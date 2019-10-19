@@ -1,0 +1,87 @@
+
+
+.title{
+	width: 100%;
+	text-align: center;
+	margin-top: 0.82rem;
+}
+
+
+.name{
+	font-size: 0.38rem;
+	color: #fff;
+	letter-spacing:3px;
+	font-weight: bold;
+}
+.name span{
+	color: #3377ff;
+}
+.introduce{
+	font-size: 0.2rem;
+	color: #fff;
+	letter-spacing:1px;
+}
+.expect{
+	width: 100%;
+	text-align: center;
+	color: #fff;
+	font-size: 0.12rem;
+	margin-top: 0.45rem;
+}
+.expect p{
+	display: inline-block;
+	border: 1px solid #fff;
+	line-height: 0.2rem;
+	padding: 0 0.15rem;
+	border-radius: 0.1rem;
+}
+.expect span{
+	color: #3377ff;
+	letter-spacing:1px;
+}
+.down_img{
+	margin-top: 0.7rem;
+	text-align: center;
+}
+.android{
+	width: 80%;
+	margin: 0 auto;
+	background: #131d2c;
+	color: #e0e1e3;
+	padding: 0.12rem 0rem;
+	box-sizing: border-box;
+	border-radius: 0.22rem;
+	margin-top: 1.4rem;
+	text-align: center;
+}
+.android  img{
+	height: 0.2rem;
+	margin-left: 0.85rem;
+	margin-right: 0.25rem;
+}
+.android p{
+	font-size: 0.12rem;
+	line-break: 0.2rem;
+	letter-spacing:2px;
+}
+.ios{
+	width: 80%;
+	margin: 0 auto;
+	background: #131d2c;
+	color: #e0e1e3;
+	padding: 0.12rem 0rem;
+	box-sizing: border-box;
+	border-radius: 0.22rem;
+	margin-top: 0.25rem;
+	text-align: center;
+}
+.ios  img{
+	height: 0.2rem;
+	margin-left: 0.85rem;
+	margin-right: 0.25rem;
+}
+.ios p{
+	font-size: 0.12rem;
+	line-break: 0.2rem;
+	letter-spacing:2px;
+}

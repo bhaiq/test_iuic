@@ -1,0 +1,87 @@
+*{
+    margin:0;
+    padding:0;
+}
+body{
+    max-width: 640px;
+    margin-left:auto;
+    margin-right:auto;
+    font-family: 'PingFangSC-Regular';
+    background-color: #fff;
+    color:#E5EAFF;
+    font-size:13px;
+}
+a{
+    text-decoration: none
+}
+li{
+	list-style:none
+}
+.cl:after{
+    content: "";
+    display: block;
+    height:0;
+    overflow: hidden;
+    clear: both;
+}
+body .reform{
+	min-height:100vh;
+	background:url(../images/bottombg.png) no-repeat center bottom;
+	background-size:100% auto
+}
+.top-header{
+	min-height:45vh;
+	background:url(../images/topbg.png) no-repeat center bottom;
+	background-size:100% auto;
+	margin-bottom:2em;
+}
+.top-header .logo{
+	font-size:1.3em;
+	text-align:center;
+	color:#F5F8FF;
+	font-weight:600;
+	padding-top:2.5em;
+}
+@media screen and (min-width: 400px) {
+	.top-header .logo{padding-top:4.5em;}
+}
+.top-header p{
+	text-align:center;
+	color:#C5D9FB;
+	padding:.85em 0 1.2em
+}
+.top-header .logo img{
+	width:5em;
+	margin-bottom:.3em
+}
+.top-header .btn {
+	text-align:center
+}
+.top-header .btn span{
+	display:inline-block;
+	padding:1.5em 2.2em;
+	background:url(../images/btnbg.png) no-repeat center bottom;
+	background-size:100% 100%;
+	color:#fff
+}
+.center{
+	padding:15px 15px;
+}
+.center li{
+	height:5em;
+	line-height:5em;
+	background:url(../images/lbg.png) no-repeat center bottom;
+	background-size:100% 100%;
+	margin:1.2em 0;
+}
+.center li img{
+	height:2.5em;
+	padding-top:1.2em;
+	padding-right:.8em
+}
+.center li span{
+	position:relative;
+	font-size:1.2em;
+	top:-.7em;
+	color:#3377FF
+}

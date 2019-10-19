@@ -1,0 +1,151 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Account;
+use App\Models\AccountLog;
+use App\Models\Coin;
+use App\Services\Service;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
+
+class AccountController extends Controller
+{
+    public function _listSecret()
+    {
+        $data['account'][] = ['amount' => 0.0000, 'amount_freeze' => 0.0000, 'amount_cny' => 0.0000, 'amount_freeze_cny' => 0.0000, 'cny' => 0.0000, 'coin' => ['name' => 'BTC']];
+        $data['account'][] = ['amount' => 0.0000, 'amount_freeze' => 0.0000, 'amount_cny' => 0.0000, 'amount_freeze_cny' => 0.0000, 'cny' => 0.0000, 'coin' => ['name' => 'ETH']];
+        return $this->response($data);
+    }
+
+    public function _list(Request $request)
+    {
+        Service::auth()->isLoginOrFail();
+        $type            = $request->get('type', 0);
+        $data['account'] = Service::auth()->getUser()->account()->whereType($type)->with('coin')->get()->toArray();
+        $coin_num        = Coin::count();
+        if ($coin_num * 2 > count($data['account'])) {
+            $coin_ids = array_unique(Arr::pluck($data['account'], 'coin_id'));
+            Coin::all()->each(function (Coin $item) use ($coin_ids) {
+                if (!in_array($item->id, $coin_ids)) {
+                    $account[] = ['uid' => Service::auth()->getUser()->id, 'coin_id' => $item->id, 'created_at' => Carbon::now(), 'type' => 0];
+                    $account[] = ['uid' => Service::auth()->getUser()->id, 'coin_id' => $item->id, 'created_at' => Carbon::now(), 'type' => 1];
+                    Account::insert($account);
+                }
+
+            });
+            $data['account'] = Service::auth()->getUser()->account()->whereType($type)->with('coin')->get()->toArray();
+        }
+        $data['all_total']     = 0;
+        $data['all_total_cny'] = 0;
+        $data['cur_total']     = 0;
+        $data['cur_total_cny'] = 0;
+
+        foreach ($data['account'] as $k => $v) {
+            $data['all_total']     = bcadd($data['all_total'], $v['cny'], 4);
+            $data['all_total_cny'] = bcadd($data['all_total_cny'], $v['cny'], 4);
+            $data['cur_total']     = bcadd($data['cur_total'], $v['cny'], 4);
+            $data['cur_total_cny'] = bcadd($data['cur_total_cny'], $v['cny'], 4);
+        }
+
+        $data_other = Service::auth()->getUser()->account()->whereType(!$type)->with('coin')->get()->toArray();
+
+        foreach ($data_other as $k => $v) {
+            $data['all_total']     = bcadd($data['all_total'], $v['cny'], 4);
+            $data['all_total_cny'] = bcadd($data['all_total_cny'], $v['cny'], 4);
+        }
+
+        // 转换成USDT数量
+        $data['cur_total'] = bcdiv($data['cur_total'], Account::getRate(), 4);
+        $data['all_total'] = bcdiv($data['all_total'], Account::getRate(), 4);
+
+        return $this->response($data);
+    }
+
+    public function log($coin_id, Request $request)
+    {
+
+        Service::auth()->isLoginOrFail();
+
+        $coinType = $request->get('coin_type', 0);
+
+        $account = AccountLog::with('coin')->whereUid(Service::auth()->getUser()->id)->whereCoinId($coin_id)->where('coin_type', $coinType)->orderBy('id', 'desc')->paginate($request->get('per_page'))->toArray();
+
+        $result = [
+            'amount' => 0,
+            'amount_freeze' => 0,
+            'cny' => 0
+        ];
+
+        $a = Account::where('coin_id', $coin_id)->where('type', $coinType)->where('uid', Service::auth()->getUser()->id)->first();
+        if($a){
+            $result = [
+                'amount' => $a->amount,
+                'amount_freeze' => $a->amount_freeze,
+                'cny' => $a->cny,
+            ];
+        }
+
+        return $this->response(array_merge($account, $result));
+
+        /*Service::auth()->isLoginOrFail();
+        $scene   = $request->get('scene');
+        $scene   = explode(',', $scene);
+
+        $scene[] = 16;
+        $scene[] = 17;
+
+        $account = AccountLog::with('coin')->whereUid(Service::auth()->getUser()->id)->whereCoinId($coin_id)->whereIn('scene', $scene)->orderBy('id', 'desc')->paginate($request->get('per_page'))->toArray();
+
+        $result = [
+            'amount' => 0,
+            'amount_freeze' => 0,
+            'cny' => 0
+        ];
+
+        $a = Account::where('coin_id', $coin_id)->where('uid', Service::auth()->getUser()->id)->first();
+        if($a){
+            $result = [
+                'amount' => $a->amount,
+                'amount_freeze' => $a->amount_freeze,
+                'cny' => $a->cny,
+            ];
+        }
+
+        return $this->response(array_merge($account, $result));*/
+    }
+
+    public function trans(Request $request)
+    {
+        Service::auth()->isLoginOrFail();
+
+        $this->validate($request->all(), [
+            'action'  => 'required|integer|between:0,1',
+            'amount'  => 'required|numeric|min:1',
+            'coin_id' => 'required|integer'
+        ]);
+
+        $coin_id = $request->get('coin_id');
+        $action  = $request->get('action');
+        $amount  = $request->get('amount');
+        $account = Service::auth()->account($coin_id, $action);
+
+        $this->validate($request->all(), [
+            'amount' => 'numeric|max:' . $account->amount,
+        ]);
+
+        Service::auth()->account($coin_id, $action)->decrement('amount', $amount);
+        Service::auth()->account($coin_id, intval(!$action))->increment('amount', $amount);
+
+        $scene = $action ? AccountLog::SCENE_TO_COIN_COIN : AccountLog::SCENE_TO_LEGAL_COIN;
+//        Service::account()->createLog(Service::auth()->getUser()->id, $coin_id, $amount, $scene);
+
+        AccountLog::addLog(Service::auth()->getUser()->id, $coin_id, $amount, $scene, $action, intval($action), AccountLog::getRemark($scene));
+        AccountLog::addLog(Service::auth()->getUser()->id, $coin_id, $amount, $scene, intval(!$action), intval(!$action), AccountLog::getRemark($scene));
+
+        return $this->response(Account::whereUid(Service::auth()->getUser()->id)->whereCoinId($coin_id)->get()->toArray());
+    }
+
+
+}
