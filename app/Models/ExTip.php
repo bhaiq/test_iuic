@@ -11,13 +11,14 @@ class ExTip extends Model
 
     protected $guarded = [];
 
-    public static function addTip($num, $bonusNum, $orderId = 0)
+    public static function addTip($num, $bonusNum, $orderId = 0, $type = 0)
     {
 
         $data = [
             'num' => $num,
             'bonus_num' => $bonusNum,
             'order_id' => $orderId,
+            'type' => $type,
         ];
 
         ExTip::create($data);

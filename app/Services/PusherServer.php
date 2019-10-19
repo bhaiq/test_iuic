@@ -14,7 +14,11 @@ class PusherServer
 
     public function __construct()
     {
-        $this->client = new Pusher('147d75f05e982aac5371', '4d37a24aaf1bb0453193', '841112', [
+//        $this->client = new Pusher('147d75f05e982aac5371', '4d37a24aaf1bb0453193', '841112', [
+//            'cluster' => 'ap1',
+//            'useTLS' => true
+//        ]);
+        $this->client = new Pusher('e1ba85a2709e9d44ec57', '30447a7d762468623f02', '845112', [
             'cluster' => 'ap1',
             'useTLS' => true
         ]);

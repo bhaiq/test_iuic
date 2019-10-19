@@ -2,8 +2,8 @@
 /**
  * Created by PhpStorm.
  * User: Asus
- * Date: 2019/7/4
- * Time: 10:03
+ * Date: 2019/9/26
+ * Time: 10:44
  */
 
 namespace App\Http\Controllers;
@@ -13,7 +13,7 @@ use App\Models\MxCity;
 use App\Services\Service;
 use Illuminate\Http\Request;
 
-class ShopAddressController extends Controller
+class MallAddressController extends Controller
 {
 
     // 地址列表
@@ -24,7 +24,6 @@ class ShopAddressController extends Controller
 
         $sa = MallAddress::where('uid', Service::auth()->getUser()->id)->latest('is_default')->get(['id', 'name', 'mobile', 'address', 'address_info', 'is_default', 'created_at'])->toArray();
 
-        $result = [];
         foreach ($sa as $k => $v){
 
             $newAddress = '';
@@ -38,22 +37,16 @@ class ShopAddressController extends Controller
                 $i++;
             }
 
-            $result[$k]['id'] = $v['id'];
-            $result[$k]['to_name'] = $v['name'];
-            $result[$k]['to_mobile'] = $v['mobile'];
-            $result[$k]['to_address'] = $newAddress . $v['address_info'];
-            $result[$k]['is_default'] = $v['is_default'];
-            $result[$k]['created_at'] = $v['created_at'];
-
+            $sa[$k]['address'] = $newAddress;
 
         }
 
-        return $this->response($result);
+        return $this->response($sa);
 
     }
 
     // 新增地址
-    public function store(Request $request)
+    public function add(Request $request)
     {
 
         Service::auth()->isLoginOrFail();
@@ -113,17 +106,20 @@ class ShopAddressController extends Controller
 
     }
 
-    // 修改地址
-    public function update(Request $request, $id)
+    // 编辑地址
+    public function edit(Request $request)
     {
+
         Service::auth()->isLoginOrFail();
 
         $this->validate($request->all(), [
+            'id' => 'required',
             'name'     => 'required',
             'mobile'     => 'required',
             'address_id' => 'required',
             'address_info' => 'required',
         ], [
+            'id.required' => 'ID不能为空',
             'name.required' => '名称不能为空',
             'mobile.required' => '手机不能为空',
             'address_id.required' => '地址信息不能为空',
@@ -131,7 +127,7 @@ class ShopAddressController extends Controller
         ]);
 
         // 验证数据是否正确
-        if(!MallAddress::where(['uid' => Service::auth()->getUser()->id, 'id' => $id])->exists()){
+        if(!MallAddress::where(['uid' => Service::auth()->getUser()->id, 'id' => $request->get('id')])->exists()){
             $this->responseError('数据有误');
         }
 
@@ -158,7 +154,7 @@ class ShopAddressController extends Controller
         \DB::beginTransaction();
         try {
 
-            MallAddress::where(['uid' => Service::auth()->getUser()->id, 'id' => $id])->update($saData);
+            MallAddress::where(['uid' => Service::auth()->getUser()->id, 'id' => $request->get('id')])->update($saData);
 
             \DB::commit();
 
@@ -177,20 +173,26 @@ class ShopAddressController extends Controller
     }
 
     // 删除地址
-    public function destroy($id)
+    public function del(Request $request)
     {
 
         Service::auth()->isLoginOrFail();
 
+        $this->validate($request->all(), [
+            'id'   => 'required',
+        ], [
+            'id.required' => 'ID不能为空',
+        ]);
+
         // 验证数据是否正确
-        if(!MallAddress::where(['uid' => Service::auth()->getUser()->id, 'id' => $id])->exists()){
+        if(!MallAddress::where(['uid' => Service::auth()->getUser()->id, 'id' => $request->get('id')])->exists()){
             $this->responseError('数据有误');
         }
 
         \DB::beginTransaction();
         try {
 
-            MallAddress::where(['uid' => Service::auth()->getUser()->id, 'id' => $id])->delete();
+            MallAddress::where(['uid' => Service::auth()->getUser()->id, 'id' => $request->get('id')])->delete();
 
             \DB::commit();
 
@@ -207,6 +209,5 @@ class ShopAddressController extends Controller
         $this->responseSuccess('操作成功');
 
     }
-
 
 }

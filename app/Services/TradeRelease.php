@@ -25,14 +25,25 @@ class TradeRelease
     // 释放
     public function release($uid, $num)
     {
-		\Log::info('关闭交易释放', ['uid' => $uid]);
-      	return false;
+
         // 判断当日释放次数是否超限
         $userInfo = UserInfo::where('uid', $uid)->first();
         if(!$userInfo){
             \Log::info('用户数据有误，不进行是释放', ['uid' => $uid]);
             return false;
         }
+
+        if(!config('kuangji.trade_release_status', 0)){
+            \Log::info('交易释放总开关关闭，不进行释放', ['uid' => $uid]);
+            return false;
+        }
+
+        // 判断用户是否购买矿机
+        if($userInfo->release_status != 0){
+            \Log::info('用户不能进行交易释放', ['uid' => $uid]);
+            return false;
+        }
+
         $this->ui = $userInfo;
 
         if(now()->toDateString() == substr($userInfo->release_time, 0, 10)){

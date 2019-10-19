@@ -20,7 +20,7 @@ class BonusController extends Controller
 
         Service::auth()->isLoginOrFail();
 
-        $result = AccountLog::select('amount as num', 'type', 'remark as exp', 'created_at')
+        $result = AccountLog::select('coin_id', 'amount as num', 'type', 'remark as exp', 'created_at')
             ->whereIn('scene', [14, 15])
             ->where('uid', Service::auth()->getUser()->id)
           	->latest('id')
@@ -30,7 +30,12 @@ class BonusController extends Controller
         foreach ($result['data'] as $k => $v){
             $result['data'][$k]['sign'] = $v['type'] ? '+' : '-';
             $result['data'][$k]['created_at'] = date('Y-m-d H:i:s', $v['created_at']);
-            $result['data'][$k]['unit'] = 'USDT';
+
+            if($v['coin_id'] == 2){
+                $result['data'][$k]['unit'] = 'IUIC';
+            }else{
+                $result['data'][$k]['unit'] = 'USDT';
+            }
 
             unset($result['data'][$k]['type']);
         }

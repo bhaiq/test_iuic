@@ -12,8 +12,8 @@ use App\Jobs\UpdateAdminBonus;
 use App\Models\Account;
 use App\Models\AccountLog;
 use App\Models\Coin;
+use App\Models\MallAddress;
 use App\Models\ReleaseOrder;
-use App\Models\ShopAddress;
 use App\Models\ShopGoods;
 use App\Models\ShopOrder;
 use App\Models\UserBonus;
@@ -29,7 +29,7 @@ class ShopController extends Controller
     public function goods()
     {
 
-        $res = ShopGoods::oldest('id')->get(['id', 'goods_name', 'goods_img', 'goods_info', 'goods_price', 'coin_type', 'ore_pool', 'goods_details', 'created_at'])->toArray();
+        $res = ShopGoods::oldest('id')->get(['id', 'goods_name', 'goods_img', 'goods_info', 'goods_price', 'coin_type', 'ore_pool', 'goods_details', 'sale_num', 'created_at'])->toArray();
         return $this->response($res);
 
     }
@@ -65,7 +65,7 @@ class ShopController extends Controller
         }
 
         // 验证地址信息
-        $address = ShopAddress::where(['id' => $request->get('address_id'), 'uid' => $user->id])->first();
+        $address = MallAddress::where(['id' => $request->get('address_id'), 'uid' => $user->id])->first();
         if(!$address){
             $this->responseError('地址信息有误');
         }
@@ -79,6 +79,17 @@ class ShopController extends Controller
             $this->responseError('用户余额不足');
         }
 
+        $newAddress = '';
+        $i = 0;
+
+        $arr = explode(',', $address->address);
+        foreach ($arr as $val) {
+            if ($i > 0) {
+                $newAddress .= $val;
+            }
+            $i++;
+        }
+
         $soData = [
             'uid' => $user->id,
             'goods_name' => $good->goods_name,
@@ -87,9 +98,9 @@ class ShopController extends Controller
             'coin_type' => $good->coin_type,
             'ore_pool' => $good->ore_pool,
             'status' => 1,
-            'to_name' => $address->to_name,
-            'to_mobile' => $address->to_mobile,
-            'to_address' => $address->to_address,
+            'to_name' => $address->name,
+            'to_mobile' => $address->mobile,
+            'to_address' => $newAddress . $address->address_info,
             'created_at' => now()->toDateTimeString(),
         ];
 
@@ -99,6 +110,9 @@ class ShopController extends Controller
 
             // 生成订单
             $so = ShopOrder::create($soData);
+
+            // 商品销量加1
+            ShopGoods::where('id', $good->id)->increment('sale_num');
 
             // 用户余额减少
             Account::reduceAmount($user->id, $coin->id, $good->goods_price);
@@ -127,9 +141,9 @@ class ShopController extends Controller
             if($pidUserLevel){
 
                 // 判断用户是否有分红权限
-                if($pidUserLevel->is_bonus != 1){
+                /*if($pidUserLevel->is_bonus != 1){
                     $this->updateBonus($user->pid);
-                }
+                }*/
 
                 // 判断上级级别
                 if($pidUserLevel->level == 2){
@@ -184,6 +198,8 @@ class ShopController extends Controller
             \DB::commit();
 
         } catch (\Exception $exception) {
+
+            throw $exception;
 
             \DB::rollBack();
 

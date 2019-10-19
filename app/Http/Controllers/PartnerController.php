@@ -120,7 +120,7 @@ class PartnerController extends Controller
 
         Service::auth()->isLoginOrFail();
 
-        $result = AccountLog::select('amount as num', 'type', 'remark as exp', 'created_at')
+        $result = AccountLog::select('coin_id', 'amount as num', 'type', 'remark as exp', 'created_at')
             ->where('scene', 18)
             ->where('remark', '合伙人分红')
             ->where('uid', Service::auth()->getUser()->id)
@@ -132,6 +132,12 @@ class PartnerController extends Controller
             $result['data'][$k]['sign'] = $v['type'] ? '+' : '-';
             $result['data'][$k]['created_at'] = date('Y-m-d H:i:s', $v['created_at']);
             $result['data'][$k]['unit'] = 'USDT';
+
+            if($v['coin_id'] == 2){
+                $result['data'][$k]['unit'] = 'IUIC';
+            }else{
+                $result['data'][$k]['unit'] = 'USDT';
+            }
 
             unset($result['data'][$k]['type']);
         }

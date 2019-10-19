@@ -7,6 +7,7 @@ use App\Models\AccountLog;
 use App\Models\Coin;
 use App\Models\CoinExtract;
 use App\Models\UsdtExtract;
+use App\Models\UserInfo;
 use App\Services\Service;
 use Illuminate\Http\Request;
 use App\Models\EthTransaction;
@@ -188,6 +189,12 @@ class EthController extends Controller
                     break;
                 }
             }
+        }
+
+        // 判断用户矿池是否充足
+        $ui = UserInfo::where('uid', Service::auth()->getUser()->id)->first();
+        if(!$ui || bcsub($ui->buy_total, $ui->release_total, 8) <= 0){
+            $this->responseError('矿池数量不足,不能提现');
         }
         
         // 获取手续费

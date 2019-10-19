@@ -8,7 +8,6 @@
 
 namespace App\Services;
 
-
 use App\Models\Account;
 use App\Models\AccountLog;
 use App\Models\Coin;
@@ -16,14 +15,14 @@ use App\Models\ExtraBonus;
 use App\Models\UserBonus;
 use App\Models\UserPartner;
 
-class RealTimeBonus
+class KuangjiBonus
 {
 
     // 实时分红
     public function handle($num)
     {
 
-        \Log::info('=====   开始执行分红   =====');
+        \Log::info('=====   开始执行分红   =====', ['num' => $num]);
 
         // 第一种分红,节点奖分红
         $this->bonus($num);
@@ -72,7 +71,7 @@ class RealTimeBonus
         }
 
         // 获取那个USDT的币种ID
-        $coin = Coin::getCoinByName('USDT');
+        $coin = Coin::getCoinByName('IUIC');
 
         foreach ($bonusCount as $v) {
 
@@ -112,7 +111,7 @@ class RealTimeBonus
         foreach ($bonusCount as $v) {
 
             // 获取那个USDT的币种ID
-            $coin = Coin::getCoinByName('USDT');
+            $coin = Coin::getCoinByName('IUIC');
 
             // 用户余额表更新
             Account::addAmount($v->uid, $coin->id, $oneNum, Account::TYPE_LC);
@@ -159,9 +158,13 @@ class RealTimeBonus
 
             // 平均每个人能分的数量
             $oneNum = bcdiv($totalNum, $userCount, 8);
+            if ($oneNum < 0.00000001) {
+                \Log::info('分红数量少于0.00000001,放弃本次额外奖分红');
+                return false;
+            }
 
             // 获取那个USDT的币种ID
-            $coin = Coin::getCoinByName('USDT');
+            $coin = Coin::getCoinByName('IUIC');
 
             // 给在座的每个人增加余额
             foreach ($v['users'] as $val) {
@@ -212,7 +215,7 @@ class RealTimeBonus
         \Log::info('合伙人分红的数据', ['num' => $num, 'count' => $userCount, 'tip' => $tip, 'one' => $oneNum]);
 
         // 获取那个USDT的币种ID
-        $coin = Coin::getCoinByName('USDT');
+        $coin = Coin::getCoinByName('IUIC');
 
         foreach ($up as $v){
 
@@ -252,7 +255,7 @@ class RealTimeBonus
         }
 
         // 获取那个USDT的币种ID
-        $coin = Coin::getCoinByName('USDT');
+        $coin = Coin::getCoinByName('IUIC');
 
         foreach ($bonusCount as $v) {
 
@@ -290,7 +293,7 @@ class RealTimeBonus
         }
 
         // 获取那个USDT的币种ID
-        $coin = Coin::getCoinByName('USDT');
+        $coin = Coin::getCoinByName('IUIC');
 
         foreach ($bonusCount as $v) {
 
@@ -328,7 +331,7 @@ class RealTimeBonus
         }
 
         // 获取那个USDT的币种ID
-        $coin = Coin::getCoinByName('USDT');
+        $coin = Coin::getCoinByName('IUIC');
 
         foreach ($bonusCount as $v) {
 

@@ -33,6 +33,11 @@ class UserInfo extends Model
         return $query->where('level', '=', 2);
     }
 
+    public function scopeValid($query)
+    {
+        return $query->whereIn('level', [1, 2]);
+    }
+
     // 矿池总量增加
     public static function addBuyTotal($uid, $num)
     {

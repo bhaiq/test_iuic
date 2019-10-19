@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Models\User;
 use App\Models\UserBonus;
 use App\Models\UserInfo;
+use App\Services\LevelService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -35,96 +36,84 @@ class UpdateAdminBonus implements ShouldQueue
     public function handle()
     {
 
-        \Log::info('=====  用户递归更新管理分红权限  =====');
+        \Log::info('===== 用户递归更新用户节点奖 =====');
 
-        $this->updateUserInfo($this->uid);
+        $this->updateNode($this->uid);
 
-        \Log::info('=====  用户递归更新管理分红权限结束  =====');
+        \Log::info('===== 用户递归更新用户节点奖 =====');
+
+        \Log::info('===== 用户递归更新用户管理奖 =====');
+
+        $this->updateAdmin($this->uid);
+
+        \Log::info('===== 用户递归更新用户管理奖 =====');
 
     }
 
-    // 递归更新用户信息
-    public function updateUserInfo($uid)
+    // 更新用户节点奖信息
+    private function updateNode($uid, $type = 0)
     {
-        if($uid <= 0){
-            \Log::info('已经到达最顶层');
-            return false;
-        }
 
-        // 判断当前管理分红权限有没有超过500
-        $userSum = UserBonus::where('type', 2)->count();
-        if($userSum >= config('shop.admin_bonus_num')){
-            \Log::info('管理分红权限用户已达到500');
-            return false;
-        }
-
-        // 判断当前用户是否报过单
-        $user = UserInfo::where('uid', $uid)->first();
+        // 获取用户信息
+        $user = User::with('user_info')->find($uid);
         if(!$user){
-
-            $u = User::where('id', $uid)->first();
-            if(!$u){
-                \Log::info('用户数据不存在', ['uid' => $uid]);
-                return false;
-            }
-
-            return $this->updateUserInfo($u->pid);
+            \Log::info('用户数据不存在');
+            return false;
         }
 
-        // 判断该用户是否有管理分红
-        if($user->is_admin == 1){
-            return $this->updateUserInfo($user->pid);
+        if(!$user->user_info){
+            \Log::info('用户未报单', ['uid' => $uid, 'type' => $type]);
+            return $this->updateNode($user->pid);
         }
 
-        // 判断推荐的用户是否有5个高级
-        $count5 = UserInfo::senior()->where('pid', $uid)->count();
-        if($count5 < 5){
-            return $this->updateUserInfo($user->pid);
-        }
+        $ub = '';
 
-        // 判断推荐的用户部门是否达到300
-        $count300 = UserInfo::where('pid_path', 'like', '%,' . $uid .',%')->count();
-        if($count300 < 300){
-            return $this->updateUserInfo($user->pid);
-        }
+        // 判断用户之前是否有节点奖
+        if(isset($user->user_info->is_bonus) && $user->user_info->is_bonus == 1){
 
-        // 判断某个部门达到100
-        $status = false;
-        $ulRes = UserInfo::senior()->where('pid', $uid)->get(['uid']);
-        if($ulRes->isEmpty()){
-            return $this->updateUserInfo($user->pid);
-        }
-
-        foreach ($ulRes->toArray() as $v){
-
-            $lowCount = UserInfo::where('pid_path', 'like', '%,' . $v['uid'] .',%')->count();
-            if($lowCount >= 100){
-                $status = true;
-                break;
+            // 获取用户节点奖信息
+            $ub = UserBonus::where(['uid' => $uid, 'type' => 1])->first();
+            if($ub){
+                $type = bcadd($ub->node_type, 1);
             }
 
         }
 
-        if(!$status){
-            return $this->updateUserInfo($user->pid);
+        $lsRes = LevelService::checkNode($uid, $type);
+        if(!$lsRes){
+            \Log::info('用户不满足升级信息', ['uid' => $uid, 'type' => $type]);
+            return $this->updateNode($user->pid);
         }
-
-        $ubData = [
-            'uid' => $uid,
-            'type' => 2,
-            'created_at' => now()->toDateTimeString()
-        ];
 
         \DB::beginTransaction();
         try {
 
-            // 分红权限表更新
-            UserBonus::create($ubData);
-            \Log::info('新增一条管理分红权限', $ubData);
+            // 判断用户之前是否有节点奖
+            if($ub){
 
-            // 用户附属表更新
-            $user->is_admin = 1;
-            $user->save();
+                $ub->node_type = $type;
+                $ub->save();
+
+            }else{
+
+                $ubData = [
+                    'uid' => $uid,
+                    'type' => 1,
+                    'node_type' => $type,
+                    'created_at' => now()->toDateTimeString(),
+                ];
+
+                UserBonus::create($ubData);
+
+                // 附属表更新
+                $ulData = [
+                    'is_bonus' => 1,
+                ];
+
+                UserInfo::where('uid', $uid)->update($ulData);
+
+            }
+
 
             \DB::commit();
 
@@ -132,10 +121,75 @@ class UpdateAdminBonus implements ShouldQueue
 
             \DB::rollBack();
 
-            \Log::info('失败=====新增管理分红权限失败');
+            \Log::info('处理节点更新信息异常', ['uid' => $uid, 'type' => $type]);
 
         }
 
-        return $this->updateUserInfo($user->pid);
+        // 处理成功则再处理一遍
+        return $this->updateNode($uid);
+
     }
+
+    // 更新用户管理奖信息
+    private function updateAdmin($uid)
+    {
+
+        // 获取用户信息
+        $user = User::with('user_info')->find($uid);
+        if(!$user){
+            \Log::info('用户数据不存在');
+            return false;
+        }
+
+        if(!$user->user_info){
+            \Log::info('用户未报单', ['uid' => $uid]);
+            return $this->updateAdmin($user->pid);
+        }
+
+        // 判断用户之前是否有节点奖
+        if(isset($user->user_info->is_admin) && $user->user_info->is_admin == 1){
+            \Log::info('用户已经是管理奖用户了');
+            return $this->updateAdmin($user->pid);
+        }
+
+        $lsRes = LevelService::checkAdmin($uid);
+        if(!$lsRes){
+            \Log::info('用户不满足升级信息', ['uid' => $uid]);
+            return $this->updateAdmin($user->pid);
+        }
+
+        \DB::beginTransaction();
+        try {
+
+            $ubData = [
+                'uid' => $uid,
+                'type' => 2,
+                'node_type' => 0,
+                'created_at' => now()->toDateTimeString(),
+            ];
+
+            UserBonus::create($ubData);
+
+            // 附属表更新
+            $ulData = [
+                'is_admin' => 1,
+            ];
+
+            UserInfo::where('uid', $uid)->update($ulData);
+
+            \DB::commit();
+
+        } catch (\Exception $exception) {
+
+            \DB::rollBack();
+
+            \Log::info('处理管理奖更新信息异常', ['uid' => $uid]);
+
+        }
+
+        // 处理成功则换用户上级
+        return $this->updateAdmin($user->pid);
+
+    }
+
 }

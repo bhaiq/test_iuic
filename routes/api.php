@@ -170,6 +170,86 @@ Route::group(['middleware' => ['auth.api']], function () {
 
     });
 
+    // 多店铺商城
+    Route::group(['prefix' => 'mall'], function () {
+
+        Route::get('/', 'MallController@index'); // 商城首页
+
+        // 店铺信息
+        Route::group(['prefix' => 'store'], function () {
+            Route::get('/', 'MallStoreController@index'); // 店铺首页
+            Route::post('apply', 'MallStoreController@apply'); // 申请店铺
+            Route::get('notice', 'MallStoreController@notice'); // 店铺通知
+            Route::post('edit', 'MallStoreController@edit'); // 店铺编辑
+
+            Route::get('goods', 'MallStoreController@goods'); // 获取店铺商品信息
+
+        });
+
+        // 商品信息
+        Route::group(['prefix' => 'goods'], function () {
+            Route::post('add', 'MallGoodsController@add'); // 发布商品
+            Route::get('category', 'MallGoodsController@category'); // 获取商品类别
+            Route::get('rebate', 'MallGoodsController@rebate'); // 获取商品返利
+            Route::get('index', 'MallGoodsController@index'); // 获取商品列表
+            Route::post('edit', 'MallGoodsController@edit'); // 商品编辑
+            Route::post('operate', 'MallGoodsController@operate'); // 商品下架或者删除
+
+            Route::get('info', 'MallGoodsController@info'); // 获取商品详情
+            Route::get('order', 'MallGoodsController@order'); // 商品生成一个订单
+            Route::post('buy', 'MallGoodsController@buy'); // 商品购买提交
+
+
+        });
+
+        // 订单信息
+        Route::group(['prefix' => 'order'], function () {
+            Route::get('admin', 'MallOrderController@admin'); // 订单管理页
+            Route::get('index', 'MallOrderController@index'); // 订单列表
+            Route::get('info', 'MallOrderController@info'); // 订单详情
+
+            Route::post('write', 'MallOrderController@write'); // 订单填写
+
+        });
+
+        // 地址信息
+        Route::group(['prefix' => 'address'], function () {
+            Route::get('index', 'MallAddressController@index'); // 地址列表
+            Route::post('add', 'MallAddressController@add'); // 新增地址
+            Route::post('edit', 'MallAddressController@edit'); // 修改地址
+            Route::post('del', 'MallAddressController@del'); // 删除地址
+
+        });
+
+        // 用户信息
+        Route::group(['prefix' => 'user'], function () {
+            Route::get('admin', 'MallUserController@admin'); // 用户订单管理页 confirm
+            Route::get('order', 'MallUserController@order'); // 用户订单列表
+            Route::post('confirm', 'MallUserController@confirm'); // 用户确认收货
+
+        });
+
+        Route::get('/category/goods', 'MallCategoryController@goods'); // 根据类别获取商品列表
+
+
+    });
+
+    // 矿机信息
+    Route::group(['prefix' => 'kuangji'], function () {
+        Route::get('home', 'KuangJiController@home'); // 矿机中心
+        Route::get('log', 'KuangJiController@log'); // 矿机购买记录
+        Route::get('my', 'KuangJiController@my'); // 我的矿机
+        Route::post('buy/position', 'KuangJiController@buyPosition'); // 购买矿位
+        Route::post('buy', 'KuangJiController@buy'); // 购买矿机
+        Route::get('release/log', 'KuangJiController@releaseLog'); // 矿机释放记录
+    });
+
+});
+
+Route::group(['prefix' => 'common'], function () {
+
+    Route::post('upload/image', 'CommonController@uploadImage'); // 公共上传图片
+
 });
 
 Route::post('/handleEthTransaction', 'EthController@handleEthTokenTransaction');
