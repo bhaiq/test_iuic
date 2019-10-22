@@ -164,8 +164,13 @@ class LevelService
 
             $lowCount = UserInfo::valid()->where('pid_path', 'like', '%,' . $v['uid'] .',%')->count();
             if($lowCount >= $branchNum){
-                $status = true;
-                break;
+
+                // 判断其他部门是否满足条件
+                if(($count300 - $lowCount) >= ($validNum - $branchNum)){
+                    $status = true;
+                    break;
+                }
+
             }
 
         }
