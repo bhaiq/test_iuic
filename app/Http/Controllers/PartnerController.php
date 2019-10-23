@@ -143,7 +143,8 @@ class PartnerController extends Controller
         }
 
         $res = [
-            'total_num' => AccountLog::where(['uid' => Service::auth()->getUser()->id, 'scene' => 18, 'remark' => '合伙人分红'])->sum('amount'),
+            'usdt_total_num' => AccountLog::where(['uid' => Service::auth()->getUser()->id, 'coin_id' => 1, 'scene' => 18, 'remark' => '合伙人分红'])->sum('amount'),
+            'iuic_total_num' => AccountLog::where(['uid' => Service::auth()->getUser()->id, 'coin_id' => 2, 'scene' => 18, 'remark' => '合伙人分红'])->sum('amount'),
         ];
 
         return $this->response(array_merge($result, $res));
