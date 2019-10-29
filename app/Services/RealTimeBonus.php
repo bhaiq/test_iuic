@@ -26,25 +26,25 @@ class RealTimeBonus
         \Log::info('=====   开始执行分红   =====');
 
         // 第一种分红,节点奖分红
-        $this->bonus($num);
+//        $this->bonus($num);
 
         // 第二种分红，管理奖分红
-        $this->adminBonus($num);
+//        $this->adminBonus($num);
 
         // 后面增加的额外分红
-        $this->extraBonus($num);
+//        $this->extraBonus($num);
 
         // 合伙人收益分红
         $this->partnerBonus($num);
 
         // 小节点奖分红
-        $this->minBonus($num);
+//        $this->minBonus($num);
 
         // 大节点奖分红
-        $this->bigBonus($num);
+//        $this->bigBonus($num);
 
         // 超级节点奖分红
-        $this->superBonus($num);
+//        $this->superBonus($num);
 
         \Log::info('=====   执行分红结束   =====');
 
