@@ -17,6 +17,9 @@ class UpdateAdminBonus implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     private $uid;
+    private $xxUid = [
+        1, 57, 34, 98, 125, 126, 105, 99, 176
+    ];
 
     /**
      * Create a new job instance.
@@ -59,6 +62,12 @@ class UpdateAdminBonus implements ShouldQueue
         if(!$user){
             \Log::info('用户数据不存在');
             return false;
+        }
+
+        // 判断用户是否属于非升级的用户
+        if(in_array($user->id, $this->xxUid)){
+            \Log::info('用户属于非升级用户，跳过', ['uid' => $uid, 'type' => $type]);
+            return $this->updateNode($user->pid);
         }
 
         if(!$user->user_info){
@@ -139,6 +148,12 @@ class UpdateAdminBonus implements ShouldQueue
         if(!$user){
             \Log::info('用户数据不存在');
             return false;
+        }
+
+        // 判断用户是否属于非升级的用户
+        if(in_array($user->id, $this->xxUid)){
+            \Log::info('用户属于非升级用户，跳过', ['uid' => $uid]);
+            return $this->updateNode($user->pid);
         }
 
         if(!$user->user_info){
