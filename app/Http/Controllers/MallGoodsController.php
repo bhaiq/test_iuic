@@ -66,6 +66,10 @@ class MallGoodsController extends Controller
             }
         }
 
+        if($request->get('goods_cost') > $request->get('goods_price')){
+            $this->responseError('成本价不能大于售价');
+        }
+
         // 验证商品类别是否有问题
         if (!MallCategory::where('id', $request->get('category_id'))->exists()) {
             $this->responseError('商品类别有误');
