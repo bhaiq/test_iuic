@@ -226,11 +226,11 @@ class MallStoreController extends Controller
         ];
 
         if($request->get('type') == 2){
-            $res = MallGood::where('store_id', $store->id)->where('status', 1)->latest('top')->latest('id')->paginate($request->get('per_page', 10));
+            $res = MallGood::where('store_id', $store->id)->where(['status' => 1, 'is_affirm' => 1])->latest('top')->latest('id')->paginate($request->get('per_page', 10));
         }else if($request->get('type') == 3){
-            $res = MallGood::where('store_id', $store->id)->where('status', 1)->latest('top')->latest('sale_num')->paginate($request->get('per_page', 10));
+            $res = MallGood::where('store_id', $store->id)->where(['status' => 1, 'is_affirm' => 1])->latest('top')->latest('sale_num')->paginate($request->get('per_page', 10));
         }else{
-            $res = MallGood::where('store_id', $store->id)->where('status', 1)->latest('top')->paginate($request->get('per_page', 10));
+            $res = MallGood::where('store_id', $store->id)->where(['status' => 1, 'is_affirm' => 1])->latest('top')->paginate($request->get('per_page', 10));
         }
 
         return $this->response(array_merge($res->toArray(), $result));

@@ -23,7 +23,7 @@ class MallController extends Controller
 
         Service::auth()->isLoginOrFail();
 
-        $res = MallGood::where('status', 1)->latest('top')->latest('sale_num')->paginate($request->get('per_page', 10));
+        $res = MallGood::where(['status' => 1, 'is_affirm' => 1])->latest('top')->latest('sale_num')->paginate($request->get('per_page', 10));
 
         $isBusiness = 0;
         $remark = '';

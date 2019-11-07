@@ -35,6 +35,7 @@ class MallGoodsController extends Controller
             'goods_info' => 'required|max:200',
             'goods_name' => 'required',
             'goods_price' => 'required|numeric|regex:/^[0-9]+(.[0-9]{1,2})?$/',
+            'goods_cost' => 'required|numeric|regex:/^[0-9]+(.[0-9]{1,2})?$/',
             'category_id' => 'required',
             'store_id' => 'required',
         ], [
@@ -45,6 +46,9 @@ class MallGoodsController extends Controller
             'goods_price.required' => '商品价格不能为空',
             'goods_price.numeric' => '商品价格必须是数字',
             'goods_price.regex' => '商品价格只能保留两位小数',
+            'goods_cost.required' => '商品成本不能为空',
+            'goods_cost.numeric' => '商品成本必须是数字',
+            'goods_cost.regex' => '商品成本只能保留两位小数',
             'category_id.required' => '商品类别不能为空',
             'store_id.required' => '店铺信息不能为空',
         ]);
@@ -80,6 +84,7 @@ class MallGoodsController extends Controller
             'store_id' => $request->get('store_id'),
             'goods_name' => $request->get('goods_name'),
             'goods_price' => $request->get('goods_price'),
+            'goods_cost' => $request->get('goods_cost'),
             'goods_img' => implode(',', $imgArr),
             'goods_info' => $request->get('goods_info'),
             'category_id' => $request->get('category_id'),
@@ -146,7 +151,7 @@ class MallGoodsController extends Controller
 
         $this->validate($request->all(), [
             'store_id' => 'required',
-            'status' => 'required|in:1,2'
+            'status' => 'required|in:1,2,3'
         ], [
             'store_id.required' => '店铺信息不能为空',
             'status.required' => '状态不能为空',
@@ -158,13 +163,27 @@ class MallGoodsController extends Controller
             $status = 0;
         }
 
-        // 获取该店铺的在售中商品
-        $res = MallGood::select('id', 'goods_name', 'goods_price', 'goods_img', 'sale_num', 'ore_pool', 'goods_info', 'category_id')
-            ->where(['store_id' => $request->get('store_id'), 'status' => $status])
-            ->latest('top')
-            ->paginate($request->get('per_page', 10));
+        if($request->get('status') != 3){
 
-        $result = $res->toArray();
+            // 获取该店铺的在售中商品
+            $res = MallGood::select('id', 'goods_name', 'goods_price', 'goods_cost', 'goods_img', 'sale_num', 'ore_pool', 'goods_info', 'category_id')
+                ->where(['store_id' => $request->get('store_id'), 'status' => $status, 'is_affirm' => 1])
+                ->latest('top')
+                ->paginate($request->get('per_page', 10));
+
+            $result = $res->toArray();
+
+        }else{
+
+            // 获取该店铺申请中的商品
+            $res = MallGood::select('id', 'goods_name', 'goods_price', 'goods_cost', 'goods_img', 'sale_num', 'ore_pool', 'goods_info', 'category_id')
+                ->where(['store_id' => $request->get('store_id'), 'is_affirm' => 0])
+                ->latest('top')
+                ->paginate($request->get('per_page', 10));
+
+            $result = $res->toArray();
+
+        }
 
         foreach ($result['data'] as $k => $v){
             $result['data'][$k]['category_name'] = MallCategory::find($v['category_id'])->name ?? '';
@@ -185,16 +204,12 @@ class MallGoodsController extends Controller
             'goods_img' => 'required',
             'goods_info' => 'required',
             'goods_name' => 'required',
-            'goods_price' => 'required|numeric|regex:/^[0-9]+(.[0-9]{1,2})?$/',
             'category_id' => 'required',
         ], [
             'goods_id.required' => '商品信息不能为空',
             'goods_img.required' => '商品图片不能为空',
             'goods_info.required' => '商品说明不能为空',
             'goods_name.required' => '商品名称不能为空',
-            'goods_price.required' => '商品价格不能为空',
-            'goods_price.numeric' => '商品价格必须是数字',
-            'goods_price.regex' => '商品价格只能保留两位小数',
             'category_id.required' => '商品类别不能为空',
         ]);
 
@@ -226,14 +241,13 @@ class MallGoodsController extends Controller
 
         $mgData = [
             'goods_name' => $request->get('goods_name'),
-            'goods_price' => $request->get('goods_price'),
             'goods_img' => implode(',', $imgArr),
             'goods_info' => $request->get('goods_info'),
             'ore_pool' => $orePool,
             'category_id' => $request->get('category_id'),
         ];
 
-        // 修改订单
+        // 修改商品
         \DB::beginTransaction();
         try {
 
@@ -323,7 +337,7 @@ class MallGoodsController extends Controller
             'goods_id.required' => '商品信息不能为空',
         ]);
 
-        $goods = MallGood::with('store')->where('status', 1)->find($request->get('goods_id'));
+        $goods = MallGood::with('store')->where(['status' => 1, 'is_affirm' => 1])->find($request->get('goods_id'));
         if (!$goods) {
             $this->responseError('商品已下架或删除');
         }
@@ -401,6 +415,7 @@ class MallGoodsController extends Controller
             'goods_img' => $goods->goods_img,
             'goods_info' => $goods->goods_info,
             'goods_price' => $goods->goods_price,
+            'goods_cost' => $goods->goods_cost,
             'ore_pool' => $goods->ore_pool,
         ];
 
@@ -460,6 +475,7 @@ class MallGoodsController extends Controller
             'num' => $request->get('num'),
             'goods_name' => $goods->goods_name,
             'goods_price' => $goods->goods_price,
+            'goods_cost' => $goods->goods_cost,
             'goods_img' => implode(',', $goods->goods_img),
             'goods_info' => $goods->goods_info,
             'ore_pool' => $goods->ore_pool,
@@ -473,7 +489,7 @@ class MallGoodsController extends Controller
         \DB::beginTransaction();
         try {
 
-            $mo = MallOrder::create($moData);
+            MallOrder::create($moData);
 
             // 商品销量加
             MallGood::where('id', $goods->id)->increment('sale_num');

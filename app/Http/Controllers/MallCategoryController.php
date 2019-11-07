@@ -25,11 +25,11 @@ class MallCategoryController extends Controller
 
         if($categoryId == 0){
 
-            $res = MallGood::with('store')->where(['type' => 0, 'status' => 1])->latest('top')->latest('sale_num')->paginate($request->get('per_page', 10));
+            $res = MallGood::with('store')->where(['type' => 0, 'status' => 1, 'is_affirm' => 1])->latest('top')->latest('sale_num')->paginate($request->get('per_page', 10));
 
         }else{
 
-            $res = MallGood::with('store')->where(['type' => 0, 'status' => 1])->where('category_id', $categoryId)->latest('top')->latest('sale_num')->paginate($request->get('per_page', 10));
+            $res = MallGood::with('store')->where(['type' => 0, 'status' => 1, 'is_affirm' => 1])->where('category_id', $categoryId)->latest('top')->latest('sale_num')->paginate($request->get('per_page', 10));
         }
 
         $result = $res->toArray();
