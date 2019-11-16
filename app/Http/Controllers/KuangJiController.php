@@ -93,7 +93,7 @@ class KuangJiController extends Controller
 
         foreach ($result['data'] as $k => $v){
 
-            if($v['status'] > 0){
+            if($v['status'] == 1){
 
                 $start = strtotime(substr($v['created_at'], 0, 10) . ' 00:00:00');
 
@@ -132,6 +132,7 @@ class KuangJiController extends Controller
                 'is_open' => 0,
                 'is_use' => 0,
                 'kj_info' => null,
+                'kup_id' => 0,
             ];
 
             // 判断自己这个矿位有没有开启
@@ -139,6 +140,7 @@ class KuangJiController extends Controller
             if($kup){
 
                 $arr['is_open'] = 1;
+                $arr['kup_id'] = $kup->id;
 
                 if($kup->kuangji_id > 0 && $kup->order_id > 0){
 
@@ -359,6 +361,121 @@ class KuangJiController extends Controller
 
         return $this->response($result->toArray());
 
+    }
+
+    // 矿机赎回
+    public function redeem(Request $request)
+    {
+
+        Service::auth()->isLoginOrFail();
+
+        $this->validate($request->all(), [
+            'id'     => 'required|integer',
+            'paypass' => 'required',
+        ], [
+            'id.required' => '矿位信息不能玩空',
+            'id.integer' => '矿位信息必须是整数',
+            'paypass.required' => '交易密码不能为空',
+        ]);
+
+        // 判断矿机赎回功能是否开启
+        if(empty(config('kuangji.kuangji_redeem_switch'))){
+            $this->responseError('功能暂不开放');
+        }
+
+        // 获取用户矿池信息
+        $ui = UserInfo::where('uid', Service::auth()->getUser()->id)->first();
+        if(!$ui){
+            $this->responseError('数据有误');
+        }
+
+        // 获取那个USDT的币种ID
+        $coin = Coin::getCoinByName('IUIC');
+        if(!$coin){
+            $this->responseError('币种信息');
+        }
+
+        // 验证二级密码
+        Service::auth()->isTransactionPasswordYesOrFail($request->get('paypass'));
+
+        // 验证矿位信息是否正确
+        $kup = KuangjiUserPosition::with(['order', 'kuangji'])->where(['uid' => Service::auth()->getUser()->id, 'id' => $request->get('id')])->first();
+        if(!$kup){
+            $this->responseError('矿位信息有误');
+        }
+
+        // 判断矿位有没有数据
+        if(empty($kup->order_id) || empty($kup->kuangji_id)){
+            $this->responseError('该矿位没有矿机');
+        }
+
+        // 判断矿池的剩余数量是否支持赎回
+        if(bcsub($ui->buy_total, $ui->release_total, 8) < $kup->kuangji->num){
+            $this->responseError('剩余矿池数量不足');
+        }
+
+        // 计算矿机释放的时间
+        $buyDay = bcadd(bcdiv(bcsub(time(), strtotime($kup->order->created_at)), 3600 * 24), 1);
+        if($buyDay > 90){
+            $this->responseError('矿机超过90天,不能赎回');
+        }
+
+        // 计算本次释放赎回比例
+        $redeemBl = $this->getRedeemBl($buyDay);
+
+        // 计算本次释放赎回数量
+        $oneNum = bcmul($kup->kuangji->num, $redeemBl, 8);
+
+        \DB::beginTransaction();
+        try {
+
+            // 矿机订单关闭
+            KuangjiOrder::where('id', $kup->order_id)->update(['status' => 2]);
+
+            // 矿位表更新
+            KuangjiUserPosition::where('id', $kup->id)->update(['order_id' => 0, 'kuangji_id' => 0]);
+
+            // 用户总矿池数量减少
+            UserInfo::where('uid', Service::auth()->getUser()->id)->decrement('buy_total', $kup->kuangji->num);
+
+            // 矿池记录新增
+            UserWalletLog::addLog(Service::auth()->getUser()->id, 'kuangji_order', $kup->order_id, '矿机赎回', '-', $kup->kuangji->num, 2, 1);
+
+            // 用户余额增加
+            Account::addAmount(Service::auth()->getUser()->id, $coin->id, $oneNum,Account::TYPE_LC);
+
+            // 用户余额日志增加
+            AccountLog::addLog(Service::auth()->getUser()->id, $coin->id, $oneNum, 20, 1, Account::TYPE_LC, '矿机赎回');
+
+            \DB::commit();
+
+        } catch (\Exception $exception) {
+
+            \DB::rollBack();
+
+            \Log::info('矿机赎回异常');
+
+            $this->responseError('操作异常');
+
+        }
+
+        $this->responseSuccess('操作成功');
+
+    }
+
+    // 计算赎回手续费
+    private function getRedeemBl($dayNum)
+    {
+
+        if($dayNum < 30){
+            $redeemBl = config('kuangji.kuangji_redeem_30_bl', 0.7);
+        }else if($dayNum < 60){
+            $redeemBl = config('kuangji.kuangji_redeem_60_bl', 0.5);
+        }else{
+            $redeemBl = config('kuangji.kuangji_redeem_90_bl', 0.3);
+        }
+
+        return $redeemBl;
     }
 
 }

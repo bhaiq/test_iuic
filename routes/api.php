@@ -242,6 +242,7 @@ Route::group(['middleware' => ['auth.api']], function () {
         Route::post('buy/position', 'KuangJiController@buyPosition'); // 购买矿位
         Route::post('buy', 'KuangJiController@buy'); // 购买矿机
         Route::get('release/log', 'KuangJiController@releaseLog'); // 矿机释放记录
+        Route::post('redeem', 'KuangJiController@redeem'); // 矿机赎回
     });
 
 });
