@@ -46,7 +46,7 @@ class KuangJiController extends Controller
 
         // 获取用户附属表信息
         $ui = UserInfo::where('uid', Service::auth()->getUser()->id)->first();
-        if($ui){
+        if ($ui) {
 
             $result['sy_pool'] = bcsub($ui->buy_total, $ui->release_total, 4);
             $result['lj_income'] = bcmul($ui->release_total, 1, 4);
@@ -65,13 +65,28 @@ class KuangJiController extends Controller
             ->get()
             ->toArray();
 
-        if(!empty($kup)){
+        if (!empty($kup)) {
 
-            foreach ($kup as $k => $v){
+            // 计算正常矿机的算力
+            foreach ($kup as $k => $v) {
                 $result['today_sl'] += $v['suanli'];
             }
 
         }
+
+        // 获取用户灵活算力的信息
+        $kjl = KuangjiLinghuo::where('uid', Service::auth()->getUser()->id)->first();
+        if ($kjl) {
+
+            $maxLh = config('kuangji.kuangji_flexible_max', 200);
+
+            $lhNum = $kjl->num > $maxLh ? $maxLh : $kjl->num;
+            $lhSl = bcmul($lhNum, config('kuangji.kuangji_flexible_suanli_bl', 0.02), 2);
+
+            $result['today_sl'] += $lhSl;
+        }
+
+        $result['today_sl'] = bcmul($result['today_sl'], 1, 2);
 
         return $this->response($result);
 
@@ -92,17 +107,17 @@ class KuangJiController extends Controller
 
         $result = $res->toArray();
 
-        foreach ($result['data'] as $k => $v){
+        foreach ($result['data'] as $k => $v) {
 
-            if($v['status'] == 1){
+            if ($v['status'] == 1) {
 
                 $start = strtotime(substr($v['created_at'], 0, 10) . ' 00:00:00');
 
                 $cur = time();
 
-                $result['data'][$k]['sy_time']  = bcdiv(bcsub(bcadd($start, 181 * 24 * 3600), $cur), 24 * 3600);
+                $result['data'][$k]['sy_time'] = bcdiv(bcsub(bcadd($start, 181 * 24 * 3600), $cur), 24 * 3600);
 
-            }else{
+            } else {
                 $result['data'][$k]['sy_time'] = 0;
             }
 
@@ -124,7 +139,7 @@ class KuangJiController extends Controller
         $kp = KuangjiPosition::get();
 
         $result = [];
-        foreach ($kp as $k => $v){
+        foreach ($kp as $k => $v) {
 
             $arr = [
                 'kp_id' => $v->id,
@@ -138,12 +153,12 @@ class KuangJiController extends Controller
 
             // 判断自己这个矿位有没有开启
             $kup = KuangjiUserPosition::where(['uid' => Service::auth()->getUser()->id, 'position_id' => $v->id])->first();
-            if($kup){
+            if ($kup) {
 
                 $arr['is_open'] = 1;
                 $arr['kup_id'] = $kup->id;
 
-                if($kup->kuangji_id > 0 && $kup->order_id > 0){
+                if ($kup->kuangji_id > 0 && $kup->order_id > 0) {
 
                     $arr['is_use'] = 1;
 
@@ -157,7 +172,7 @@ class KuangJiController extends Controller
                     $cur = time();
 
                     $kjInfo = [];
-                    $kjInfo['sy_time']  = bcdiv(bcsub(bcadd($start, 181 * 24 * 3600), $cur), 24 * 3600);
+                    $kjInfo['sy_time'] = bcdiv(bcsub(bcadd($start, 181 * 24 * 3600), $cur), 24 * 3600);
                     $kjInfo['name'] = $res->name;
                     $kjInfo['img'] = $res->img;
                     $kjInfo['price'] = $res->price;
@@ -171,7 +186,7 @@ class KuangJiController extends Controller
             }
 
             // 判断这个矿位能不能买
-            if(!$kup && $v->status == 0){
+            if (!$kup && $v->status == 0) {
                 continue;
             }
 
@@ -190,7 +205,7 @@ class KuangJiController extends Controller
         Service::auth()->isLoginOrFail();
 
         $this->validate($request->all(), [
-            'kp_id'     => 'required|integer',
+            'kp_id' => 'required|integer',
             'paypass' => 'required',
         ], [
             'kp_id.required' => '矿位信息不能玩空',
@@ -200,7 +215,7 @@ class KuangJiController extends Controller
 
         // 获取矿位信息
         $kp = KuangjiPosition::where('status', 1)->find($request->get('kp_id'));
-        if(!$kp){
+        if (!$kp) {
             $this->responseError('数据有误');
         }
 
@@ -209,13 +224,13 @@ class KuangJiController extends Controller
 
         // 判断用户是否已经购买
         $kupBool = KuangjiUserPosition::where(['uid' => Service::auth()->getUser()->id, 'position_id' => $request->get('kp_id')])->exists();
-        if($kupBool){
+        if ($kupBool) {
             $this->responseError('该矿位已经购买了');
         }
 
         // 判断用户矿池数量是否充足
         $ui = UserInfo::where('uid', Service::auth()->getUser()->id)->first();
-        if(!$ui || $ui->buy_total <= 0 || $ui->buy_total <= $ui->release_total){
+        if (!$ui || $ui->buy_total <= 0 || $ui->buy_total <= $ui->release_total) {
             $this->responseError('用户矿池不足');
         }
 
@@ -224,7 +239,7 @@ class KuangJiController extends Controller
         $coinAccount = Service::auth()->account($coin->id, Account::TYPE_LC);
 
         // 判断用户余额是否充足
-        if($coinAccount->amount < $kp->price){
+        if ($coinAccount->amount < $kp->price) {
             $this->responseError('用户余额不足');
         }
 
@@ -269,7 +284,7 @@ class KuangJiController extends Controller
         Service::auth()->isLoginOrFail();
 
         $this->validate($request->all(), [
-            'id'     => 'required|integer',
+            'id' => 'required|integer',
             'paypass' => 'required',
         ], [
             'id.required' => '矿机信息不能玩空',
@@ -279,7 +294,7 @@ class KuangJiController extends Controller
 
         // 获取矿机信息
         $kj = Kuangji::find($request->get('id'));
-        if(!$kj){
+        if (!$kj) {
             $this->responseError('数据有误');
         }
 
@@ -288,7 +303,7 @@ class KuangJiController extends Controller
 
         // 验证用户是否有充足的矿位
         $kup = KuangjiUserPosition::where(['uid' => Service::auth()->getUser()->id, 'order_id' => 0, 'kuangji_id' => 0])->first();
-        if(!$kup){
+        if (!$kup) {
             $this->responseError('没有矿位');
         }
 
@@ -297,7 +312,7 @@ class KuangJiController extends Controller
         $coinAccount = Service::auth()->account($coin->id, Account::TYPE_LC);
 
         // 判断用户余额是否充足
-        if($coinAccount->amount < $kj->price){
+        if ($coinAccount->amount < $kj->price) {
             $this->responseError('用户余额不足');
         }
 
@@ -371,7 +386,7 @@ class KuangJiController extends Controller
         Service::auth()->isLoginOrFail();
 
         $this->validate($request->all(), [
-            'id'     => 'required|integer',
+            'id' => 'required|integer',
             'paypass' => 'required',
         ], [
             'id.required' => '矿位信息不能玩空',
@@ -380,19 +395,19 @@ class KuangJiController extends Controller
         ]);
 
         // 判断矿机赎回功能是否开启
-        if(empty(config('kuangji.kuangji_redeem_switch'))){
+        if (empty(config('kuangji.kuangji_redeem_switch'))) {
             $this->responseError('功能暂不开放');
         }
 
         // 获取用户矿池信息
         $ui = UserInfo::where('uid', Service::auth()->getUser()->id)->first();
-        if(!$ui){
+        if (!$ui) {
             $this->responseError('数据有误');
         }
 
         // 获取那个USDT的币种ID
         $coin = Coin::getCoinByName('IUIC');
-        if(!$coin){
+        if (!$coin) {
             $this->responseError('币种信息');
         }
 
@@ -401,23 +416,23 @@ class KuangJiController extends Controller
 
         // 验证矿位信息是否正确
         $kup = KuangjiUserPosition::with(['order', 'kuangji'])->where(['uid' => Service::auth()->getUser()->id, 'id' => $request->get('id')])->first();
-        if(!$kup){
+        if (!$kup) {
             $this->responseError('矿位信息有误');
         }
 
         // 判断矿位有没有数据
-        if(empty($kup->order_id) || empty($kup->kuangji_id)){
+        if (empty($kup->order_id) || empty($kup->kuangji_id)) {
             $this->responseError('该矿位没有矿机');
         }
 
         // 判断矿池的剩余数量是否支持赎回
-        if(bcsub($ui->buy_total, $ui->release_total, 8) < $kup->kuangji->num){
+        if (bcsub($ui->buy_total, $ui->release_total, 8) < $kup->kuangji->num) {
             $this->responseError('剩余矿池数量不足');
         }
 
         // 计算矿机释放的时间
         $buyDay = bcadd(bcdiv(bcsub(time(), strtotime($kup->order->created_at)), 3600 * 24), 1);
-        if($buyDay > 90){
+        if ($buyDay > 90) {
             $this->responseError('矿机超过90天,不能赎回');
         }
 
@@ -443,7 +458,7 @@ class KuangJiController extends Controller
             UserWalletLog::addLog(Service::auth()->getUser()->id, 'kuangji_order', $kup->order_id, '矿机赎回', '-', $kup->kuangji->num, 2, 1);
 
             // 用户余额增加
-            Account::addAmount(Service::auth()->getUser()->id, $coin->id, $oneNum,Account::TYPE_LC);
+            Account::addAmount(Service::auth()->getUser()->id, $coin->id, $oneNum, Account::TYPE_LC);
 
             // 用户余额日志增加
             AccountLog::addLog(Service::auth()->getUser()->id, $coin->id, $oneNum, 20, 1, Account::TYPE_LC, '矿机赎回');
@@ -468,11 +483,11 @@ class KuangJiController extends Controller
     private function getRedeemBl($dayNum)
     {
 
-        if($dayNum < 30){
+        if ($dayNum < 30) {
             $redeemBl = config('kuangji.kuangji_redeem_30_bl', 0.7);
-        }else if($dayNum < 60){
+        } else if ($dayNum < 60) {
             $redeemBl = config('kuangji.kuangji_redeem_60_bl', 0.5);
-        }else{
+        } else {
             $redeemBl = config('kuangji.kuangji_redeem_90_bl', 0.3);
         }
 
@@ -495,18 +510,20 @@ class KuangJiController extends Controller
 
         // 验证用户是否已经激活灵活矿位
         $kjl = KuangjiLinghuo::where('uid', Service::auth()->getUser()->id)->first();
-        if($kjl){
+        if ($kjl) {
 
             $result['is_open'] = 1;
 
-            if($kjl->num > 0){
+            if ($kjl->num > 0) {
 
                 $result['is_use'] = 1;
 
                 $start = strtotime(substr($kjl->start_time, 0, 10) . ' 00:00:00');
                 $cur = time();
 
-                $totalNum = $kjl->num > 200 ? 200 : $kjl->num;
+                $maxLh = config('kuangji.kuangji_flexible_max', 200);
+
+                $totalNum = $kjl->num > $maxLh ? $maxLh : $kjl->num;
 
                 $suanli = bcmul($totalNum, config('kuangji.kuangji_flexible_suanli_bl', 0.02), 2);
 
@@ -541,7 +558,7 @@ class KuangJiController extends Controller
 
         // 判断有木有灵活矿位信息
         $kjl = KuangjiLinghuo::where('uid', Service::auth()->getUser()->id)->first();
-        if($kjl){
+        if ($kjl) {
             $this->responseError('已经购买了');
         }
 
@@ -554,7 +571,7 @@ class KuangJiController extends Controller
 
         // 判断用户余额是否充足
         $price = config('kuangji.kuangji_flexible_price', 0);
-        if($coinAccount->amount < $price){
+        if ($coinAccount->amount < $price) {
             $this->responseError('用户余额不足');
         }
 
@@ -606,9 +623,15 @@ class KuangJiController extends Controller
             'paypass.required' => '交易密码不能为空',
         ]);
 
+        // 判断数量是否小于限制数量
+        $minLh = config('kuangji.kuangji_flexible_max', 1);
+        if ($request->get('num') < $minLh) {
+            $this->responseError('购买数量不能小于' . $minLh);
+        }
+
         // 判断有木有灵活矿位信息
         $kjl = KuangjiLinghuo::where('uid', Service::auth()->getUser()->id)->first();
-        if(!$kjl){
+        if (!$kjl) {
             $this->responseError('未购买矿位');
         }
 
@@ -620,7 +643,7 @@ class KuangJiController extends Controller
         $coinAccount = Service::auth()->account($coin->id, Account::TYPE_LC);
 
         // 判断用户余额是否充足
-        if($coinAccount->amount < $request->get('num')){
+        if ($coinAccount->amount < $request->get('num')) {
             $this->responseError('用户余额不足');
         }
 
