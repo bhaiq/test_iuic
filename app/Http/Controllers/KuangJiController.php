@@ -12,6 +12,7 @@ use App\Models\Account;
 use App\Models\AccountLog;
 use App\Models\Coin;
 use App\Models\Kuangji;
+use App\Models\KuangjiLinghuo;
 use App\Models\KuangjiOrder;
 use App\Models\KuangjiPosition;
 use App\Models\KuangjiUserPosition;
@@ -476,6 +477,181 @@ class KuangJiController extends Controller
         }
 
         return $redeemBl;
+    }
+
+    // 获取灵活矿位信息
+    public function getFlexible(Request $request)
+    {
+
+        Service::auth()->isLoginOrFail();
+
+        $result = [
+            'kp_name' => '灵活矿位',
+            'kp_price' => config('kuangji.kuangji_flexible_price', 0),
+            'is_open' => 0,
+            'is_use' => 0,
+            'kj_info' => null,
+        ];
+
+        // 验证用户是否已经激活灵活矿位
+        $kjl = KuangjiLinghuo::where('uid', Service::auth()->getUser()->id)->first();
+        if($kjl){
+
+            $result['is_open'] = 1;
+
+            if($kjl->num > 0){
+
+                $result['is_use'] = 1;
+
+                $start = strtotime(substr($kjl->start_time, 0, 10) . ' 00:00:00');
+                $cur = time();
+
+                $totalNum = $kjl->num > 200 ? 200 : $kjl->num;
+
+                $suanli = bcmul($totalNum, config('kuangji.kuangji_flexible_suanli_bl', 0.02));
+
+                $result['kj_info'] = [
+                    'sy_time' => bcdiv(bcsub(bcadd($start, 181 * 24 * 3600), $cur), 24 * 3600),
+                    'name' => '灵活算力',
+                    'img' => url()->previous() . '/images/lh.png',
+                    'price' => $kjl->num,
+                    'suanli' => $suanli,
+                    'valid_day' => 180,
+                ];
+
+            }
+
+        }
+
+        return $this->response($result);
+
+    }
+
+    // 购买灵活矿位
+    public function submitFlexible(Request $request)
+    {
+
+        Service::auth()->isLoginOrFail();
+
+        $this->validate($request->all(), [
+            'paypass' => 'required',
+        ], [
+            'paypass.required' => '交易密码不能为空',
+        ]);
+
+        // 判断有木有灵活矿位信息
+        $kjl = KuangjiLinghuo::where('uid', Service::auth()->getUser()->id)->first();
+        if($kjl){
+            $this->responseError('已经购买了');
+        }
+
+        // 验证二级密码
+        Service::auth()->isTransactionPasswordYesOrFail($request->get('paypass'));
+
+        // 获取那个USDT的币种ID
+        $coin = Coin::getCoinByName('IUIC');
+        $coinAccount = Service::auth()->account($coin->id, Account::TYPE_LC);
+
+        // 判断用户余额是否充足
+        $price = config('kuangji.kuangji_flexible_price', 0);
+        if($coinAccount->amount < $price){
+            $this->responseError('用户余额不足');
+        }
+
+        $kjlData = [
+            'uid' => Service::auth()->getUser()->id,
+            'num' => 0,
+            'start_time' => now()->toDateTimeString(),
+            'created_at' => now()->toDateTimeString(),
+        ];
+
+        \DB::beginTransaction();
+        try {
+
+            KuangjiLinghuo::create($kjlData);
+
+            // 用户余额减少
+            Account::reduceAmount(Service::auth()->getUser()->id, $coin->id, $price, Account::TYPE_LC);
+
+            // 用户日志新增
+            AccountLog::addLog(Service::auth()->getUser()->id, $coin->id, $price, 20, 0, Account::TYPE_LC, '购买灵活矿位');
+
+            \DB::commit();
+
+        } catch (\Exception $exception) {
+
+            \DB::rollBack();
+
+            \Log::info('购买灵活矿位异常');
+
+            $this->responseError('操作异常');
+
+        }
+
+        $this->responseSuccess('操作成功');
+
+    }
+
+    // 灵活矿位购买矿机
+    public function buyFlexible(Request $request)
+    {
+
+        Service::auth()->isLoginOrFail();
+
+        $this->validate($request->all(), [
+            'num' => 'required',
+            'paypass' => 'required',
+        ], [
+            'num.required' => '数量不能为空',
+            'paypass.required' => '交易密码不能为空',
+        ]);
+
+        // 判断有木有灵活矿位信息
+        $kjl = KuangjiLinghuo::where('uid', Service::auth()->getUser()->id)->first();
+        if(!$kjl){
+            $this->responseError('未购买矿位');
+        }
+
+        // 验证二级密码
+        Service::auth()->isTransactionPasswordYesOrFail($request->get('paypass'));
+
+        // 获取那个USDT的币种ID
+        $coin = Coin::getCoinByName('IUIC');
+        $coinAccount = Service::auth()->account($coin->id, Account::TYPE_LC);
+
+        // 判断用户余额是否充足
+        if($coinAccount->amount < $request->get('num')){
+            $this->responseError('用户余额不足');
+        }
+
+        \DB::beginTransaction();
+        try {
+
+            $kjl->start_time = now()->toDateTimeString();
+            $kjl->save();
+
+            KuangjiLinghuo::where('uid', Service::auth()->getUser()->id)->increment('num', $request->get('num'));
+
+            // 用户余额减少
+            Account::reduceAmount(Service::auth()->getUser()->id, $coin->id, $request->get('num'), Account::TYPE_LC);
+
+            // 用户日志新增
+            AccountLog::addLog(Service::auth()->getUser()->id, $coin->id, $request->get('num'), 20, 0, Account::TYPE_LC, '购买灵活矿机');
+
+            \DB::commit();
+
+        } catch (\Exception $exception) {
+
+            \DB::rollBack();
+
+            \Log::info('购买灵活矿位异常');
+
+            $this->responseError('操作异常');
+
+        }
+
+        $this->responseSuccess('操作成功');
+
     }
 
 }

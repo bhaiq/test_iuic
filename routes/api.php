@@ -243,6 +243,9 @@ Route::group(['middleware' => ['auth.api']], function () {
         Route::post('buy', 'KuangJiController@buy'); // 购买矿机
         Route::get('release/log', 'KuangJiController@releaseLog'); // 矿机释放记录
         Route::post('redeem', 'KuangJiController@redeem'); // 矿机赎回
+        Route::get('flexible', 'KuangJiController@getFlexible'); // 获取灵活矿机信息
+        Route::post('flexible/submit', 'KuangJiController@submitFlexible'); //购买灵活矿位
+        Route::post('flexible/buy', 'KuangJiController@buyFlexible'); //购买灵活矿机
     });
 
 });
