@@ -508,7 +508,7 @@ class KuangJiController extends Controller
 
                 $totalNum = $kjl->num > 200 ? 200 : $kjl->num;
 
-                $suanli = bcmul($totalNum, config('kuangji.kuangji_flexible_suanli_bl', 0.02));
+                $suanli = bcmul($totalNum, config('kuangji.kuangji_flexible_suanli_bl', 0.02), 2);
 
                 $result['kj_info'] = [
                     'sy_time' => bcdiv(bcsub(bcadd($start, 181 * 24 * 3600), $cur), 24 * 3600),
@@ -651,6 +651,22 @@ class KuangJiController extends Controller
         }
 
         $this->responseSuccess('操作成功');
+
+    }
+
+    // 赎回矿机说明
+    public function redeemInfo(Request $request)
+    {
+
+        Service::auth()->isLoginOrFail();
+
+        $result = [
+            'redeem_30' => bcmul(config('kuangji.kuangji_redeem_30_bl', 0.7), 100),
+            'redeem_60' => bcmul(config('kuangji.kuangji_redeem_60_bl', 0.5), 100),
+            'redeem_90' => bcmul(config('kuangji.kuangji_redeem_90_bl', 0.3), 100),
+        ];
+
+        return $this->response($result);
 
     }
 
