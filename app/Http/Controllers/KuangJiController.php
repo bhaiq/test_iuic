@@ -694,9 +694,9 @@ class KuangJiController extends Controller
         Service::auth()->isLoginOrFail();
 
         $result = [
-            'redeem_30' => bcmul(config('kuangji.kuangji_redeem_30_bl', 0.7), 100),
-            'redeem_60' => bcmul(config('kuangji.kuangji_redeem_60_bl', 0.5), 100),
-            'redeem_90' => bcmul(config('kuangji.kuangji_redeem_90_bl', 0.3), 100),
+            'redeem_30' => bcmul(config('kuangji.kuangji_redeem_30_bl', 0.7), 100) . '%',
+            'redeem_60' => bcmul(config('kuangji.kuangji_redeem_60_bl', 0.5), 100) . '%',
+            'redeem_90' => bcmul(config('kuangji.kuangji_redeem_90_bl', 0.3), 100) . '%',
         ];
 
         return $this->response($result);
