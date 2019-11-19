@@ -626,23 +626,35 @@ class KuangJiController extends Controller
         Service::auth()->isLoginOrFail();
 
         $this->validate($request->all(), [
-            'num' => 'required',
+            'num' => 'required|integer',
             'paypass' => 'required',
         ], [
             'num.required' => '数量不能为空',
+            'num.integer' => '数量必须是整数',
             'paypass.required' => '交易密码不能为空',
         ]);
 
         // 判断数量是否小于限制数量
-        $minLh = config('kuangji.kuangji_flexible_max', 1);
+        $minLh = config('kuangji.kuangji_flexible_min', 1);
         if ($request->get('num') < $minLh) {
             $this->responseError('购买数量不能小于' . $minLh);
+        }
+
+        // 判断数量是否大于于限制数量
+        $maxLh = config('kuangji.kuangji_flexible_max', 200);
+        if ($request->get('num') > $maxLh) {
+            $this->responseError('购买数量不能大于' . $maxLh);
         }
 
         // 判断有木有灵活矿位信息
         $kjl = KuangjiLinghuo::where('uid', Service::auth()->getUser()->id)->first();
         if (!$kjl) {
             $this->responseError('未购买矿位');
+        }
+
+        // 判断用户已有的加上本次购买的是否超过限制的
+        if(bcadd($request->get('num'), $kjl->num) > $maxLh){
+            $this->responseError('最多只能购买' . bcsub($maxLh, $kjl->num));
         }
 
         // 验证二级密码
