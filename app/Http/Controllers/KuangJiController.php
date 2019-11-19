@@ -179,6 +179,12 @@ class KuangJiController extends Controller
                     $kjInfo['suanli'] = $res->suanli;
                     $kjInfo['valid_day'] = $res->valid_day;
 
+                    // 获取赎回比例
+                    $redeemBl = $this->getRedeemBl(bcsub(180, $kjInfo['sy_time']));
+
+                    // 获取赎回数量
+                    $kjInfo['redeem_num'] = bcmul($redeemBl, $res->price);
+
                     $arr['kj_info'] = $kjInfo;
 
                 }
