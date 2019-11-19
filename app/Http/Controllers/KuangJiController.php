@@ -513,10 +513,10 @@ class KuangJiController extends Controller
         if ($kjl) {
 
             $result['is_open'] = 1;
+            $result['is_use'] = 1;
 
             if ($kjl->num > 0) {
 
-                $result['is_use'] = 1;
 
                 $start = strtotime(substr($kjl->start_time, 0, 10) . ' 00:00:00');
                 $cur = time();
@@ -536,6 +536,16 @@ class KuangJiController extends Controller
                     'valid_day' => 180,
                 ];
 
+            }else{
+
+                $result['kj_info'] = [
+                    'sy_time' => 0,
+                    'name' => '灵活算力',
+                    'img' => url()->previous() . '/images/lh.png',
+                    'price' => 0,
+                    'suanli' => 0,
+                    'valid_day' => 0,
+                ];
             }
 
         }
