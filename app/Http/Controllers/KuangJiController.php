@@ -683,6 +683,13 @@ class KuangJiController extends Controller
 
             KuangjiLinghuo::where('uid', Service::auth()->getUser()->id)->increment('num', $request->get('num'));
 
+            // 用户附属表释放状态改变
+            UserInfo::where('uid', Service::auth()->getUser()->id)->update(['release_status' => 1]);
+            UserInfo::where('uid', Service::auth()->getUser()->id)->increment('buy_total', $request->get('num'));
+
+            // 矿池记录新增
+            UserWalletLog::addLog(Service::auth()->getUser()->id, 'kuangji_linghuo', $kjl->id, '购买灵活矿机', '+', $request->get('num'), 2, 1);
+
             // 用户余额减少
             Account::reduceAmount(Service::auth()->getUser()->id, $coin->id, $request->get('num'), Account::TYPE_LC);
 
