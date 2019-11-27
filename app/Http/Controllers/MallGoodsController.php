@@ -108,6 +108,8 @@ class MallGoodsController extends Controller
 
             \DB::rollBack();
 
+            throw $exception;
+
             \Log::info('发布商品异常');
 
             $this->responseError('操作异常');
