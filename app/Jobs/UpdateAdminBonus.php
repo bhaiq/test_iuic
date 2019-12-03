@@ -18,7 +18,7 @@ class UpdateAdminBonus implements ShouldQueue
 
     private $uid;
     private $xxUid = [
-        1, 34, 98, 125, 126, 105, 99
+        1, 34, 98, 125, 126, 105
     ];
 
     /**
