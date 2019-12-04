@@ -10,6 +10,7 @@ namespace App\Services;
 
 use App\Models\Account;
 use App\Models\AccountLog;
+use App\Models\AppointBonus;
 use App\Models\Coin;
 use App\Models\ExtraBonus;
 use App\Models\UserBonus;
@@ -53,15 +54,24 @@ class KuangjiBonus
     private function bonus($num)
     {
 
-        // 获取可以分红的用户数量
-        $bonusCount = UserBonus::where('type', '=', 1)->where('node_type', 0)->get(['uid']);
-        if ($bonusCount->isEmpty()) {
-            \Log::info('没有用户达到节点奖分红条件,放弃本次节点奖分红');
-            return false;
-        }
+        // 首先拿到指定节点奖的用户
+        $oldAppointArr = AppointBonus::where('type', '=', 1)->pluck('uid')->toArray();
+
+        // 获取排除指定用户可以分红的用户数量
+        $userArr = UserBonus::whereNotIn('uid', $oldAppointArr)->where('type', '=', 1)->where('node_type', 0)->pluck('uid')->toArray();
+
+        // 获取指定的分红用户
+        $appointArr = AppointBonus::where('type', '=', 1)->where('node_type', 0)->pluck('uid')->toArray();
+
+        // 合并两个数据
+        $bonusArr = array_unique(array_merge($userArr, $appointArr));
 
         // 获取分红的人数
-        $userCount = $bonusCount->count();
+        $userCount = count($bonusArr);
+        if($userCount <= 0){
+            \Log::info('没有符合普通节点奖的用户');
+            return false;
+        }
 
         // 获取每一份分红多少钱
         $oneNum = bcmul(config('shop.bonus_bl'), bcdiv($num, $userCount, 8), 8);
@@ -73,13 +83,13 @@ class KuangjiBonus
         // 获取那个USDT的币种ID
         $coin = Coin::getCoinByName('IUIC');
 
-        foreach ($bonusCount as $v) {
+        foreach ($bonusArr as $v) {
 
             // 用户余额表更新
-            Account::addAmount($v->uid, $coin->id, $oneNum, Account::TYPE_LC);
+            Account::addAmount($v, $coin->id, $oneNum, Account::TYPE_LC);
 
             // 用户余额日志表更新
-            Service::account()->createLog($v->uid, $coin->id, $oneNum, AccountLog::SCENE_SCENE_BONUS);
+            Service::account()->createLog($v, $coin->id, $oneNum, AccountLog::SCENE_SCENE_BONUS);
 
         }
 
@@ -237,15 +247,24 @@ class KuangjiBonus
     private function minBonus($num)
     {
 
-        // 获取可以分红的用户数量
-        $bonusCount = UserBonus::where('type', '=', 1)->where('node_type', 1)->get(['uid']);
-        if ($bonusCount->isEmpty()) {
-            \Log::info('没有用户达到小节点奖分红条件,放弃本次小节点奖分红');
-            return false;
-        }
+        // 首先拿到指定节点奖的用户
+        $oldAppointArr = AppointBonus::where('type', '=', 1)->pluck('uid')->toArray();
+
+        // 获取排除指定用户可以分红的用户数量
+        $userArr = UserBonus::whereNotIn('uid', $oldAppointArr)->where('type', '=', 1)->where('node_type', 1)->pluck('uid')->toArray();
+
+        // 获取指定的分红用户
+        $appointArr = AppointBonus::where('type', '=', 1)->where('node_type', 1)->pluck('uid')->toArray();
+
+        // 合并两个数据
+        $bonusArr = array_unique(array_merge($userArr, $appointArr));
 
         // 获取分红的人数
-        $userCount = $bonusCount->count();
+        $userCount = count($bonusArr);
+        if($userCount <= 0){
+            \Log::info('没有符合小节点奖的用户');
+            return false;
+        }
 
         // 获取每一份分红多少钱
         $oneNum = bcmul(config('node.small_node', 0.05), bcdiv($num, $userCount, 8), 8);
@@ -257,13 +276,13 @@ class KuangjiBonus
         // 获取那个USDT的币种ID
         $coin = Coin::getCoinByName('IUIC');
 
-        foreach ($bonusCount as $v) {
+        foreach ($bonusArr as $v) {
 
             // 用户余额表更新
-            Account::addAmount($v->uid, $coin->id, $oneNum, Account::TYPE_LC);
+            Account::addAmount($v, $coin->id, $oneNum, Account::TYPE_LC);
 
             // 用户余额日志表更新
-            AccountLog::addLog($v->uid, $coin->id, $oneNum, 14, 1, Account::TYPE_LC, '小节点奖分红');
+            AccountLog::addLog($v, $coin->id, $oneNum, 14, 1, Account::TYPE_LC, '小节点奖分红');
 
         }
 
@@ -275,15 +294,24 @@ class KuangjiBonus
     private function bigBonus($num)
     {
 
-        // 获取可以分红的用户数量
-        $bonusCount = UserBonus::where('type', '=', 1)->where('node_type', 2)->get(['uid']);
-        if ($bonusCount->isEmpty()) {
-            \Log::info('没有用户达到大节点奖分红条件,放弃本次大节点奖分红');
-            return false;
-        }
+        // 首先拿到指定节点奖的用户
+        $oldAppointArr = AppointBonus::where('type', '=', 1)->pluck('uid')->toArray();
+
+        // 获取排除指定用户可以分红的用户数量
+        $userArr = UserBonus::whereNotIn('uid', $oldAppointArr)->where('type', '=', 2)->where('node_type', 2)->pluck('uid')->toArray();
+
+        // 获取指定的分红用户
+        $appointArr = AppointBonus::where('type', '=', 1)->where('node_type', 2)->pluck('uid')->toArray();
+
+        // 合并两个数据
+        $bonusArr = array_unique(array_merge($userArr, $appointArr));
 
         // 获取分红的人数
-        $userCount = $bonusCount->count();
+        $userCount = count($bonusArr);
+        if($userCount <= 0){
+            \Log::info('没有符合小节点奖的用户');
+            return false;
+        }
 
         // 获取每一份分红多少钱
         $oneNum = bcmul(config('node.big_node', 0.04), bcdiv($num, $userCount, 8), 8);
@@ -295,13 +323,13 @@ class KuangjiBonus
         // 获取那个USDT的币种ID
         $coin = Coin::getCoinByName('IUIC');
 
-        foreach ($bonusCount as $v) {
+        foreach ($bonusArr as $v) {
 
             // 用户余额表更新
-            Account::addAmount($v->uid, $coin->id, $oneNum, Account::TYPE_LC);
+            Account::addAmount($v, $coin->id, $oneNum, Account::TYPE_LC);
 
             // 用户余额日志表更新
-            AccountLog::addLog($v->uid, $coin->id, $oneNum, 14, 1, Account::TYPE_LC, '大节点奖分红');
+            AccountLog::addLog($v, $coin->id, $oneNum, 14, 1, Account::TYPE_LC, '大节点奖分红');
 
         }
 
@@ -313,15 +341,24 @@ class KuangjiBonus
     private function superBonus($num)
     {
 
-        // 获取可以分红的用户数量
-        $bonusCount = UserBonus::where('type', '=', 1)->where('node_type', 3)->get(['uid']);
-        if ($bonusCount->isEmpty()) {
-            \Log::info('没有用户达到超级节点奖分红条件,放弃本次超级节点奖分红');
-            return false;
-        }
+        // 首先拿到指定节点奖的用户
+        $oldAppointArr = AppointBonus::where('type', '=', 1)->pluck('uid')->toArray();
+
+        // 获取排除指定用户可以分红的用户数量
+        $userArr = UserBonus::whereNotIn('uid', $oldAppointArr)->where('type', '=', 2)->where('node_type', 3)->pluck('uid')->toArray();
+
+        // 获取指定的分红用户
+        $appointArr = AppointBonus::where('type', '=', 1)->where('node_type', 3)->pluck('uid')->toArray();
+
+        // 合并两个数据
+        $bonusArr = array_unique(array_merge($userArr, $appointArr));
 
         // 获取分红的人数
-        $userCount = $bonusCount->count();
+        $userCount = count($bonusArr);
+        if($userCount <= 0){
+            \Log::info('没有符合小节点奖的用户');
+            return false;
+        }
 
         // 获取每一份分红多少钱
         $oneNum = bcmul(config('node.super_node', 0.03), bcdiv($num, $userCount, 8), 8);
@@ -333,13 +370,13 @@ class KuangjiBonus
         // 获取那个USDT的币种ID
         $coin = Coin::getCoinByName('IUIC');
 
-        foreach ($bonusCount as $v) {
+        foreach ($bonusArr as $v) {
 
             // 用户余额表更新
-            Account::addAmount($v->uid, $coin->id, $oneNum, Account::TYPE_LC);
+            Account::addAmount($v, $coin->id, $oneNum, Account::TYPE_LC);
 
             // 用户余额日志表更新
-            AccountLog::addLog($v->uid, $coin->id, $oneNum, 14, 1, Account::TYPE_LC, '超级节点奖分红');
+            AccountLog::addLog($v, $coin->id, $oneNum, 14, 1, Account::TYPE_LC, '超级节点奖分红');
 
         }
 
