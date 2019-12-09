@@ -298,7 +298,7 @@ class KuangjiBonus
         $oldAppointArr = AppointBonus::where('type', '=', 1)->pluck('uid')->toArray();
 
         // 获取排除指定用户可以分红的用户数量
-        $userArr = UserBonus::whereNotIn('uid', $oldAppointArr)->where('type', '=', 2)->where('node_type', 2)->pluck('uid')->toArray();
+        $userArr = UserBonus::whereNotIn('uid', $oldAppointArr)->where('type', '=', 1)->where('node_type', 2)->pluck('uid')->toArray();
 
         // 获取指定的分红用户
         $appointArr = AppointBonus::where('type', '=', 1)->where('node_type', 2)->pluck('uid')->toArray();
@@ -345,7 +345,7 @@ class KuangjiBonus
         $oldAppointArr = AppointBonus::where('type', '=', 1)->pluck('uid')->toArray();
 
         // 获取排除指定用户可以分红的用户数量
-        $userArr = UserBonus::whereNotIn('uid', $oldAppointArr)->where('type', '=', 2)->where('node_type', 3)->pluck('uid')->toArray();
+        $userArr = UserBonus::whereNotIn('uid', $oldAppointArr)->where('type', '=', 1)->where('node_type', 3)->pluck('uid')->toArray();
 
         // 获取指定的分红用户
         $appointArr = AppointBonus::where('type', '=', 1)->where('node_type', 3)->pluck('uid')->toArray();
