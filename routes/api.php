@@ -199,6 +199,7 @@ Route::group(['middleware' => ['auth.api']], function () {
             Route::get('order', 'MallGoodsController@order'); // 商品生成一个订单
             Route::post('buy', 'MallGoodsController@buy'); // 商品购买提交
 
+            Route::get('coin', 'MallGoodsController@coin'); // 获取付款方式的币种
 
         });
 

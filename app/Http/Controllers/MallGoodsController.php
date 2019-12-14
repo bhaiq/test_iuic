@@ -11,6 +11,7 @@ namespace App\Http\Controllers;
 use App\Models\Account;
 use App\Models\AccountLog;
 use App\Models\Coin;
+use App\Models\ExTeam;
 use App\Models\MallAddress;
 use App\Models\MallCategory;
 use App\Models\MallGood;
@@ -413,12 +414,17 @@ class MallGoodsController extends Controller
 
         }
 
+        // 获取IUIC的价格
+        $exTeam = ExTeam::getCurPrice(1);
+        $goodsPriceIuic = bcdiv(bcmul($exTeam['rate'], $goods->goods_price, 8), $exTeam['price_cny'], 4);
+
         $res['goods'] = [
             'goods_id' => $goods->id,
             'goods_name' => $goods->goods_name,
             'goods_img' => $goods->goods_img,
             'goods_info' => $goods->goods_info,
             'goods_price' => $goods->goods_price,
+            'goods_price_iuic' => $goodsPriceIuic,
             'goods_cost' => $goods->goods_cost,
             'ore_pool' => $goods->ore_pool,
         ];
@@ -438,11 +444,13 @@ class MallGoodsController extends Controller
             'address_id' => 'required',
             'num' => 'required|integer',
             'paypass' => 'required',
+            'coin_id' => 'required',
         ], [
             'goods_id.required' => '商品信息不能为空',
             'address_id.required' => '地址信息不能为空',
             'num.required' => '数量不能为空',
             'num.integer' => '数量必须是整数',
+            'coin_id.required' => '币种信息不能不为空',
         ]);
 
         // 验证商品信息是否正确
@@ -457,14 +465,29 @@ class MallGoodsController extends Controller
             $this->responseError('地址信息有误');
         }
 
+        // 验证币种信息是否整
+        $coin = Coin::find($request->get('coin_id'));
+        if(!$coin){
+            $this->responseError('地址信息有误');
+        }
+
         // 验证二级密码
         Service::auth()->isTransactionPasswordYesOrFail($request->get('paypass'));
 
         // 获取那个USDT的币种ID
-        $coin = Coin::getCoinByName('USDT');
+        $coin = Coin::getCoinByName($coin->name);
         $coinAccount = Service::auth()->account($coin->id, Account::TYPE_LC);
 
-        $totalPrice = bcmul($goods->goods_price, $request->get('num'), 8);
+        if($coin->name == 'USDT'){
+            $totalPrice = bcmul($goods->goods_price, $request->get('num'), 8);
+        }else{
+
+            // 获取IUIC的价格
+            $exTeam = ExTeam::getCurPrice(1);
+
+            // 获取IUIC的数量
+            $totalPrice = bcdiv(bcmul($exTeam['rate'], bcmul($goods->goods_price, $request->get('num'), 8), 8), $exTeam['price_cny'], 8);
+        }
 
         // 判断用户余额是否充足
         if ($coinAccount->amount < $totalPrice) {
@@ -487,6 +510,8 @@ class MallGoodsController extends Controller
             'to_mobile' => $address->mobile,
             'to_address' => $address->address,
             'to_address_info' => $address->address_info,
+            'pay_coin_id' => $coin->id,
+            'pay_num' => $totalPrice,
             'created_at' => now()->toDateTimeString(),
         ];
 
@@ -518,6 +543,12 @@ class MallGoodsController extends Controller
 
         $this->responseSuccess('操作成功');
 
+    }
+
+    // 获取支付时可选择的币种信息
+    public function coin()
+    {
+        return Coin::get(['id', 'name'])->toArray();
     }
 
 }
