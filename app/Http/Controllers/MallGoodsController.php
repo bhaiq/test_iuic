@@ -418,13 +418,26 @@ class MallGoodsController extends Controller
         $exTeam = ExTeam::getCurPrice(1);
         $goodsPriceIuic = bcdiv(bcmul($exTeam['rate'], $goods->goods_price, 8), $exTeam['price_cny'], 4);
 
+        $goodsPriceArr = [
+            [
+                'id' => 1,
+                'name' => 'USDT',
+                'num' => $goods->goods_price,
+            ],
+            [
+                'id' => 2,
+                'name' => 'IUIC',
+                'num' => $goodsPriceIuic
+            ],
+        ];
+
         $res['goods'] = [
             'goods_id' => $goods->id,
             'goods_name' => $goods->goods_name,
             'goods_img' => $goods->goods_img,
             'goods_info' => $goods->goods_info,
             'goods_price' => $goods->goods_price,
-            'goods_price_iuic' => $goodsPriceIuic,
+            'goods_price_arr' => $goodsPriceArr,
             'goods_cost' => $goods->goods_cost,
             'ore_pool' => $goods->ore_pool,
         ];
