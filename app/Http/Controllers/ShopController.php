@@ -199,8 +199,6 @@ class ShopController extends Controller
 
         } catch (\Exception $exception) {
 
-            throw $exception;
-
             \DB::rollBack();
 
             \Log::info('商城订单购买出现异常');

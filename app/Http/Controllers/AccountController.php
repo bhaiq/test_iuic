@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Account;
 use App\Models\AccountLog;
 use App\Models\Coin;
+use App\Models\UserWallet;
 use App\Services\Service;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -23,6 +24,56 @@ class AccountController extends Controller
     {
         Service::auth()->isLoginOrFail();
         $type            = $request->get('type', 0);
+
+        if($type == 2){
+
+            $result['account'] = [
+                'coin_id' => 1001,
+                'type' => 0,
+                'amount' => 0,
+                'amount_freeze' => 0,
+                'total' => 0,
+                'amount_cny' => 0,
+                'amount_freeze_cny' => 0,
+                'cny' => 0,
+                'coin' => [
+                    'id' => 1001,
+                    'name' => '能量资产'
+                ],
+
+            ];
+
+            // 先验证用户是否有能量账户，没有则创建
+            $uw = UserWallet::where('uid', Service::auth()->getUser()->id)->first();
+            if(!$uw){
+                $uwData = [
+                    'uid' => Service::auth()->getUser()->id,
+                    'created_at' => now()->toDateTimeString(),
+                ];
+                $uw = UserWallet::create($uwData);
+            }
+
+            $result['account']['amount'] = bcmul($uw->energy_num, 1, 4);
+            $result['account']['amount_freeze'] = bcmul($uw->energy_frozen_num, 1, 4);
+            $result['account']['total'] = bcmul($uw->total, 1, 4);
+            $result['account']['amount_cny'] = bcmul($uw->energy_cny, 1, 4);
+            $result['account']['amount_freeze_cny'] = bcmul($uw->energy_frozen_cny, 1, 4);
+            $result['account']['cny'] = bcmul($uw->total_cny, 1, 4);
+
+            $data['cur_total'] = bcmul($uw->total, 1, 4);
+            $data['cur_total_cny'] = bcmul($uw->total_cny, 1, 4);
+
+            $data_other = Service::auth()->getUser()->account()->with('coin')->get()->toArray();
+
+            foreach ($data_other as $k => $v) {
+                $result['all_total']     = bcadd($data['all_total'], $v['cny'], 4);
+                $result['all_total_cny'] = bcadd($data['all_total_cny'], $v['cny'], 4);
+            }
+
+            return $this->response($result);
+
+        }
+
         $data['account'] = Service::auth()->getUser()->account()->whereType($type)->with('coin')->get()->toArray();
         $coin_num        = Coin::count();
         if ($coin_num * 2 > count($data['account'])) {

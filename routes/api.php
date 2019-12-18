@@ -250,6 +250,12 @@ Route::group(['middleware' => ['auth.api']], function () {
         Route::get('redeem/info', 'KuangJiController@redeemInfo'); //赎回矿机说明
     });
 
+    // 能量商城
+    Route::group(['prefix' => 'energy'], function () {
+        Route::get('goods', 'EnergyController@goods'); // 能量商品
+        Route::post('buy', 'EnergyController@buy'); // 能量商品购买
+    });
+
 });
 
 Route::group(['prefix' => 'common'], function () {
