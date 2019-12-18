@@ -27,7 +27,7 @@ class AccountController extends Controller
 
         if($type == 2){
 
-            $result['account'] = [
+            $result['account'][] = [
                 'coin_id' => 1001,
                 'type' => 0,
                 'amount' => 0,
@@ -53,12 +53,12 @@ class AccountController extends Controller
                 $uw = UserWallet::create($uwData);
             }
 
-            $result['account']['amount'] = bcmul($uw->energy_num, 1, 4);
-            $result['account']['amount_freeze'] = bcmul($uw->energy_frozen_num, 1, 4);
-            $result['account']['total'] = bcmul($uw->total, 1, 4);
-            $result['account']['amount_cny'] = bcmul($uw->energy_cny, 1, 4);
-            $result['account']['amount_freeze_cny'] = bcmul($uw->energy_frozen_cny, 1, 4);
-            $result['account']['cny'] = bcmul($uw->total_cny, 1, 4);
+            $result['account'][0]['amount'] = bcmul($uw->energy_num, 1, 4);
+            $result['account'][0]['amount_freeze'] = bcmul($uw->energy_frozen_num, 1, 4);
+            $result['account'][0]['total'] = bcmul($uw->total, 1, 4);
+            $result['account'][0]['amount_cny'] = bcmul($uw->energy_cny, 1, 4);
+            $result['account'][0]['amount_freeze_cny'] = bcmul($uw->energy_frozen_cny, 1, 4);
+            $result['account'][0]['cny'] = bcmul($uw->total_cny, 1, 4);
 
             $result['cur_total'] = bcmul($uw->total, 1, 4);
             $result['cur_total_cny'] = bcmul($uw->total_cny, 1, 4);
