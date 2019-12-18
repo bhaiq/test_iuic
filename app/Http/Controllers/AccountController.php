@@ -60,8 +60,8 @@ class AccountController extends Controller
             $result['account']['amount_freeze_cny'] = bcmul($uw->energy_frozen_cny, 1, 4);
             $result['account']['cny'] = bcmul($uw->total_cny, 1, 4);
 
-            $data['cur_total'] = bcmul($uw->total, 1, 4);
-            $data['cur_total_cny'] = bcmul($uw->total_cny, 1, 4);
+            $result['cur_total'] = bcmul($uw->total, 1, 4);
+            $result['cur_total_cny'] = bcmul($uw->total_cny, 1, 4);
             $result['all_total'] = 0;
             $result['all_total_cny'] = 0;
 
