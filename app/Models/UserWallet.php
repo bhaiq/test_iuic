@@ -47,7 +47,7 @@ class UserWallet extends Model
 
     public function getTotalCnyAttribute()
     {
-        return bcadd($this->total, $this->getEnergyCny(), 8);
+        return bcmul($this->total, $this->getEnergyCny(), 8);
     }
 
     // 获取能量资产对人民币的比例
