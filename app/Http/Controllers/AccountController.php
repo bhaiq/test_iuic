@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Account;
 use App\Models\AccountLog;
 use App\Models\Coin;
+use App\Models\EnergyLog;
 use App\Models\UserWallet;
 use App\Services\Service;
 use Carbon\Carbon;
@@ -122,6 +123,40 @@ class AccountController extends Controller
     {
 
         Service::auth()->isLoginOrFail();
+
+        if($coin_id == '1001'){
+
+            $eLogs = EnergyLog::where('uid', Service::auth()->getUser()->id)->latest()->paginate()->toArray();
+            foreach ($eLogs['data'] as $k => $v){
+
+                $eLogs['data'][$k] = [
+                    'uid' => $v['uid'],
+                    'coin_id' => '1001',
+                    'amount' => $v['num'],
+                    'type' => $v['sign'] == '+' ? 1 : 0,
+                    'remark' => $v['exp'],
+                    'created_at' => $v['created_at']
+                ];
+            }
+
+            $result = [
+                'amount' => 0,
+                'amount_freeze' => 0,
+                'cny' => 0
+            ];
+
+            $uw = UserWallet::where('uid', Service::auth()->getUser()->id)->first();
+            if($uw){
+                $result = [
+                    'amount' => $uw->energy_num,
+                    'amount_freeze' => $uw->energy_frozen_num,
+                    'cny' => $uw->total_cny,
+                ];
+            }
+
+            return $this->response(array_merge($eLogs, $result));
+
+        }
 
         $coinType = $request->get('coin_type', 0);
 
