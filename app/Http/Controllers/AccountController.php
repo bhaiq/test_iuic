@@ -39,7 +39,7 @@ class AccountController extends Controller
                 'cny' => 0,
                 'coin' => [
                     'id' => 1001,
-                    'name' => '能量资产'
+                    'name' => '能量'
                 ],
 
             ];
