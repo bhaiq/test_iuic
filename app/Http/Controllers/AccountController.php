@@ -62,6 +62,8 @@ class AccountController extends Controller
 
             $data['cur_total'] = bcmul($uw->total, 1, 4);
             $data['cur_total_cny'] = bcmul($uw->total_cny, 1, 4);
+            $result['all_total'] = 0;
+            $result['all_total_cny'] = 0;
 
             $data_other = Service::auth()->getUser()->account()->with('coin')->get()->toArray();
 
