@@ -11,7 +11,9 @@ namespace App\Http\Controllers;
 use App\Models\Account;
 use App\Models\AccountLog;
 use App\Models\Coin;
+use App\Models\EnergyExchange;
 use App\Models\EnergyGood;
+use App\Models\EnergyLog;
 use App\Models\EnergyOrder;
 use App\Models\MallAddress;
 use App\Models\UserWallet;
@@ -178,5 +180,95 @@ class EnergyController extends Controller
 
     }
 
+    // 兑换提交
+    public function exchange(Request $request)
+    {
+
+        Service::auth()->isLoginOrFail();
+
+        $this->validate($request->all(), [
+            'coin_id'     => 'required',
+            'num' => 'required|integer|min:1',
+            'paypass' => 'required',
+        ], [
+            'coin_id.required' => '币种信息不能为空',
+            'num.required' => '数量不能为空',
+            'num.integer' => '数量必须是整数',
+            'num.min' => '数量不能小于1',
+            'paypass.required' => '交易密码不能为空',
+        ]);
+
+        // 获取币种信息
+        $coin = Coin::find($request->get('coin_id'));
+        if(!$coin){
+            $this->responseError('币种信息有误');
+        }
+
+        // 验证二级密码
+        Service::auth()->isTransactionPasswordYesOrFail($request->get('paypass'));
+
+        // 验证用户余额是否充足
+        if(!UserWallet::checkWallet(Service::auth()->getUser()->id, $request->get('num'))){
+            $this->responseError('用户余额不足');
+        }
+
+        // 获取币种兑换人民币的价格
+        $cny = Account::getCoinCnyPrice($coin->id);
+
+        // 获取能量兑换人民币的价格
+        $energyCny = UserWallet::getCnyEnergy();
+
+        // 计算本次兑换得到的数量
+        $oneNum = bcdiv(bcmul($request->get('num'), $energyCny, 8), $cny, 8);
+
+        // 判断有木有手续费
+        if(!empty(config('shop.energy_exchange_tip', 0))){
+
+            $tip = config('shop.energy_exchange_tip', 0);
+            $oneNum = bcmul($oneNum, bcsub(1, $tip, 8), 8);
+
+        }
+
+        $eeData = [
+            'uid' => Service::auth()->getUser()->id,
+            'coin_id' => $coin->id,
+            'num' => $request->get('num'),
+            'gain_num' => $oneNum,
+            'created_at' => now()->toDateTimeString()
+        ];
+
+        \DB::beginTransaction();
+        try {
+
+            // 兑换表新增
+            $ee = EnergyExchange::create($eeData);
+
+            // 能量资产减少
+            UserWallet::reduceEnergyNum(Service::auth()->getUser()->id, $request->get('num'));
+
+            // 能量资产余额表日志新增
+            EnergyLog::addLog(Service::auth()->getUser()->id, 'energy_goods', $ee->id, '兑换' . $coin->name, '-', $request->get('num'), 1);
+
+            // 币种资产增加
+            Account::addAmount(Service::auth()->getUser()->id, $coin->id, $oneNum);
+
+            // 用户余额资产增加
+            AccountLog::addLog(Service::auth()->getUser()->id, $coin->id, $oneNum, 22, 1, Account::TYPE_LC, '能量兑换');
+
+            \DB::commit();
+
+        } catch (\Exception $exception) {
+
+            \DB::rollBack();
+
+            \Log::info('能量资产兑换异常');
+
+            $this->responseError('操作异常');
+
+        }
+
+        $this->responseSuccess('操作成功');
+
+    }
 
 }

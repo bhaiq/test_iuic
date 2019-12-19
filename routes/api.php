@@ -254,6 +254,7 @@ Route::group(['middleware' => ['auth.api']], function () {
     Route::group(['prefix' => 'energy'], function () {
         Route::get('goods', 'EnergyController@goods'); // 能量商品
         Route::post('buy', 'EnergyController@buy'); // 能量商品购买
+        Route::post('exchange', 'EnergyController@exchange'); // 能量兑换
     });
 
 });

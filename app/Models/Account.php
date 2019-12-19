@@ -183,4 +183,15 @@ class Account extends Model
 
     }
 
+    // 获取币种信息的余额
+    public static function getCoinCnyPrice($coinId)
+    {
+        $coin = Coin::whereName('USDT')->first();
+        if ($coin->id == $coinId) {
+            return self::getRate();
+        }
+
+        return ExTeam::curPrice(1) * self::getRate();
+    }
+
 }
