@@ -26,6 +26,10 @@ class AccountController extends Controller
         Service::auth()->isLoginOrFail();
         $type            = $request->get('type', 0);
 
+        if(!in_array($type, [0, 1, 2])){
+            $this->responseError('参数有误');
+        }
+
         if($type == 2){
 
             $result['account'][] = [

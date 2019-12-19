@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\EnergyDynamicRelease;
 use App\Models\Account;
 use App\Models\AccountLog;
 use App\Models\Coin;
@@ -248,7 +249,7 @@ class EnergyController extends Controller
             UserWallet::reduceEnergyNum(Service::auth()->getUser()->id, $request->get('num'));
 
             // 能量资产余额表日志新增
-            EnergyLog::addLog(Service::auth()->getUser()->id, 'energy_goods', $ee->id, '兑换' . $coin->name, '-', $request->get('num'), 1);
+            EnergyLog::addLog(Service::auth()->getUser()->id, 1, 'energy_goods', $ee->id, '兑换' . $coin->name, '-', $request->get('num'), 1);
 
             // 币种资产增加
             Account::addAmount(Service::auth()->getUser()->id, $coin->id, $oneNum);
@@ -267,6 +268,9 @@ class EnergyController extends Controller
             $this->responseError('操作异常');
 
         }
+
+        // 加入队列
+        dispatch(new EnergyDynamicRelease(Service::auth()->getUser()->id, $request->get('num')));
 
         $this->responseSuccess('操作成功');
 

@@ -23,4 +23,18 @@ class EnergyOrder extends Model
         return EnergyOrder::where(['uid' => $uid, 'goods_id' => $goodsId])->count();
     }
 
+    // 获取用户下级推荐的有效数量
+    public static function getEnergyValidNum($uid)
+    {
+
+        // 获取用户下级数量
+        $ids = User::where('pid', $uid)->pluck('id')->toArray();
+
+        // 获取用户报单用户的数量
+        $newIds = EnergyOrder::whereIn('uid', $ids)->pluck('uid')->toArray();
+
+        return count(array_unique($newIds));
+
+    }
+
 }

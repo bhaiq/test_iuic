@@ -105,4 +105,24 @@ class UserWallet extends Model
         return true;
     }
 
+    // 消费者积分增加
+    public static function addConsumerNum($uid, $num)
+    {
+        UserWallet::where('uid', $uid)->increment('consumer_num', $num);
+
+        \Log::info('用户' . $uid . '的消费者积分数量增加' . $num);
+
+        return true;
+    }
+
+    // 消费者积分减少
+    public static function reduceConsumerNum($uid, $num)
+    {
+        UserWallet::where('uid', $uid)->decrement('consumer_num', $num);
+
+        \Log::info('用户' . $uid . '的消费者积分数量减少' . $num);
+
+        return true;
+    }
+
 }
