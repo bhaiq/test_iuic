@@ -18,7 +18,7 @@ class EnergyLog extends Model
     protected $guarded = [];
 
     // 新增一条记录
-    public static function addLog($uid, $dyTable, $dyId, $exp, $sign, $num, $type, $dyUid = '')
+    public static function addLog($uid, $dyTable, $dyId, $exp, $sign, $num, $type, $dyUid = 0)
     {
 
         $data = [
