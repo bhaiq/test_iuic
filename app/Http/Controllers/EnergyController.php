@@ -128,6 +128,7 @@ class EnergyController extends Controller
             'goods_name' => $good->goods_name,
             'goods_img' => $good->goods_img,
             'goods_price' => $good->goods_price,
+            'num' => $good->num,
             'add_num' => $good->add_num,
             'to_name' => $address->name,
             'to_mobile' => $address->mobile,
