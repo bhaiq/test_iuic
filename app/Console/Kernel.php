@@ -6,6 +6,7 @@ use App\Console\Commands\AddBaodan;
 use App\Console\Commands\AddInfoCollect;
 use App\Console\Commands\AddWalletCollect;
 use App\Console\Commands\KuangjiRelease;
+use App\Console\Commands\ReleaseEnergy;
 use App\Console\Commands\UpdateLevel;
 use App\Console\Commands\UpdateWallet;
 use App\Console\Commands\UserStat;
@@ -31,6 +32,7 @@ class Kernel extends ConsoleKernel
         AddBaodan::class,
         UpdateLevel::class,
         KuangjiRelease::class,
+        ReleaseEnergy::class,
     ];
 
     /**
@@ -54,6 +56,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('addBaodan')->dailyAt('05:22');
         $schedule->command('updateLevel')->dailyAt('00:25');
         $schedule->command('kuangjiRelease')->dailyAt('00:01');
+        $schedule->command('releaseEnergy')->dailyAt('04:11');
     }
 
     /**
