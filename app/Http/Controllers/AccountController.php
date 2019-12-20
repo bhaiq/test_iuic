@@ -85,11 +85,11 @@ class AccountController extends Controller
 
 
             $result['account'][1]['amount'] = bcmul($uw->consumer_num, 1, 4);
-            $result['account'][0]['amount_freeze'] = 0;
-            $result['account'][0]['total'] = bcmul($uw->consumer_num, 1, 4);
-            $result['account'][0]['amount_cny'] = bcmul($uw->consumer_cny, 1, 4);
-            $result['account'][0]['amount_freeze_cny'] = 0;
-            $result['account'][0]['cny'] = bcmul($uw->consumer_cny, 1, 4);
+            $result['account'][1]['amount_freeze'] = 0;
+            $result['account'][1]['total'] = bcmul($uw->consumer_num, 1, 4);
+            $result['account'][1]['amount_cny'] = bcmul($uw->consumer_cny, 1, 4);
+            $result['account'][1]['amount_freeze_cny'] = 0;
+            $result['account'][1]['cny'] = bcmul($uw->consumer_cny, 1, 4);
 
 
             $result['cur_total'] = bcdiv(bcadd($uw->total_cny, $uw->consumer_cny, 8), Account::getRate(), 4);
@@ -166,7 +166,7 @@ class AccountController extends Controller
                     'amount' => $v['num'],
                     'type' => $v['sign'] == '+' ? 1 : 0,
                     'remark' => $v['exp'],
-                    'created_at' => $v['created_at']
+                    'created_at' => strtotime($v['created_at'])
                 ];
             }
 
