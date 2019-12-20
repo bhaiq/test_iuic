@@ -43,6 +43,7 @@ class EnergyController extends Controller
                 'goods_name' => $v->goods_name,
                 'goods_img' => $v->goods_img,
                 'goods_price' => $v->goods_price,
+                'goods_details' => $v->goods_details,
                 'coin_type' => 'USDT',
                 'add_num' => $v->add_num,
                 'xg_num' => $v->xg_num,
