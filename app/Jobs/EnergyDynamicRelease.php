@@ -59,6 +59,8 @@ class EnergyDynamicRelease implements ShouldQueue
     private function toRecommendReward($uid, $num, $layer)
     {
 
+        \Log::info('进行代数奖进来的数据', ['uid' => $uid, 'num' => $num, 'layer' => $layer]);
+
         // 先判断层数是否超过3层
         if($layer > 2){
             \Log::info('已经进行到3代了，结束奖励');
@@ -134,6 +136,8 @@ class EnergyDynamicRelease implements ShouldQueue
     // 进行社区节点奖操作
     private function toCommunityReward($uid, $num)
     {
+
+        \Log::info('进行社区节点奖进来的数据', ['uid' => $uid, 'num' => $num]);
 
         // 获取用户信息
         $user = User::find($uid);
