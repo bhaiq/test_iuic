@@ -98,7 +98,7 @@ class EnergyDynamicRelease implements ShouldQueue
 
             \DB::rollBack();
 
-            \Log::info('团队奖加速释放出现异常');
+            \Log::info('代数奖加速释放出现异常');
 
         }
 
