@@ -178,6 +178,9 @@ class EnergyController extends Controller
 
         }
 
+        // 加入队列
+        dispatch(new EnergyDynamicRelease(Service::auth()->getUser()->id, $good->num));
+
         $this->responseSuccess('操作成功');
 
     }
@@ -268,9 +271,6 @@ class EnergyController extends Controller
             $this->responseError('操作异常');
 
         }
-
-        // 加入队列
-        dispatch(new EnergyDynamicRelease(Service::auth()->getUser()->id, $request->get('num')));
 
         $this->responseSuccess('操作成功');
 
