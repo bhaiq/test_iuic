@@ -93,7 +93,7 @@ class AccountController extends Controller
 
 
             $result['cur_total'] = bcdiv(bcadd($uw->total_cny, $uw->consumer_cny, 8), Account::getRate(), 4);
-            $result['cur_total_cny'] = bcadd($uw->total_cny, $uw->consumer_cny, 8);
+            $result['cur_total_cny'] = bcadd($uw->total_cny, $uw->consumer_cny, 4);
             $result['all_total'] = 0;
             $result['all_total_cny'] = 0;
 
