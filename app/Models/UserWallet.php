@@ -18,7 +18,7 @@ class UserWallet extends Model
     protected $guarded = [];
 
     protected $appends = [
-        'total', 'energy_cny', 'energy_frozen_cny', 'total_cny'
+        'total', 'energy_cny', 'energy_frozen_cny', 'total_cny', 'consumer_cny'
     ];
 
     public function getTotalAttribute()
@@ -39,6 +39,11 @@ class UserWallet extends Model
     public function getTotalCnyAttribute()
     {
         return bcmul($this->total, $this->getEnergyCny(), 8);
+    }
+
+    public function getConsumerCnyAttribute()
+    {
+        return bcmul($this->consumer_num, $this->getEnergyCny(), 8);
     }
 
     // 获取能量资产对人民币的比例

@@ -48,6 +48,22 @@ class AccountController extends Controller
 
             ];
 
+            $result['account'][] = [
+                'coin_id' => 1002,
+                'type' => 0,
+                'amount' => 0,
+                'amount_freeze' => 0,
+                'total' => 0,
+                'amount_cny' => 0,
+                'amount_freeze_cny' => 0,
+                'cny' => 0,
+                'coin' => [
+                    'id' => 1001,
+                    'name' => '消费积分'
+                ],
+
+            ];
+
             // 先验证用户是否有能量账户，没有则创建
             $uw = UserWallet::where('uid', Service::auth()->getUser()->id)->first();
             if(!$uw){
@@ -65,8 +81,17 @@ class AccountController extends Controller
             $result['account'][0]['amount_freeze_cny'] = bcmul($uw->energy_frozen_cny, 1, 4);
             $result['account'][0]['cny'] = bcmul($uw->total_cny, 1, 4);
 
-            $result['cur_total'] = bcmul($uw->total, 1, 4);
-            $result['cur_total_cny'] = bcmul($uw->total_cny, 1, 4);
+
+            $result['account'][1]['amount'] = bcmul($uw->consumer_num, 1, 4);
+            $result['account'][0]['amount_freeze'] = 0;
+            $result['account'][0]['total'] = bcmul($uw->consumer_num, 1, 4);
+            $result['account'][0]['amount_cny'] = bcmul($uw->consumer_cny, 1, 4);
+            $result['account'][0]['amount_freeze_cny'] = 0;
+            $result['account'][0]['cny'] = bcmul($uw->consumer_cny, 1, 4);
+
+
+            $result['cur_total'] = bcdiv(bcadd($uw->total_cny, $uw->consumer_cny, 8), Account::getRate(), 4);
+            $result['cur_total_cny'] = bcadd($uw->total_cny, $uw->consumer_cny, 8);
             $result['all_total'] = 0;
             $result['all_total_cny'] = 0;
 
