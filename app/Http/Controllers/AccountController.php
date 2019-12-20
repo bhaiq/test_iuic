@@ -45,6 +45,7 @@ class AccountController extends Controller
                     'id' => 1001,
                     'name' => '能量'
                 ],
+                'is_open' => 1,
 
             ];
 
@@ -61,6 +62,7 @@ class AccountController extends Controller
                     'id' => 1001,
                     'name' => '消费积分'
                 ],
+                'is_open' => 0,
 
             ];
 
