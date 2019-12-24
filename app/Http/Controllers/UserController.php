@@ -174,8 +174,16 @@ class UserController extends Controller
                 Service::auth()->isLoginOrFail();
                 $username = Service::auth()->getUser()->mobile ? Service::auth()->getUser()->mobile : Service::auth()->getUser()->email;
                 break;
-        }
 
+            // 改绑手机号
+            case 4:
+                $this->validate($request->all(), [
+                    'username' => 'required',
+                    'type'     => 'required|integer',
+                ]);
+                $username = $request->get('username');
+                break;
+        }
 
         //判断是否是email
         if (strpos($username, '@') !== false) {
