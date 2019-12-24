@@ -60,7 +60,7 @@ class User extends Model
 {
     protected $table = 'user';
 
-    protected $fillable = ['mobile', 'email', 'password', 'pid', 'invite_code', 'type', 'path', 'pid_path', 'nickname'];
+    protected $fillable = ['mobile', 'email', 'password', 'pid', 'invite_code', 'type', 'path', 'pid_path', 'nickname', 'account'];
 
     protected $hidden = ['password', 'transaction_password'];
 
