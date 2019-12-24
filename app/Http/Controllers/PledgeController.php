@@ -158,4 +158,28 @@ class PledgeController extends Controller
 
     }
 
+    // 质押日志
+    public function log(Request $request)
+    {
+
+        Service::auth()->isLoginOrFail();
+
+        $res = PledgeLog::where('uid', Service::auth()->getUser()->id)->latest()->paginate($request->get('per_page', 10))->toArray();
+
+        foreach ($res['data'] as $k => $v){
+
+            $result['num'] = $v['num'];
+            $result['coin_name'] = 'IUIC';
+            $result['exp'] = $v['type'] == 1 ? '质押' : '取出';
+            $result['status_name'] = PledgeLog::STATUS_NAME[$v['status']];
+            $result['created_at'] = date('Y/m/d H:i', strtotime($v['created_at']));
+
+            $res['data'][$k] = $result;
+
+        }
+
+        return $this->response($res);
+
+    }
+
 }

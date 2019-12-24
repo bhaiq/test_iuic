@@ -267,6 +267,7 @@ Route::group(['middleware' => ['auth.api']], function () {
     Route::group(['prefix' => 'pledge'], function () {
         Route::get('start', 'PledgeController@start'); // 质押信息页面
         Route::post('submit', 'PledgeController@submit'); // 质押提交或取消
+        Route::get('log', 'PledgeController@log'); // 质押日志
     });
 
 });

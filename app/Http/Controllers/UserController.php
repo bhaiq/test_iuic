@@ -209,6 +209,12 @@ class UserController extends Controller
 //        $user     = User::whereEmail($username)->orWhere('mobile', $username)->first();
         $user = User::where('new_account', $request->get('new_account'))->first();
         if (!$user) return $this->responseError('user.auth.not_find');
+
+        // 验证用户账号和手机是否匹配
+        if($user->mobile != $request->username){
+            return $this->responseError('账号和手机不匹配');
+        }
+
         //判断是否是email
         if (strpos($request->input('username'), '@') !== false) {
             Service::email()->verifyCode($user->email, $request->input('code'));

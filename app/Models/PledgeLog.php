@@ -17,4 +17,10 @@ class PledgeLog extends Model
 
     protected $guarded = [];
 
+    const STATUS_NAME = [
+        0 => '审核中',
+        1 => '已完成',
+        2 => '已失败',
+    ];
+
 }
