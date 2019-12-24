@@ -82,7 +82,7 @@ class UserController extends Controller
             'invite_code' => 'string|required',
             'code'        => 'required',
             'type'        => 'integer|required|between:1,2',
-            'account'     => 'string|required|between:6,18',
+            'new_account'     => 'string|required|between:6,18',
         ];
 
         //1为手机2为邮件
@@ -91,7 +91,7 @@ class UserController extends Controller
         $this->validate($request->all(), $rules);
 
         // 验证用户账户是否存在
-        if(User::where('account', $request->get('account'))->exists()){
+        if(User::where('new_account', $request->get('new_account'))->exists()){
             return $this->responseError('账号已经存在');
         }
 
@@ -113,8 +113,8 @@ class UserController extends Controller
             Service::email()->verifyCode($request->input('username'), $request->input('code'));
         }
 
-        $data['account'] = $request->get('account');
-        $data['nickname'] = $request->get('account');
+        $data['new_account'] = $request->get('new_account');
+        $data['nickname'] = $request->get('new_account');
         $data['password'] = $request->input('password');
         $data['pid']      = $pid;
         $data['pid_path'] = $pid_path;
@@ -191,16 +191,15 @@ class UserController extends Controller
     public function forgetPassword(Request $request)
     {
         $this->validate($request->all(), [
-            'account'     => 'required',
+            'new_account'     => 'required',
             'username'    => 'required',
             'password'    => 'string|required|between:6,18',
             're_password' => 'string|required|same:password',
             'code'        => 'integer|required',
         ]);
-        $username = $request->input('username');
         $password = $request->input('password');
 //        $user     = User::whereEmail($username)->orWhere('mobile', $username)->first();
-        $user = User::where('account', $request->get('account'))->first();
+        $user = User::where('new_account', $request->get('new_account'))->first();
         if (!$user) return $this->responseError('user.auth.not_find');
         //判断是否是email
         if (strpos($request->input('username'), '@') !== false) {

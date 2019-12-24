@@ -263,6 +263,11 @@ Route::group(['middleware' => ['auth.api']], function () {
         Route::post('update/mobile', 'NewUserController@updateMobile'); // 更改用户手机
     });
 
+    // 质押IUIC
+    Route::group(['prefix' => 'pledge'], function () {
+        Route::get('start', 'PledgeController@start'); // 质押信息页面
+    });
+
 });
 
 Route::group(['prefix' => 'common'], function () {
