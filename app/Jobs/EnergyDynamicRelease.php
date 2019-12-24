@@ -134,11 +134,11 @@ class EnergyDynamicRelease implements ShouldQueue
     }
 
     // 进行社区节点奖操作
-    private function toCommunityReward($uid, $num, $oldBl = 0.05)
+    private function toCommunityReward($uid, $num, $oldBl = 0)
     {
 
         \Log::info('进行社区节点奖进来的数据', ['uid' => $uid, 'num' => $num, 'bl' => $oldBl]);
-        if($oldBl <= 0){
+        if($oldBl >= config('energy.energy_community_50000_reward_bl', 0.05)){
             \Log::info('已经发放完成，结束发放');
             return false;
         }
@@ -161,11 +161,12 @@ class EnergyDynamicRelease implements ShouldQueue
         }
 
         // 判断该用户实际拿到的比例
-        if($bl >= $oldBl){
-            $bl = $oldBl;
-            $oldBl = 0;
+        if($bl <= $oldBl){
+            \Log::info('用户持币数量级别的奖励已被领取,跳过', ['cb_num' => $iuicNum]);
+            return $this->toCommunityReward($user->pid, $num, $oldBl);
         }else{
-            $oldBl = bcsub($oldBl, $bl, 4);
+            $oldBl = $bl;
+            $bl = bcsub($bl, $oldBl, 4);
         }
 
         \DB::beginTransaction();
