@@ -51,7 +51,7 @@ class UserController extends Controller
             'password' => 'string|required|between:6,18'
         ]);
 
-        $user = User::whereEmail($request->input('username'))->orWhere('mobile', $request->input('username'))->first();
+        $user = User::where('account', $request->input('username'))->first();
         if (!$user) return $this->responseError('user.auth.not_find');
         if ($user->password == StringLib::password($request->input('password'))) {
           

@@ -257,6 +257,12 @@ Route::group(['middleware' => ['auth.api']], function () {
         Route::post('exchange', 'EnergyController@exchange'); // 能量兑换
     });
 
+    // 用户绑定验证
+    Route::group(['prefix' => 'user'], function () {
+        Route::post('check/pass', 'NewUserController@checkPass'); // 验证用户密码
+        Route::post('update/mobile', 'NewUserController@updateMobile'); // 更改用户手机
+    });
+
 });
 
 Route::group(['prefix' => 'common'], function () {
