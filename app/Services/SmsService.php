@@ -30,6 +30,7 @@ class SmsService
         // 阿里云发送短信
         $aliSms = new AliSms();
         $response = $aliSms->sendSms($mobile, $template, ['code'=> $code]);
+        \Log::info('发送验证码返回的数据', [$response]);
         if($response->Code != 'OK'){
             abort(400, trans('communication.code_error'));
         }
