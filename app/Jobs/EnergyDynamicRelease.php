@@ -134,10 +134,14 @@ class EnergyDynamicRelease implements ShouldQueue
     }
 
     // 进行社区节点奖操作
-    private function toCommunityReward($uid, $num)
+    private function toCommunityReward($uid, $num, $oldBl = 0.5)
     {
 
-        \Log::info('进行社区节点奖进来的数据', ['uid' => $uid, 'num' => $num]);
+        \Log::info('进行社区节点奖进来的数据', ['uid' => $uid, 'num' => $num, 'bl' => $oldBl]);
+        if($oldBl <= 0){
+            \Log::info('已经发放完成，结束发放');
+            return false;
+        }
 
         // 获取用户信息
         $user = User::find($uid);
@@ -153,7 +157,15 @@ class EnergyDynamicRelease implements ShouldQueue
         $bl = $this->getCommunityRewardBl($iuicNum);
         if($bl <= 0){
             \Log::info('用户持币数量不够,跳过', ['cb_num' => $iuicNum]);
-            return $this->toCommunityReward($user->pid, $num);
+            return $this->toCommunityReward($user->pid, $num, $oldBl);
+        }
+
+        // 判断该用户实际拿到的比例
+        if($bl >= $oldBl){
+            $bl = $oldBl;
+            $oldBl = 0;
+        }else{
+            $oldBl = bcsub($oldBl, $bl, 4);
         }
 
         \DB::beginTransaction();
@@ -176,7 +188,7 @@ class EnergyDynamicRelease implements ShouldQueue
 
         }
 
-        return $this->toCommunityReward($user->pid, $this->num);
+        return $this->toCommunityReward($user->pid, $this->num, $oldBl);
 
     }
 
@@ -186,23 +198,23 @@ class EnergyDynamicRelease implements ShouldQueue
 
         switch ($num){
 
-            case $num >= 50000:
+            case $num >= 25000:
                 $bl = config('energy.energy_community_50000_reward_bl', 0.05);
                 break;
 
-            case $num >= 40000:
+            case $num >= 20000:
                 $bl = config('energy.energy_community_40000_reward_bl', 0.04);
                 break;
 
-            case $num >= 30000:
+            case $num >= 15000:
                 $bl = config('energy.energy_community_30000_reward_bl', 0.03);
                 break;
 
-            case $num >= 20000:
+            case $num >= 10000:
                 $bl = config('energy.energy_community_20000_reward_bl', 0.02);
                 break;
 
-            case $num >= 10000:
+            case $num >= 5000:
                 $bl = config('energy.energy_community_10000_reward_bl', 0.01);
                 break;
 
