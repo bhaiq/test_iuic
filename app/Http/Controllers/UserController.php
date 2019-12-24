@@ -86,7 +86,7 @@ class UserController extends Controller
         ];
 
         //1为手机2为邮件
-        $rules['username'] = $request->input('type') == 1 ? 'required|digits_between:8,16|unique:user,mobile' : 'string|required|max:50|email|unique:user,email';
+        $rules['username'] = $request->input('type') == 1 ? 'required|digits_between:8,16' : 'string|required|max:50|email';
 
         $this->validate($request->all(), $rules);
 
