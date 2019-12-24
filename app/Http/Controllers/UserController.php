@@ -211,10 +211,10 @@ class UserController extends Controller
         if (!$user) return $this->responseError('user.auth.not_find');
         //判断是否是email
         if (strpos($request->input('username'), '@') !== false) {
-            Service::email()->verifyCode($request->input('username'), $request->input('code'));
+            Service::email()->verifyCode($user->email, $request->input('code'));
         } else {
             //Service::cloud()->verifyCode($request->input('username'), $request->input('code'));
-            Service::mobile()->verifyCode($request->input('username'), $request->input('code'));
+            Service::mobile()->verifyCode($user->mobile, $request->input('code'));
         }
         $user->password = StringLib::password($password);
         $user->save();
