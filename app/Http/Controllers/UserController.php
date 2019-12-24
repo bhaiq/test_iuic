@@ -91,7 +91,7 @@ class UserController extends Controller
         $this->validate($request->all(), $rules);
 
         // 验证用户账户是否存在
-        if(User::where('account')->exists()){
+        if(User::where('account', $request->get('account'))->exists()){
             return $this->responseError('账号已经存在');
         }
 
@@ -114,7 +114,7 @@ class UserController extends Controller
         }
 
         $data['account'] = $request->get('account');
-        $data['nickname'] = $request->input('username');
+        $data['nickname'] = $request->get('account');
         $data['password'] = $request->input('password');
         $data['pid']      = $pid;
         $data['pid_path'] = $pid_path;
