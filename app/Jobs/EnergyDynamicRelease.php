@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Models\Account;
 use App\Models\EnergyOrder;
+use App\Models\PledgeLevel;
 use App\Models\User;
 use App\Services\EnergyService;
 use Illuminate\Bus\Queueable;
@@ -150,19 +151,16 @@ class EnergyDynamicRelease implements ShouldQueue
             return false;
         }
 
-        // 获取用户持有的IUIC数量
-        $iuicNum = Account::where(['uid' => $uid, 'coin_id' => 2])->sum('amount');
-
         // 获取用户本次加速的比例
-        $bl = $this->getCommunityRewardBl($iuicNum);
+        $bl = $this->getCommunityRewardBl($user->pledge_num);
         if($bl <= 0){
-            \Log::info('用户持币数量不够,跳过', ['cb_num' => $iuicNum]);
+            \Log::info('用户持币数量不够,跳过', ['cb_num' => $user->pledge_num]);
             return $this->toCommunityReward($user->pid, $num, $oldBl);
         }
 
         // 判断该用户实际拿到的比例
         if($bl <= $oldBl){
-            \Log::info('用户持币数量级别的奖励已被领取,跳过', ['cb_num' => $iuicNum]);
+            \Log::info('用户持币数量级别的奖励已被领取,跳过', ['cb_num' => $user->pledge_num]);
             return $this->toCommunityReward($user->pid, $num, $oldBl);
         }else{
             $oldBl = $bl;
@@ -197,32 +195,11 @@ class EnergyDynamicRelease implements ShouldQueue
     private function getCommunityRewardBl($num)
     {
 
-        switch ($num){
+        $bl = 0;
 
-            case $num >= 25000:
-                $bl = config('energy.energy_community_50000_reward_bl', 0.05);
-                break;
-
-            case $num >= 20000:
-                $bl = config('energy.energy_community_40000_reward_bl', 0.04);
-                break;
-
-            case $num >= 15000:
-                $bl = config('energy.energy_community_30000_reward_bl', 0.03);
-                break;
-
-            case $num >= 10000:
-                $bl = config('energy.energy_community_20000_reward_bl', 0.02);
-                break;
-
-            case $num >= 5000:
-                $bl = config('energy.energy_community_10000_reward_bl', 0.01);
-                break;
-
-            default:
-                $bl = 0;
-                break;
-
+        $pl = PledgeLevel::where('num', '>=', $num)->oldest('num')->first();
+        if($pl){
+            $bl = $pl->pledge_bl;
         }
 
         return $bl;
