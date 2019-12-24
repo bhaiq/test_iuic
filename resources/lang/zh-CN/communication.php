@@ -7,5 +7,5 @@ return [
     'email'  => [
         'send_success' => 'email发送成功！',
     ],
-    'code_error'=>'验证码错误'
+    'code_error'=>'验证码发送失败'
 ];
