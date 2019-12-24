@@ -155,8 +155,8 @@ class UserController extends Controller
                     'username' => 'required',
                     'type'     => 'required|integer',
                 ]);
-                $user = User::whereEmail($request->input('username'))->orWhere('mobile', $request->input('username'))->first();
-                if ($user) return $this->responseError('user.auth.exist');
+//                $user = User::whereEmail($request->input('username'))->orWhere('mobile', $request->input('username'))->first();
+//                if ($user) return $this->responseError('user.auth.exist');
                 $username = $request->get('username');
                 break;
             //找回密码
