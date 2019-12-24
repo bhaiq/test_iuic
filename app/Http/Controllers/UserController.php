@@ -200,7 +200,7 @@ class UserController extends Controller
         $username = $request->input('username');
         $password = $request->input('password');
 //        $user     = User::whereEmail($username)->orWhere('mobile', $username)->first();
-        $user = User::where('account', $username)->first();
+        $user = User::where('account', $request->get('account'))->first();
         if (!$user) return $this->responseError('user.auth.not_find');
         //判断是否是email
         if (strpos($request->input('username'), '@') !== false) {
