@@ -168,6 +168,8 @@ class PledgeController extends Controller
 
         foreach ($res['data'] as $k => $v){
 
+            $result['type'] = $v['type'];
+            $result['status'] = $v['status'];
             $result['num'] = $v['num'];
             $result['coin_name'] = 'IUIC';
             $result['exp'] = $v['type'] == 1 ? '质押' : '取出';
