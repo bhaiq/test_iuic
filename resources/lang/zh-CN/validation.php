@@ -185,5 +185,6 @@ return [
         'amount_min'            => '最小数量',
         'username'              => '用户',
         'avatar'                => '头像',
+        'new_account'           => '账号',
     ],
 ];
