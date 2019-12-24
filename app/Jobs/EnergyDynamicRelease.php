@@ -134,7 +134,7 @@ class EnergyDynamicRelease implements ShouldQueue
     }
 
     // 进行社区节点奖操作
-    private function toCommunityReward($uid, $num, $oldBl = 0.5)
+    private function toCommunityReward($uid, $num, $oldBl = 0.05)
     {
 
         \Log::info('进行社区节点奖进来的数据', ['uid' => $uid, 'num' => $num, 'bl' => $oldBl]);
