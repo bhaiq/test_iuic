@@ -266,6 +266,7 @@ Route::group(['middleware' => ['auth.api']], function () {
     // 质押IUIC
     Route::group(['prefix' => 'pledge'], function () {
         Route::get('start', 'PledgeController@start'); // 质押信息页面
+        Route::post('submit', 'PledgeController@submit'); // 质押提交或取消
     });
 
 });
