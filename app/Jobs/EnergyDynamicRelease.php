@@ -163,8 +163,9 @@ class EnergyDynamicRelease implements ShouldQueue
             \Log::info('用户持币数量级别的奖励已被领取,跳过', ['cb_num' => $user->pledge_num]);
             return $this->toCommunityReward($user->pid, $num, $oldBl);
         }else{
+            $nBl = bcsub($bl, $oldBl, 4);
             $oldBl = $bl;
-            $bl = bcsub($bl, $oldBl, 4);
+            $bl = $nBl;
         }
 
         \DB::beginTransaction();
