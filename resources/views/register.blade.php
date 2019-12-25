@@ -14,6 +14,9 @@
     <h2>手机注册</h2>
 </div>
 <div class="form">
+    <p>
+        <input type="text" name="new_account" placeholder="请输入账号"/>
+    </p>
     <p style="padding: 0px;">
         <em>+86</em><input style="padding-left: 15px;" type="text" name="user" placeholder="请输入手机号码"/>
     </p>
@@ -47,6 +50,7 @@
         var $ = layui.jquery, layer = layui.layer; //独立版的layer无需执行这一句
 
         $('#sub').on('click', function(){
+            var new_account = $('input[name=new_account]').val();
             var user = $('input[name=user]').val();
             var captcha = $('input[name=captcha]').val();
             var pass = $('input[name=pass]').val();
@@ -57,7 +61,7 @@
             $.ajax({
                 url:"/api/user",    //请求的url地址
                 dataType:"json",   //返回格式为json
-                data:{'username':user,'code':captcha,'password':pass,'re_password':repass,'invite_code':code,'type':1},
+                data:{'new_account': new_account, 'username':user,'code':captcha,'password':pass,'re_password':repass,'invite_code':code,'type':1},
                 type:"POST",   //请求方式
                 success:function(d){
                     alert('注册成功');
