@@ -82,13 +82,17 @@ class UserController extends Controller
             'invite_code' => 'string|required',
             'code'        => 'required',
             'type'        => 'integer|required|between:1,2',
-            'new_account'     => 'alpha_num|required|between:6,18',
+            'new_account'     => 'required|between:6,18',
         ];
 
         //1为手机2为邮件
         $rules['username'] = $request->input('type') == 1 ? 'required|digits_between:8,16' : 'string|required|max:50|email';
 
         $this->validate($request->all(), $rules);
+
+        if(!preg_match('/^[a-zA-Z0-9]+$/', $request->get('new_account'))){
+            return $this->responseError('账号只能是字母或者数字');
+        }
 
         // 验证用户账户是否存在
         if(User::where('new_account', $request->get('new_account'))->exists()){
