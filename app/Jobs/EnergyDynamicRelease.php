@@ -198,7 +198,7 @@ class EnergyDynamicRelease implements ShouldQueue
 
         $bl = 0;
 
-        $pl = PledgeLevel::where('num', '>=', $num)->oldest('num')->first();
+        $pl = PledgeLevel::where('num', '<=', $num)->latest('num')->first();
         if($pl){
             $bl = $pl->pledge_bl;
         }

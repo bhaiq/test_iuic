@@ -37,7 +37,7 @@ class PledgeController extends Controller
             if($isDefault && Service::auth()->getUser()->pledge_num >= $v->num){
 
                 $result[] = [
-                    'num' => $v->num,
+                    'num' => bcmul($v->num, 1),
                     'sort' => $k+1,
                     'bl' => bcmul($v->pledge_bl, 100) . '%',
                     'is_default' => 1,
@@ -48,7 +48,7 @@ class PledgeController extends Controller
             }else{
 
                 $result[] = [
-                    'num' => $v->num,
+                    'num' => bcmul($v->num, 1),
                     'sort' => $k+1,
                     'bl' => bcmul($v->pledge_bl, 100) . '%',
                     'is_default' => 0,
@@ -58,7 +58,7 @@ class PledgeController extends Controller
 
         }
 
-        return $this->response(['data' => $result, 'pledge_num' => Service::auth()->getUser()->pledge_num]);
+        return $this->response(['data' => $result, 'pledge_num' => bcmul(Service::auth()->getUser()->pledge_num, 1)]);
 
     }
 
