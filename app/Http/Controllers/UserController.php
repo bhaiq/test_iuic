@@ -82,7 +82,7 @@ class UserController extends Controller
             'invite_code' => 'string|required',
             'code'        => 'required',
             'type'        => 'integer|required|between:1,2',
-            'new_account'     => 'string|required|between:6,18',
+            'new_account'     => 'alpha_num|required|between:6,18',
         ];
 
         //1为手机2为邮件
