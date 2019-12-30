@@ -192,10 +192,10 @@ class EthController extends Controller
         }
 
         // 判断用户矿池是否充足
-        $ui = UserInfo::where('uid', Service::auth()->getUser()->id)->first();
+        /*$ui = UserInfo::where('uid', Service::auth()->getUser()->id)->first();
         if(!$ui || bcsub($ui->buy_total, $ui->release_total, 8) <= 0){
             $this->responseError('矿池数量不足,不能提现');
-        }
+        }*/
         
         // 获取手续费
         if($c->name == 'USDT'){
