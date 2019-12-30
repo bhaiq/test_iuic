@@ -77,7 +77,7 @@ class EnergyDynamicRelease implements ShouldQueue
 
         // 获取用户推荐的有效用户数
         $eoCount = EnergyOrder::getEnergyValidNum($uid);
-        if($eoCount < $layer){
+        if($eoCount < 1){
             \Log::info('用户直推的有效用户数量没有达到层数,跳过', ['count' => $eoCount, 'layer' => $layer]);
             $layer++;
             return $this->toRecommendReward($user->pid, $num, $layer);
