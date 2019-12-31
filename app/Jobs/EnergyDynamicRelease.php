@@ -86,11 +86,13 @@ class EnergyDynamicRelease implements ShouldQueue
         \DB::beginTransaction();
         try {
 
+            $exp = $layer == 1 ? '一层加速奖励' : '二层加速奖励';
+
             // 获取用户本代能拿到的比例
             $bl = $this->getRecommendLayerBl($layer);
             $oneNum = bcmul($num, $bl, 8);
             if($oneNum > 0){
-                EnergyService::orderSpeedRelease($uid, $oneNum, '代数奖加速', $this->uid);
+                EnergyService::orderSpeedRelease($uid, $oneNum, $exp, $this->uid);
             }else{
                 \Log::info('代数奖层数奖励比例异常');
             }
@@ -173,7 +175,7 @@ class EnergyDynamicRelease implements ShouldQueue
 
             $oneNum = bcmul($num, $bl, 8);
             if($oneNum > 0){
-                EnergyService::orderSpeedRelease($uid, $oneNum, '社区节点奖加速', $this->uid);
+                EnergyService::orderSpeedRelease($uid, $oneNum, '社区加速奖励', $this->uid);
             }else{
                 \Log::info('社区节点奖比例异常');
             }

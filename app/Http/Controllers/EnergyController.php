@@ -63,12 +63,16 @@ class EnergyController extends Controller
         Service::auth()->isLoginOrFail();
 
         $this->validate($request->all(), [
-            'goods_id'     => 'required|integer',
+            'goods_id' => 'required|integer',
+            'goods_num' => 'required|integer|min:1',
             'address_id' => 'required|integer',
             'paypass' => 'required',
         ], [
             'goods_id.required' => '商品信息不能为空',
             'goods_id.integer' => '商品信息类型不正确',
+            'goods_num.required' => '商品数量不能为空',
+            'goods_num.integer' => '商品数量类型不正确',
+            'goods_num.min' => '商品数量不能小于1',
             'address_id.required' => '地址信息不能为空',
             'address_id.integer' => '地址信息类型不正确',
             'paypass.required' => '交易密码不能为空',
@@ -94,7 +98,7 @@ class EnergyController extends Controller
 
         // 验证购买的数量是否达到限购的数量
         $buyCount = EnergyOrder::geyBuyNum(Service::auth()->getUser()->id, $good->id);
-        if($buyCount >= $good->xg_num){
+        if(bcadd($buyCount, $request->get('goods_num')) > $good->xg_num){
             $this->responseError('购买数量超过限制');
         }
 
@@ -109,7 +113,8 @@ class EnergyController extends Controller
         $coinAccount = Service::auth()->account($coin->id, Account::TYPE_LC);
 
         // 判断用户余额是否充足
-        if($coinAccount->amount < $good->goods_price){
+        $totalPrice = bcmul($good->goods_price, $request->get('goods_num'), 8);
+        if($coinAccount->amount < $totalPrice){
             $this->responseError('用户余额不足');
         }
 
@@ -124,14 +129,18 @@ class EnergyController extends Controller
             $i++;
         }
 
+        $oNum = bcmul($good->num, $request->get('goods_num'), 2);
+        $oAddNum = bcmul($good->add_num, $request->get('goods_num'), 2);
+
         $eoData = [
             'uid' => $user->id,
             'goods_id' => $good->id,
             'goods_name' => $good->goods_name,
             'goods_img' => $good->goods_img,
             'goods_price' => $good->goods_price,
-            'num' => $good->num,
-            'add_num' => $good->add_num,
+            'goods_num' => $request->get('goods_num'),
+            'num' => $oNum,
+            'add_num' => $oAddNum,
             'to_name' => $address->name,
             'to_mobile' => $address->mobile,
             'to_address' => $newAddress . $address->address_info,
@@ -146,21 +155,21 @@ class EnergyController extends Controller
             EnergyOrder::create($eoData);
 
             // 用户余额减少
-            Account::reduceAmount($user->id, $coin->id, $good->goods_price);
+            Account::reduceAmount($user->id, $coin->id, $totalPrice);
 
             // 用户余额日志增加
-            AccountLog::addLog($user->id, $coin->id, $good->goods_price, 21, 0, Account::TYPE_LC, '购买能量商品');
+            AccountLog::addLog($user->id, $coin->id, $totalPrice, 21, 0, Account::TYPE_LC, '购买能量商品');
 
             // 先验证用户是否有能量账户
             if(UserWallet::where('uid', $user->id)->exists()){
 
-                UserWallet::addEnergyFrozenNum($user->id, $good->add_num);
+                UserWallet::addEnergyFrozenNum($user->id, $oAddNum);
 
             }else{
 
                 $uwData = [
                     'uid' => $user->id,
-                    'energy_frozen_num' => $good->add_num,
+                    'energy_frozen_num' => $oAddNum,
                     'created_at' => now()->toDateTimeString(),
                 ];
                 UserWallet::create($uwData);
@@ -180,7 +189,7 @@ class EnergyController extends Controller
         }
 
         // 加入队列
-        dispatch(new EnergyDynamicRelease(Service::auth()->getUser()->id, $good->num));
+        dispatch(new EnergyDynamicRelease(Service::auth()->getUser()->id, $oNum));
 
         $this->responseSuccess('操作成功');
 

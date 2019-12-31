@@ -64,9 +64,14 @@ class EnergyTeamRelease implements ShouldQueue
             return false;
         }
 
+        // 判断当前用户是否是有效用户
+        if(!EnergyOrder::where('uid', $uid)->exists()){
+            \Log::info('本层用户不是有效用户，跳过');
+            return $this->toHandle($user->pid, $this->num, $layer);
+        }
+
         // 获取用户推荐的有效用户数
         $eoCount = EnergyOrder::getEnergyValidNum($uid);
-
         if($eoCount < $layer){
             \Log::info('用户直推的有效用户数量没有达到层数,跳过', ['count' => $eoCount, 'layer' => $layer]);
             $layer++;
@@ -76,7 +81,7 @@ class EnergyTeamRelease implements ShouldQueue
         \DB::beginTransaction();
         try {
 
-            EnergyService::orderSpeedRelease($uid, $this->num, '团队奖加速', $this->uid);
+            EnergyService::orderSpeedRelease($uid, $this->num, '团队加速奖励', $this->uid);
 
             \DB::commit();
 

@@ -157,12 +157,12 @@ class AccountController extends Controller
 
         if($coin_id == '1001'){
 
-            $eLogs = EnergyLog::where('uid', Service::auth()->getUser()->id)->latest()->paginate()->toArray();
+            $eLogs = EnergyLog::where('wallet_type', 1)->where('uid', Service::auth()->getUser()->id)->latest()->paginate()->toArray();
             foreach ($eLogs['data'] as $k => $v){
 
                 $eLogs['data'][$k] = [
                     'uid' => $v['uid'],
-                    'coin_id' => '1001',
+                    'coin_id' => $coin_id,
                     'amount' => $v['num'],
                     'type' => $v['sign'] == '+' ? 1 : 0,
                     'remark' => $v['exp'],
@@ -182,6 +182,38 @@ class AccountController extends Controller
                     'amount' => $uw->energy_num,
                     'amount_freeze' => $uw->energy_frozen_num,
                     'cny' => $uw->total_cny,
+                ];
+            }
+
+            return $this->response(array_merge($eLogs, $result));
+
+        }else if($coin_id == '1002'){
+
+            $eLogs = EnergyLog::where('wallet_type', 2)->where('uid', Service::auth()->getUser()->id)->latest()->paginate()->toArray();
+            foreach ($eLogs['data'] as $k => $v){
+
+                $eLogs['data'][$k] = [
+                    'uid' => $v['uid'],
+                    'coin_id' => $coin_id,
+                    'amount' => $v['num'],
+                    'type' => $v['sign'] == '+' ? 1 : 0,
+                    'remark' => $v['exp'],
+                    'created_at' => strtotime($v['created_at'])
+                ];
+            }
+
+            $result = [
+                'amount' => 0,
+                'amount_freeze' => 0,
+                'cny' => 0
+            ];
+
+            $uw = UserWallet::where('uid', Service::auth()->getUser()->id)->first();
+            if($uw){
+                $result = [
+                    'amount' => $uw->consumer_num,
+                    'amount_freeze' => 0,
+                    'cny' => $uw->consumer_cny,
                 ];
             }
 

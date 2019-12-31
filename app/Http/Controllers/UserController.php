@@ -99,6 +99,12 @@ class UserController extends Controller
             return $this->responseError('账号已经存在');
         }
 
+        // 验证手机是否超过10个
+        $mobileCount = User::where('mobile', $request->get('username'))->count();
+        if($mobileCount > 10){
+            return $this->responseError('该手机号可注册的账号已超限');
+        }
+
         $pid = 0;
         $pid_path = '';
         if ($request->has('invite_code')) {
@@ -161,6 +167,13 @@ class UserController extends Controller
                 ]);
 //                $user = User::whereEmail($request->input('username'))->orWhere('mobile', $request->input('username'))->first();
 //                if ($user) return $this->responseError('user.auth.exist');
+
+                // 验证手机是否超过10个
+                $mobileCount = User::where('mobile', $request->get('username'))->count();
+                if($mobileCount > 10){
+                    return $this->responseError('该手机号可注册的账号已超限');
+                }
+
                 $username = $request->get('username');
                 break;
             //找回密码
