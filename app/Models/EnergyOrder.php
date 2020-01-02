@@ -20,7 +20,7 @@ class EnergyOrder extends Model
     // 获取用户购买的数量
     public static function geyBuyNum($uid, $goodsId)
     {
-        return EnergyOrder::where(['uid' => $uid, 'goods_id' => $goodsId])->count();
+        return EnergyOrder::where(['uid' => $uid, 'goods_id' => $goodsId])->sum('goods_num');
     }
 
     // 获取用户下级推荐的有效数量
