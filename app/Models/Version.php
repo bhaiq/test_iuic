@@ -37,7 +37,8 @@ class Version extends Model
     public function getUrlAttribute($val)
     {
         if ($this->type == 1) {
-            return 'itms-services://?action=download-manifest&url=' . $val;
+//            return 'itms-services://?action=download-manifest&url=' . $val;
+            return $val;
         }
         return $val;
     }
