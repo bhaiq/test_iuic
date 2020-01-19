@@ -66,7 +66,7 @@ class UserInfo extends Model
     public static function checkUserValid($uid)
     {
 
-        if(User::where('uid', $uid)->whereIn('level', [1, 2])->exists()){
+        if(User::where('id', $uid)->whereIn('level', [1, 2])->exists()){
             return 1;
         }
 
