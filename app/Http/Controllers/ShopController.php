@@ -150,44 +150,53 @@ class ShopController extends Controller
 
                     // 上级推荐奖励
                     $pidReward = bcmul(config('shop.pid_reward'), $good->ore_pool, 2);
-                    UserInfo::where('uid', $user->pid)->increment('buy_total', $pidReward);
+                    if($pidReward > 0){
 
-                    // 释放订单表增加
-                    $reoData = [
-                        'uid' => $user->pid,
-                        'total_num' => $pidReward,
-                        'today_max' => $pidReward,
-                        'release_time' => now()->subDay()->toDateTimeString(),
-                        'type' => 1,
-                        'created_at' => now()->toDateTimeString(),
-                    ];
-                    ReleaseOrder::create($reoData);
+                        UserInfo::where('uid', $user->pid)->increment('buy_total', $pidReward);
 
+                        // 释放订单表增加
+                        $reoData = [
+                            'uid' => $user->pid,
+                            'total_num' => $pidReward,
+                            'today_max' => $pidReward,
+                            'release_time' => now()->subDay()->toDateTimeString(),
+                            'type' => 1,
+                            'created_at' => now()->toDateTimeString(),
+                        ];
+                        ReleaseOrder::create($reoData);
 
-                    // 上级奖励日志
-                    UserWalletLog::addLog($user->pid, 'shop_order', $so->id, '推荐奖励', '+', $pidReward, 2, 1);
+                        // 上级奖励日志
+                        UserWalletLog::addLog($user->pid, 'shop_order', $so->id, '推荐奖励', '+', $pidReward, 2, 1);
+
+                    }
 
                 }
 
                 if($pidUserLevel->level == 1){
 
                     // 上级推荐奖励
-                    $pidReward = 200;
-                    UserInfo::where('uid', $user->pid)->increment('buy_total', $pidReward);
+                    $pidReward = bcmul(config('shop.pid_reward'), $good->ore_pool, 2);
+                    $pidReward = $pidReward > 200 ? 200 : $pidReward;
 
-                    // 释放订单表增加
-                    $reoData = [
-                        'uid' => $user->pid,
-                        'total_num' => $pidReward,
-                        'today_max' => $pidReward,
-                        'release_time' => now()->subDay()->toDateTimeString(),
-                        'type' => 1,
-                        'created_at' => now()->toDateTimeString(),
-                    ];
-                    ReleaseOrder::create($reoData);
+                    if($pidReward > 0){
 
-                    // 上级奖励日志
-                    UserWalletLog::addLog($user->pid, 'shop_order', $so->id, '推荐奖励', '+', $pidReward, 2, 1);
+                        UserInfo::where('uid', $user->pid)->increment('buy_total', $pidReward);
+
+                        // 释放订单表增加
+                        $reoData = [
+                            'uid' => $user->pid,
+                            'total_num' => $pidReward,
+                            'today_max' => $pidReward,
+                            'release_time' => now()->subDay()->toDateTimeString(),
+                            'type' => 1,
+                            'created_at' => now()->toDateTimeString(),
+                        ];
+                        ReleaseOrder::create($reoData);
+
+                        // 上级奖励日志
+                        UserWalletLog::addLog($user->pid, 'shop_order', $so->id, '推荐奖励', '+', $pidReward, 2, 1);
+
+                    }
 
 
                 }
@@ -209,7 +218,7 @@ class ShopController extends Controller
 
 
         // 队列递归更新用户管理权限
-        dispatch(new UpdateAdminBonus($user->id));
+        dispatch(new UpdateAdminBonus($user->id, $good->goods_price));
 
         $this->responseSuccess('操作成功');
 

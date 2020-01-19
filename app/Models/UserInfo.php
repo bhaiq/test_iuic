@@ -62,5 +62,17 @@ class UserInfo extends Model
 
     }
 
+    // 验证用户是否报过单
+    public static function checkUserValid($uid)
+    {
+
+        if(User::where('uid', $uid)->whereIn('level', [1, 2])->exists()){
+            return 1;
+        }
+
+        return 0;
+
+    }
+
 
 }
