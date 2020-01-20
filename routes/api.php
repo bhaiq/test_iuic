@@ -270,6 +270,8 @@ Route::group(['middleware' => ['auth.api']], function () {
         Route::get('log', 'PledgeController@log'); // 质押日志
     });
 
+    Route::post('senior_admin/submit', 'SeniorAdminController@submit'); // 申请高级管理奖提交
+
 });
 
 Route::group(['prefix' => 'common'], function () {
