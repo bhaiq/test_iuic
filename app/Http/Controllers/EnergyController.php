@@ -17,7 +17,9 @@ use App\Models\EnergyGood;
 use App\Models\EnergyLog;
 use App\Models\EnergyOrder;
 use App\Models\MallAddress;
+use App\Models\UserInfo;
 use App\Models\UserWallet;
+use App\Models\UserWalletLog;
 use App\Services\Service;
 use Illuminate\Http\Request;
 
@@ -227,28 +229,40 @@ class EnergyController extends Controller
             $this->responseError('用户余额不足');
         }
 
-        // 获取币种兑换人民币的价格
-        $cny = Account::getCoinCnyPrice($coin->id);
-
-        // 获取能量兑换人民币的价格
-        $energyCny = UserWallet::getCnyEnergy();
-
-        // 计算本次兑换得到的数量
-        $oneNum = bcdiv(bcmul($request->get('num'), $energyCny, 8), $cny, 8);
+        $totalNum = $request->get('num');
 
         // 判断有木有手续费
         if(!empty(config('shop.energy_exchange_tip', 0))){
 
             $tip = config('shop.energy_exchange_tip', 0);
-            $oneNum = bcmul($oneNum, bcsub(1, $tip, 8), 8);
+            $totalNum = bcmul($request->get('num'), bcsub(1, $tip, 8), 8);
 
         }
+
+        // 获取能量兑换人民币的价格
+        $energyCny = UserWallet::getCnyEnergy();
+
+        // 获取币种兑换人民币的价格
+        $cny = Account::getCoinCnyPrice($coin->id);
+
+        // 获取IUIC兑换人民币的价格
+        $iuicCny = Account::getCoinCnyPrice(2);
+
+        // 计算转矿的数量
+        $zkBl = config('energy.energy_zk_bl', 0.5);
+        $zkNum = bcdiv(bcmul(bcmul($totalNum, $zkBl, 8), $energyCny, 8), $iuicCny,8);
+
+        // 计算本次兑换得到的数量
+        $gainBl = bcsub(1, $zkBl, 4);
+        $oneNum = bcdiv(bcmul(bcmul($totalNum, $gainBl, 8), $energyCny, 8), $cny, 8);
 
         $eeData = [
             'uid' => Service::auth()->getUser()->id,
             'coin_id' => $coin->id,
             'num' => $request->get('num'),
             'gain_num' => $oneNum,
+            'zk_bl' => $zkBl,
+            'zk_num' => $zkNum,
             'created_at' => now()->toDateTimeString()
         ];
 
@@ -270,6 +284,12 @@ class EnergyController extends Controller
             // 用户余额资产增加
             AccountLog::addLog(Service::auth()->getUser()->id, $coin->id, $oneNum, 22, 1, Account::TYPE_LC, '能量兑换');
 
+            // 用户矿池增加
+            UserInfo::addBuyTotal(Service::auth()->getUser()->id, $zkNum);
+
+            // 用户框处余额日志增加
+            UserWalletLog::addLog(Service::auth()->getUser()->id, 'energy_exchange', $ee->id, '能量兑换', '+', $zkNum, 2, 1);
+
             \DB::commit();
 
         } catch (\Exception $exception) {
@@ -283,6 +303,27 @@ class EnergyController extends Controller
         }
 
         $this->responseSuccess('操作成功');
+
+    }
+
+    // 兑换页面数据获取
+    public function exchangeStart()
+    {
+
+        Service::auth()->isLoginOrFail();
+
+        $num = 0;
+        $ui = UserWallet::where('uid', Service::auth()->getUser()->id)->first();
+        if($ui){
+            $num = $ui->energy_num;
+        }
+
+        $result = [
+            'num' => $num,
+            'zk_bl' => config('energy.energy_zk_bl', 0.5)
+        ];
+
+        return $this->response($result);
 
     }
 

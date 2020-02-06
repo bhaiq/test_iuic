@@ -6,6 +6,7 @@ use App\Models\Account;
 use App\Models\AccountLog;
 use App\Models\Coin;
 use App\Models\ExtraBonus;
+use App\Models\SeniorAdmin;
 use App\Models\User;
 use App\Models\UserBonus;
 use App\Models\UserInfo;
@@ -26,6 +27,10 @@ class UpdateAdminBonus implements ShouldQueue
     private $xxUid = [
         1, 34, 125, 126, 105
     ];
+    private $extraRewardUsers;
+    private $extraRewardBl;
+
+    private $seniorAdminUsers;
 
     /**
      * Create a new job instance.
@@ -36,6 +41,9 @@ class UpdateAdminBonus implements ShouldQueue
     {
         $this->uid = $uid;
         $this->num = $num;
+        $this->extraRewardUsers = [];
+        $this->extraRewardBl = 0;
+        $this->seniorAdminUsers = [];
     }
 
     /**
@@ -70,11 +78,27 @@ class UpdateAdminBonus implements ShouldQueue
 
         \Log::info('===== 直推合伙人奖励 =====');
 
+        // 先获取额外奖励的人员
+        $eb = ExtraBonus::find(1);
+        if($eb){
+            $this->extraRewardUsers = $eb->users;
+            $this->extraRewardBl = $eb->recommend_bl;
+        }
+
         \Log::info('===== 直推额外奖励 =====');
 
-        $this->toExtraReward($this->num);
+        $this->toExtraReward($this->uid, $this->num);
 
         \Log::info('===== 直推额外奖励 =====');
+
+        // 先获取高级管理员的用户
+        $this->seniorAdminUsers= SeniorAdmin::where('status', 1)->pluck('uid')->toArray();
+
+        \Log::info('===== 直推高级管理奖 =====');
+
+        $this->toSeniorAdmin($this->uid, $this->num);
+
+        \Log::info('===== 直推高级管理奖 =====');
 
     }
 
@@ -338,59 +362,99 @@ class UpdateAdminBonus implements ShouldQueue
     }
 
     // 额外的奖励
-    public function toExtraReward($num)
+    public function toExtraReward($uid, $num)
     {
 
-        \Log::info('进来直推额外的奖励的数据', ['num' => $num]);
+        \Log::info('进来直推额外的奖励的数据', ['uid' => $uid, 'num' => $num]);
 
-        // 判断有没有需要额外释放的奖励
-        $eb = ExtraBonus::get();
-        if ($eb->isEmpty()) {
-            \Log::info('没有额外的奖励');
+        // 判断有没有团队信息
+        if(empty($this->extraRewardUsers) || empty($this->extraRewardBl)){
+            \Log::info('没有团队奖奖励信息', ['users' => $this->extraRewardUsers, 'bl' => $this->extraRewardBl]);
             return false;
         }
 
-        foreach ($eb->toArray() as $v) {
-
-            // 判断数据是否齐全
-            if (empty($v['name'] || empty($v['recommend_bl']) || empty($v['users']))) {
-                \Log::info('本次数据不齐全', [$v]);
-                continue;
-            }
-
-            // 判断用户信息是否是一个数组
-            if (!is_array($v['users'])) {
-                \Log::info('用户信息有误,不是一个数组');
-                continue;
-            }
-
-            // 获取总共能分的奖励
-            $totalNum = bcmul($num, $v['recommend_bl'], 8);
-
-            // 获取能分的用户数量
-            $userCount = count($v['users']);
-
-            // 平均每个人能分的数量
-            $oneNum = bcdiv($totalNum, $userCount, 8);
-
-            // 获取那个USDT的币种ID
-            $coin = Coin::getCoinByName('USDT');
-
-            // 给在座的每个人增加余额
-            foreach ($v['users'] as $val) {
-
-                if (!empty($val)) {
-
-                    // 用户余额表新增
-                    Account::addAmount($val, $coin->id, $oneNum, Account::TYPE_LC);
-
-                    // 用户余额日志表更新
-                    AccountLog::addLog($val, $coin->id, $oneNum, 18, 1, Account::TYPE_LC, $v['name']);
-                }
-
-            }
-
+        // 获取用户信息
+        $user = User::find($uid);
+        if (!$user) {
+            \Log::info('用户信息有误');
+            return false;
         }
+
+        // 获取用户上级信息
+        $pidUser = User::find($user->pid);
+        if (!$pidUser) {
+            \Log::info('用户上级信息有误');
+            return false;
+        }
+
+        // 判断用户上级是否有团队奖权限
+        if(!in_array($user->pid, $this->extraRewardUsers)){
+            \Log::info('用户没有团队奖权限，跳过');
+            return $this->toExtraReward($user->pid, $num);
+        }
+
+        // 计算用户得到的奖励数量
+        $oneNum = bcmul($num, $this->extraRewardBl, 8);
+        if ($oneNum < 0.00000001) {
+            \Log::info('数量太少，放弃', ['num' => $oneNum]);
+            return false;
+        }
+
+        // 用户余额表更新
+        Account::addAmount($user->pid, 1, $oneNum, Account::TYPE_LC);
+
+        // 用户余额日志表更新
+        AccountLog::addLog($user->pid, 1, $oneNum, 18, 1, Account::TYPE_LC, '直推团队奖');
+
+        return true;
+    }
+
+    // 直推高级管理奖
+    public function toSeniorAdmin($uid, $num)
+    {
+
+        \Log::info('进来直推额外的奖励的数据', ['uid' => $uid, 'num' => $num]);
+
+        // 判断有没有管理奖用户信息
+        if(empty($this->seniorAdminUsers)){
+            \Log::info('没有高级管理奖用户信息', ['users' => $this->extraRewardUsers, 'bl' => $this->extraRewardBl]);
+            return false;
+        }
+
+        // 获取用户信息
+        $user = User::find($uid);
+        if (!$user) {
+            \Log::info('用户信息有误');
+            return false;
+        }
+
+        // 获取用户上级信息
+        $pidUser = User::find($user->pid);
+        if (!$pidUser) {
+            \Log::info('用户上级信息有误');
+            return false;
+        }
+
+        // 判断用户上级是否有高级管理奖权限
+        if(!in_array($user->pid, $this->extraRewardUsers)){
+            \Log::info('用户没有高级管理奖权限，跳过');
+            return $this->toSeniorAdmin($user->pid, $num);
+        }
+
+        // 计算用户得到的奖励数量
+        $oneNum = bcmul($num, 0.01, 8);
+        if ($oneNum < 0.00000001) {
+            \Log::info('数量太少，放弃', ['num' => $oneNum]);
+            return false;
+        }
+
+        // 用户余额表更新
+        Account::addAmount($user->pid, 1, $oneNum, Account::TYPE_LC);
+
+        // 用户余额日志表更新
+        AccountLog::addLog($user->pid, 1, $oneNum, 18, 1, Account::TYPE_LC, '直推高级管理奖');
+
+        return true;
 
     }
 
