@@ -417,7 +417,7 @@ class UpdateAdminBonus implements ShouldQueue
 
         // 判断有没有管理奖用户信息
         if(empty($this->seniorAdminUsers)){
-            \Log::info('没有高级管理奖用户信息', ['users' => $this->extraRewardUsers, 'bl' => $this->extraRewardBl]);
+            \Log::info('没有高级管理奖用户信息', ['users' => $this->seniorAdminUsers, 'bl' => $this->extraRewardBl]);
             return false;
         }
 
@@ -436,7 +436,7 @@ class UpdateAdminBonus implements ShouldQueue
         }
 
         // 判断用户上级是否有高级管理奖权限
-        if(!in_array($user->pid, $this->extraRewardUsers)){
+        if(!in_array($user->pid, $this->seniorAdminUsers)){
             \Log::info('用户没有高级管理奖权限，跳过');
             return $this->toSeniorAdmin($user->pid, $num);
         }
