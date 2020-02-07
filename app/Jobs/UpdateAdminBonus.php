@@ -441,8 +441,10 @@ class UpdateAdminBonus implements ShouldQueue
             return $this->toSeniorAdmin($user->pid, $num);
         }
 
+        $rewardBl = config('senior_admin.senior_admin_reward_bl', 0.15);
+
         // 计算用户得到的奖励数量
-        $oneNum = bcmul($num, 0.01, 8);
+        $oneNum = bcmul($num, $rewardBl, 8);
         if ($oneNum < 0.00000001) {
             \Log::info('数量太少，放弃', ['num' => $oneNum]);
             return false;
