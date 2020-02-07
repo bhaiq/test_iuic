@@ -19,6 +19,33 @@ use Illuminate\Http\Request;
 class SeniorAdminController extends Controller
 {
 
+    // 高级管理奖页面
+    public function start(Request $request)
+    {
+
+        Service::auth()->isLoginOrFail();
+
+        $result = [
+            'tj_iuic_num' => config('senior_admin.senior_admin_num'),
+            'tj_senior_num' => config('senior_admin.senior_admin_lower_user_count'),
+            'cur_level' => UserInfo::LEVEL[0],
+        ];
+
+        // 获取用户信息
+        $ui = UserInfo::where('uid', Service::auth()->getUser()->id)->first();
+        if($ui){
+            $result['cur_level'] = UserInfo::LEVEL[$ui->level];
+        }
+
+        // 获取用户直推的用户ID
+        $lowUsers = User::where('pid', Service::auth()->getUser()->id)->pluck('id')->toArray();
+
+        // 获取用户直推高级用户的数量
+        $result['cur_senior_num'] = UserInfo::whereIn('uid', $lowUsers)->where('level', 2)->count();
+
+        return $this->response($result);
+    }
+
     // 申请高级管理奖
     public function submit(Request $request)
     {

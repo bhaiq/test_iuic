@@ -271,7 +271,11 @@ Route::group(['middleware' => ['auth.api']], function () {
         Route::get('log', 'PledgeController@log'); // 质押日志
     });
 
-    Route::post('senior_admin/submit', 'SeniorAdminController@submit'); // 申请高级管理奖提交
+    // 高级管理奖
+    Route::group(['prefix' => 'senior_admin'], function () {
+        Route::get('start', 'SeniorAdminController@start'); // 获取管理奖页面信息
+        Route::post('submit', 'SeniorAdminController@submit'); // 质押申请高级管理奖提交信息页面
+    });
 
 });
 
