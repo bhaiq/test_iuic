@@ -16,6 +16,7 @@ use App\Models\EnergyExchange;
 use App\Models\EnergyGood;
 use App\Models\EnergyLog;
 use App\Models\EnergyOrder;
+use App\Models\EnergyTransfer;
 use App\Models\MallAddress;
 use App\Models\UserInfo;
 use App\Models\UserWallet;
@@ -205,7 +206,7 @@ class EnergyController extends Controller
 
         $this->validate($request->all(), [
             'coin_id'     => 'required',
-            'num' => 'required|integer|min:1',
+            'num' => 'required|integer|min:0',
             'paypass' => 'required',
         ], [
             'coin_id.required' => '币种信息不能为空',
@@ -324,6 +325,139 @@ class EnergyController extends Controller
         ];
 
         return $this->response($result);
+
+    }
+
+    // 划转页面数据获取
+    public function transferStart()
+    {
+
+        Service::auth()->isLoginOrFail();
+
+        $num = 0;
+
+        // 获取用户能量资产信息
+        $uw = UserWallet::where('uid', Service::auth()->getUser()->id)->first();
+        if($uw){
+            $num = bcmul($uw->energy_frozen_num, 1, 4);
+        }
+
+        $result = [
+            'num' => $num,
+            'bl' => 1,
+        ];
+
+        return $this->response($result);
+
+    }
+
+    // 能量划转提交
+    public function transfer(Request $request)
+    {
+
+        Service::auth()->isLoginOrFail();
+
+        $this->validate($request->all(), [
+            'num' => 'required|integer|min:0',
+            'paypass' => 'required',
+        ], [
+            'num.required' => '数量不能为空',
+            'num.integer' => '数量必须是整数',
+            'num.min' => '数量不能小于1',
+            'paypass.required' => '交易密码不能为空',
+        ]);
+
+        // 验证二级密码
+        Service::auth()->isTransactionPasswordYesOrFail($request->get('paypass'));
+
+        // 获取用户能量资产信息
+        $uw = UserWallet::where('uid', Service::auth()->getUser()->id)->first();
+        if(!$uw || $uw->energy_frozen_num < $request->get('num')){
+            $this->responseError('余额不足');
+        }
+
+        $data = [
+            'uid' => Service::auth()->getUser()->id,
+            'num' => $request->get('num'),
+            'created_at' => now()->toDateTimeString()
+        ];
+
+        \DB::beginTransaction();
+        try {
+
+            // 冻结能量资产划转表新增
+            $et = EnergyTransfer::create($data);
+
+            // 冻结能量减少
+            UserWallet::reduceEnergyFrozenNum(Service::auth()->getUser()->id, $request->get('num'));
+
+            // 用户IUIC矿池增加
+            UserInfo::addBuyTotal(Service::auth()->getUser()->id, $request->get('num'));
+
+            $totalNum = $request->get('num');
+
+            // 先获取用户的能量订单信息
+            $orders = EnergyOrder::where(['uid' => Service::auth()->getUser()->id, 'status' => 0])->get();
+            foreach ($orders as $v){
+
+                // 先判断该订单的未释放量
+                $noReleaseNum = bcsub($v->add_num, $v->release_num, 8);
+
+                // 判断可释放数和划转数的大小
+                if($totalNum > $noReleaseNum){
+
+                    // 订单状态改变
+                    $updData = [
+                        'status' => 1,
+                        'release_num' => $v->add_num,
+                    ];
+
+                    EnergyOrder::where('id', $v->id)->update($updData);
+
+                    $totalNum = bcsub($totalNum, $noReleaseNum, 8);
+
+                }else if($totalNum == $noReleaseNum){
+
+                    // 订单状态改变
+                    $updData = [
+                        'status' => 1,
+                        'release_num' => $v->add_num,
+                    ];
+
+                    EnergyOrder::where('id', $v->id)->update($updData);
+
+                    $totalNum = 0;
+
+                    break;
+
+                }else{
+
+                    // 释放量增加
+                    EnergyOrder::where('id', $v->id)->increment('release_num', $totalNum);
+
+                    $totalNum = 0;
+
+                }
+
+            }
+
+            if($totalNum > 0){
+                new \Exception('数据异常');
+            }
+
+            \DB::commit();
+
+        } catch (\Exception $exception) {
+
+            \DB::rollBack();
+
+            \Log::info('能量资产划转异常');
+
+            $this->responseError('操作异常');
+
+        }
+
+        $this->responseSuccess('操作成功');
 
     }
 

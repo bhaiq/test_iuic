@@ -51,7 +51,7 @@ class KuangjiRelease extends Command
 
         \Log::info('=====  开始矿机定时释放  =====');
 
-        $this->toRelease();
+//        $this->toRelease();
 
         \Log::info('=====  矿机定时释放结束  =====');
 
