@@ -461,4 +461,63 @@ class EnergyController extends Controller
 
     }
 
+    // 能量兑换页面计算
+    public function exchangeCompute(Request $request)
+    {
+
+        $this->validate($request->all(), [
+            'num' => 'required|integer|min:0',
+            'coin_id' => 'required',
+        ], [
+            'num.required' => '数量不能为空',
+            'num.integer' => '数量必须是整数',
+            'num.min' => '数量不能小于0',
+            'coin_id.required' => '币种信息不能为空',
+        ]);
+
+        // 获取币种信息
+        $coin = Coin::find($request->get('coin_id'));
+        if(!$coin){
+            $this->responseError('币种信息有误');
+        }
+
+        $totalNum = $request->get('num');
+        $tipNum = 0;
+
+        // 判断有木有手续费
+        if(!empty(config('shop.energy_exchange_tip', 0))){
+
+            $tip = config('shop.energy_exchange_tip', 0);
+            $tipNum = bcmul($tip, $request->get('num'), 8);
+            $totalNum = bcsub($request->get('num'), $tipNum, 8);
+
+        }
+
+        // 获取能量兑换人民币的价格
+        $energyCny = UserWallet::getCnyEnergy();
+
+        // 获取币种兑换人民币的价格
+        $cny = Account::getCoinCnyPrice($coin->id);
+
+        // 获取IUIC兑换人民币的价格
+        $iuicCny = Account::getCoinCnyPrice(2);
+
+        // 计算转矿的数量
+        $zkBl = config('energy.energy_zk_bl', 0.5);
+        $zkNum = bcdiv(bcmul(bcmul($totalNum, $zkBl, 8), $energyCny, 8), $iuicCny,8);
+
+        // 计算本次兑换得到的数量
+        $gainBl = bcsub(1, $zkBl, 4);
+        $oneNum = bcdiv(bcmul(bcmul($totalNum, $gainBl, 8), $energyCny, 8), $cny, 8);
+
+        $result = [
+            'num' => $oneNum,
+            'zk_num' => $zkNum,
+            //            'tip_num' => $tipNum,
+        ];
+
+        return $this->response($result);
+
+    }
+
 }
