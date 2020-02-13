@@ -34,8 +34,8 @@ class LotteryController extends Controller
 
         // 获取用户今日抽奖次数
         $data['lottery_count'] = LotteryLog::where('uid', $access_token->uid)
-                            ->where('created_at', '>', now()->toDateString() . ' 00:00:00')
-                            ->count();
+            ->where('created_at', '>', now()->toDateString() . ' 00:00:00')
+            ->count();
 
         // 获取抽奖商品信息
         $data['goods'] = LotteryGoods::get()->toArray();
@@ -59,11 +59,11 @@ class LotteryController extends Controller
             }
         }
         $data['logs'] = LotteryLog::with(['user', 'goods'])
-                        ->whereIn('goods_id', $xcArr)
-                        ->latest('id')
-                        ->limit(10)
-                        ->get()
-                        ->toArray();
+            ->whereIn('goods_id', $xcArr)
+            ->latest('id')
+            ->limit(10)
+            ->get()
+            ->toArray();
 
         $data['x_token'] = $access_token->token;
 
@@ -208,6 +208,17 @@ class LotteryController extends Controller
 
         }
 
+        if(empty($result)){
+
+            $result[] = [
+                'goods_id' => 0,
+                'goods_name' => '未中奖',
+                'goods_img' => '/script/lottery/img/xxcy_120px.png',
+                'ds' => 360,
+            ];
+
+        }
+
         // 记录到日志里
         LotteryLog::insert($llData);
 
@@ -218,21 +229,22 @@ class LotteryController extends Controller
     // 获取调整的度数
     private function getDushu($id)
     {
+
         switch ($id){
 
             case 1:
                 $result = 0;
                 break;
 
-            case 2:
+            case 8:
                 $result = 45;
                 break;
 
-            case 3:
+            case 7:
                 $result = 90;
                 break;
 
-            case 4:
+            case 6:
                 $result = 135;
                 break;
 
@@ -240,15 +252,15 @@ class LotteryController extends Controller
                 $result = 180;
                 break;
 
-            case 6:
+            case 4:
                 $result = 225;
                 break;
 
-            case 7:
+            case 3:
                 $result = 270;
                 break;
 
-            case 8:
+            case 2:
                 $result = 315;
                 break;
 

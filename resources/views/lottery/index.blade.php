@@ -32,7 +32,9 @@
             <div class="swiper-container">
                 <div class="swiper-wrapper">
                     @foreach($logs as $v)
-                        <p>恭喜{{ $v['user']['nickname'] }}抽中{{ $v['goods']['name'] }}</p>
+                        <div class="swiper-slide">
+                            <p>恭喜{{ $v['user']['nickname'] }}抽中{{ $v['goods']['name'] }}</p>
+                        </div>
                     @endforeach
                 </div>
                 <!-- Add Pagination -->
@@ -235,6 +237,7 @@
                 'paypass': $('input[name=paypass]').val(),
             },
             function (d) {
+                // console.log(d.data);
                 if(d.code == 1){
 
                     // 成功的情况下用户抽奖次数增加，余额减少
@@ -310,18 +313,25 @@
         var num=Math.floor(Math.floor(Math.random()*(m-n+1)+n))
         return num;
     }
+
     function rotateFn(angles,txt, img){  //控制轮盘在angle度停下
         bRotate=!bRotate;
+
         $('.lun1').stopRotate();
         $(".lun1").rotate({
             angle:0,                //旋转的角度
-            animateTo:angles+1800,  //从当前角度旋转多少度
+            animateTo: angles+1800,  //从当前角度旋转多少度
             duration:3000,          //持续时间
             callback:function(){    //回调函数
 
-                $(".meng1").css("display","block")
-                $("#zhong").text(txt)
-                $("#one_return_img").prop('src', img);
+                if(angles == 360){
+                    kfClick();
+                    error_tx(txt);
+                }else{
+                    $(".meng1").css("display","block")
+                    $("#zhong").text(txt)
+                    $("#one_return_img").prop('src', img);
+                }
 
                 toggleBody(1)  //在跳出弹窗的时候
                 bRotate=!bRotate;
@@ -345,7 +355,17 @@
                 // alert(txt);
                 // tt +="   "+txt
                 // console.log()
-                $(".meng2").css("display","block");
+
+                if(angles == 360){
+
+                    kfClick();
+                    error_tx(txt);
+
+                }else{
+
+                    $(".meng2").css("display","block");
+
+                }
 
                 toggleBody(1)  //在跳出弹窗的时候
                 bRotate=!bRotate;
