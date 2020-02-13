@@ -12,6 +12,8 @@ class BannerController extends Controller
     public function _list(Request $request)
     {
 
+        Service::auth()->isLoginOrFail();
+
         $result = Banner::oldest('top')->get()->toArray();
 
         foreach ($result as $k => $v){
