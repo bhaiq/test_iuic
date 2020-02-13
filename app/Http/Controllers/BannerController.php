@@ -14,8 +14,8 @@ class BannerController extends Controller
 
         $result = Banner::oldest('top')->get()->toArray();
 
-        foreach ($result as $v){
-            $result['jump_url'] = $v['jump_url'] . '?x-token=' . $request->header(HeaderConstant::AUTH_TOKEN);
+        foreach ($result as $k => $v){
+            $result[$k]['jump_url'] = $v['jump_url'] . '?x-token=' . $request->header(HeaderConstant::AUTH_TOKEN);
         }
 
         return $this->response($result);
