@@ -66,7 +66,7 @@ class LotteryController extends Controller
         $data['logs'] = LotteryLog::with(['user', 'goods'])
             ->whereIn('goods_id', $xcArr)
             ->latest('id')
-            ->limit(10)
+            ->limit(30)
             ->get()
             ->toArray();
 
@@ -361,7 +361,7 @@ class LotteryController extends Controller
     // 判断是否是移动端
     public function isMobile()
     {
-
+        return TRUE;
         // 如果有HTTP_X_WAP_PROFILE则一定是移动设备
 
         if (isset ($_SERVER['HTTP_X_WAP_PROFILE'])) {
