@@ -13,14 +13,14 @@
     <script src="/script/lottery/js/fontsize.js"></script>
 </head>
 <body>
-<div class="head">
+{{--<div class="head">
     <p>规则</p>
     <div class="box cl">
         <div class="fl" style="padding:0;margin:0;width:0.25rem;" tapmode="light" >
             <a href="/lottery/index?x-token={{ $x_token }}"><img src="/script/lottery/img/fh_an.png" alt="" class="img_f fl" ></a>
         </div>
     </div>
-</div>
+</div>--}}
 
 <div class="tet_box">
     <p class="title">幸运大转盘游戏规则</p>

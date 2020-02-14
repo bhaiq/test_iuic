@@ -14,14 +14,14 @@
     <script src="/script/lottery/js/fontsize.js"></script>
 </head>
 <body>
-<div class="head">
+{{--<div class="head">
     <p>幸运大转盘</p>
     <div class="box cl">
         <div class="fl" style="padding:0;margin:0;width:0.25rem;" tapmode="light" >
             <img src="/script/lottery/img/fh_an.png" alt="" class="img_f fl" >
         </div>
     </div>
-</div>
+</div>--}}
 <div class="lp_box">
     <div class="tit">
         <img src="/script/lottery/img/zp_dbt.png" class="ti_img">
