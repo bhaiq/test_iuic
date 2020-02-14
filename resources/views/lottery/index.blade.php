@@ -6,6 +6,7 @@
     <meta content="telephone=no" name="format-detection">
     <meta content="telephone=no" name="format-detection">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" name="viewport" />
     <title>幸运大转盘</title>
     <link rel="stylesheet" href="/script/lottery/css/style.css">
     <link rel="stylesheet" href="/script/lottery/css/swiper.min.css">
@@ -237,7 +238,7 @@
                 'paypass': $('input[name=paypass]').val(),
             },
             function (d) {
-                // console.log(d.data);
+                console.log(d.data);
                 if(d.code == 1){
 
                     // 成功的情况下用户抽奖次数增加，余额减少
