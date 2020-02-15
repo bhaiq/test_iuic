@@ -53,7 +53,7 @@ class ReleaseEnergy extends Command
     {
 
         // 获取能量报单信息
-        $eo = EnergyOrder::where('status', 0)->where('created_at', '<', now()->toDateString() . ' 00:00:00')->get();
+        $eo = EnergyOrder::where(['status' => 0, 'type' => 1])->where('created_at', '<', now()->toDateString() . ' 00:00:00')->get();
         if($eo->isEmpty()){
             \Log::info('没有合适的能量报单信息，放弃报单');
             return false;
