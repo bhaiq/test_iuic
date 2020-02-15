@@ -302,6 +302,25 @@ class TradeRelease
             }
         }
 
+        // 获取本次释放的有效数量
+        $newNum = $num * config('release.trade_bl');
+        \Log::info('本次释放的数量' . $newNum);
+
+        if(bcadd($userInfo->release_total, $newNum, 8) > $userInfo->buy_total){
+            $newNum = bcsub($userInfo->buy_total, $userInfo->release_total, 8);
+        }
+
+        // 获取一天最多释放数量
+        $todayReleaseNum = config('release.today_release_num', 10000);
+        if(bcadd($userInfo->today_release, $newNum, 8) > $todayReleaseNum){
+            $newNum = bcsub($todayReleaseNum, $userInfo->today_release, 8);
+        }
+
+        if ($newNum <= 0) {
+            \Log::info('可释放数量小于或等于0，放弃本次释放');
+            return false;
+        }
+
         // 先增加释放时间和次数
         $uiNewData = [];
         if(now()->toDateString() == substr($userInfo->release_time, 0, 10)){
@@ -311,19 +330,6 @@ class TradeRelease
         }
         $uiNewData['release_time'] = now()->toDateTimeString();
         UserInfo::where('uid', $uid)->update($uiNewData);
-
-        // 获取本次释放的有效数量
-        $newNum = $num * config('release.trade_bl');
-        \Log::info('本次释放的数量' . $newNum);
-
-        if(bcadd($userInfo->release_total, $newNum, 8) > $userInfo->buy_total){
-            $newNum = bcsub($userInfo->buy_total, $userInfo->release_total, 8);
-        }
-
-        if ($newNum <= 0) {
-            \Log::info('可释放数量小于或等于0，放弃本次释放');
-            return false;
-        }
 
         // 获取那个IUIC的币种ID
         $coin = Coin::getCoinByName('IUIC');
@@ -335,6 +341,8 @@ class TradeRelease
         Service::account()->createLog($uid, $coin->id, $newNum, AccountLog::SCENE_Trade_RELEASE);
 
         UserInfo::where('uid', $uid)->increment('release_total', $newNum);
+
+        UserInfo::where('uid', $uid)->increment('today_release', $newNum);
 
         \Log::info('=====   交易释放完成   =====');
 
