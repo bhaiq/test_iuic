@@ -304,7 +304,6 @@ class TradeRelease
 
         // 获取本次释放的有效数量
         $newNum = $num * config('release.trade_bl');
-        \Log::info('本次释放的数量' . $newNum);
 
         if(bcadd($userInfo->release_total, $newNum, 8) > $userInfo->buy_total){
             $newNum = bcsub($userInfo->buy_total, $userInfo->release_total, 8);
@@ -320,6 +319,8 @@ class TradeRelease
             \Log::info('可释放数量小于或等于0，放弃本次释放');
             return false;
         }
+
+        \Log::info('本次释放的数量' . $newNum);
 
         // 先增加释放时间和次数
         $uiNewData = [];
