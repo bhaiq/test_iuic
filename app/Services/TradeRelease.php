@@ -288,8 +288,14 @@ class TradeRelease
             return false;
         }
 
+        // 先判断当日可释放多少次
+        $rCount = config('release.today_release_count', 0);
+        if($rCount <= 0){
+            \Log::info('当日设置不能释放', ['uid' => $uid, 'r_count' => $rCount]);
+            return false;
+        }
+
         if(now()->toDateString() == substr($userInfo->release_time, 0, 10)){
-            $rCount = config('release.today_release_count', 0);
             if($rCount <= $userInfo->today_count){
                 \Log::info('今天释放次数超限，不进行是释放', ['uid' => $uid, 'r_count' => $rCount]);
                 return false;
