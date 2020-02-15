@@ -23,7 +23,7 @@ class TradeRelease
     private $r_bool = true;
 
     // 释放
-    public function release($uid, $num)
+    /*public function release($uid, $num)
     {
 
         // 判断当日释放次数是否超限
@@ -265,6 +265,72 @@ class TradeRelease
             'status' => false,
             'today' => false,
         ];
+
+    }
+
+    */
+
+    // 新的释放方式
+    public function release($uid, $num)
+    {
+
+        \Log::info('=====   开始交易释放   =====');
+
+        // 判断当日释放次数是否超限
+        $userInfo = UserInfo::where('uid', $uid)->first();
+        if(!$userInfo){
+            \Log::info('用户数据有误，不进行是释放', ['uid' => $uid]);
+            return false;
+        }
+
+        if(!config('kuangji.trade_release_status', 0)){
+            \Log::info('交易释放总开关关闭，不进行释放', ['uid' => $uid]);
+            return false;
+        }
+
+        if(now()->toDateString() == substr($userInfo->release_time, 0, 10)){
+            $rCount = config('release.today_release_count', 0);
+            if($rCount <= $userInfo->today_count){
+                \Log::info('今天释放次数超限，不进行是释放', ['uid' => $uid, 'r_count' => $rCount]);
+                return false;
+            }
+        }
+
+        // 先增加释放时间和次数
+        $uiNewData = [];
+        if(now()->toDateString() == substr($userInfo->release_time, 0, 10)){
+            $uiNewData['today_count'] = $userInfo->today_count + 1;
+        }else{
+            $uiNewData['today_count'] = 1;
+        }
+        $uiNewData['release_time'] = now()->toDateTimeString();
+        UserInfo::where('uid', $uid)->update($uiNewData);
+
+        // 获取本次释放的有效数量
+        $newNum = $num * config('release.trade_bl');
+        \Log::info('本次释放的数量' . $newNum);
+
+        if(bcadd($userInfo->release_total, $newNum, 8) > $userInfo->buy_total){
+            $newNum = bcsub($userInfo->buy_total, $userInfo->release_total, 8);
+        }
+
+        if ($newNum <= 0) {
+            \Log::info('可释放数量小于或等于0，放弃本次释放');
+            return false;
+        }
+
+        // 获取那个IUIC的币种ID
+        $coin = Coin::getCoinByName('IUIC');
+
+        // 用户余额表更新
+        Account::addAmount($uid, $coin->id, $newNum, Account::TYPE_LC);
+
+        // 用户余额日志表更新
+        Service::account()->createLog($uid, $coin->id, $newNum, AccountLog::SCENE_Trade_RELEASE);
+
+        UserInfo::where('uid', $uid)->increment('release_total', $newNum);
+
+        \Log::info('=====   交易释放完成   =====');
 
     }
 
