@@ -13,6 +13,7 @@ use App\Models\AccountLog;
 use App\Models\Coin;
 use App\Models\Kuangji;
 use App\Models\KuangjiLinghuo;
+use App\Models\KuangjiLinghuoLog;
 use App\Models\KuangjiOrder;
 use App\Models\KuangjiPosition;
 use App\Models\KuangjiUserPosition;
@@ -689,6 +690,14 @@ class KuangJiController extends Controller
             // 用户日志新增
             AccountLog::addLog(Service::auth()->getUser()->id, $coin->id, $request->get('num'), 20, 0, Account::TYPE_LC, '购买灵活矿机');
 
+            // 矿机赎回记录增加
+            $kllData = [
+                'uid' => Service::auth()->getUser()->id,
+                'num' => $request->get('num'),
+                'type' => 1,
+            ];
+            KuangjiLinghuoLog::create($kllData);
+
             \DB::commit();
 
         } catch (\Exception $exception) {
@@ -765,6 +774,14 @@ class KuangJiController extends Controller
             // 质押表数据减少
             KuangjiLinghuo::where('uid', Service::auth()->getUser()->id)->decrement('num', $request->get('num'));
 
+            // 矿机赎回记录增加
+            $kllData = [
+                'uid' => Service::auth()->getUser()->id,
+                'num' => $request->get('num'),
+                'type' => 2,
+            ];
+            KuangjiLinghuoLog::create($kllData);
+
             // 用户余额增加
             Account::addAmount(Service::auth()->getUser()->id, 2, $request->get('num'));
 
@@ -784,6 +801,29 @@ class KuangJiController extends Controller
         }
 
         $this->responseSuccess('操作成功');
+
+    }
+
+    // 灵活矿机记录
+    public function linghuoLog(Request $request)
+    {
+
+        Service::auth()->isLoginOrFail();
+
+        $res = KuangjiLinghuoLog::from('kuangji_linghuo_log as kll')
+            ->latest('kll.id')
+            ->paginate($request->get('per_page', 10));
+
+        $result = $res->toArray();
+
+        foreach ($result['data'] as $k => $v) {
+
+            $result['data'][$k]['exp'] = $v['type'] == 1 ? '质押' : '赎回';
+            $result['data'][$k]['sign'] = $v['type'] == 1 ? '+' : '-';
+
+        }
+
+        return $this->response($result);
 
     }
 
