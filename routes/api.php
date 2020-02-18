@@ -248,6 +248,7 @@ Route::group(['middleware' => ['auth.api']], function () {
         Route::post('flexible/submit', 'KuangJiController@submitFlexible'); //购买灵活矿位
         Route::post('flexible/buy', 'KuangJiController@buyFlexible'); //购买灵活矿机
         Route::get('redeem/info', 'KuangJiController@redeemInfo'); //赎回矿机说明
+        Route::post('redeem/linghuo', 'KuangJiController@redeemLinghuo'); //赎回灵活矿机
     });
 
     // 能量商城

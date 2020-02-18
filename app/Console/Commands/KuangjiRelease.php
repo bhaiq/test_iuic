@@ -145,14 +145,32 @@ class KuangjiRelease extends Command
 
         foreach ($kjl as $v) {
 
-            $start = strtotime(substr($v->start_time, 0, 10) . ' 00:00:00');
-            $cur = time();
+            /*$start = strtotime(substr($v->start_time, 0, 10) . ' 00:00:00');
+            $cur = time();*/
 
             \DB::beginTransaction();
             try {
 
+                // 获取算力
+                $suanli = config('kuangji.kuangji_flexible_suanli_bl', 0.02);
+
+                $maxLh = config('kuangji.kuangji_flexible_max', 200);
+
+                // 获取本次能释放的数量
+                $oldNum = ($v->num) > $maxLh ? $maxLh : $v->num;
+
+                $oneNum = bcmul($oldNum, $suanli, 4);
+                if ($oneNum <= 0) {
+                    \Log::info('灵活算力有异常', ['oneNum' => $oneNum, 'id' => $v->id]);
+                    continue;
+                }
+
+                // 订单释放
+                $this->orderRelease($v->uid, $oneNum, $v->id, 'kuangji_linghuo', '灵活矿机释放');
+
+
                 // 当矿机订单过期的时候进行处理
-                if (($start * 181 * 24 * 3600) < $cur) {
+                /*if (($start * 181 * 24 * 3600) < $cur) {
 
                     $uData = [
                         'num' => 0,
@@ -181,7 +199,7 @@ class KuangjiRelease extends Command
                     // 订单释放
                     $this->orderRelease($v->uid, $oneNum, $v->id, 'kuangji_linghuo', '灵活矿机释放');
 
-                }
+                }*/
 
                 \DB::commit();
 
@@ -252,7 +270,7 @@ class KuangjiRelease extends Command
         UserWalletLog::addLog($uid, $dyTable, $orderId, $exp, '-', $totalNum, 2, 1);
 
         // 获取用户订单表信息
-        $ro = ReleaseOrder::where(['uid' => $uid, 'status' => 0])->get();
+        /*$ro = ReleaseOrder::where(['uid' => $uid, 'status' => 0])->get();
         foreach ($ro as $v) {
 
             if (bcadd($v->release_num, $num, 8) < $v->total_num) {
@@ -278,7 +296,7 @@ class KuangjiRelease extends Command
 
             }
 
-        }
+        }*/
 
         // 释放手续费费实时释放
         (new KuangjiBonus())->handle($tipNum);

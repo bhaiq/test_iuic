@@ -581,7 +581,7 @@ class KuangJiController extends Controller
         // 验证二级密码
         Service::auth()->isTransactionPasswordYesOrFail($request->get('paypass'));
 
-        // 获取那个USDT的币种ID
+        // 获取那个IUIC的币种ID
         $coin = Coin::getCoinByName('IUIC');
         $coinAccount = Service::auth()->account($coin->id, Account::TYPE_LC);
 
@@ -683,13 +683,6 @@ class KuangJiController extends Controller
 
             KuangjiLinghuo::where('uid', Service::auth()->getUser()->id)->increment('num', $request->get('num'));
 
-            // 用户附属表释放状态改变
-            UserInfo::where('uid', Service::auth()->getUser()->id)->update(['release_status' => 1]);
-            UserInfo::where('uid', Service::auth()->getUser()->id)->increment('buy_total', $request->get('num'));
-
-            // 矿池记录新增
-            UserWalletLog::addLog(Service::auth()->getUser()->id, 'kuangji_linghuo', $kjl->id, '购买灵活矿机', '+', $request->get('num'), 2, 1);
-
             // 用户余额减少
             Account::reduceAmount(Service::auth()->getUser()->id, $coin->id, $request->get('num'), Account::TYPE_LC);
 
@@ -725,6 +718,72 @@ class KuangJiController extends Controller
         ];
 
         return $this->response($result);
+
+    }
+
+    // 灵活矿机赎回
+    public function redeemLinghuo(Request $request)
+    {
+
+        Service::auth()->isLoginOrFail();
+
+        $this->validate($request->all(), [
+            'num' => 'required|integer',
+            'paypass' => 'required',
+        ], [
+            'num.required' => '数量不能为空',
+            'num.integer' => '数量必须是整数',
+            'paypass.required' => '交易密码不能为空',
+        ]);
+
+        // 验证灵活矿机赎回开关
+        $switch = config('kuangji.kuangji_linghuo_redeem_switch', 0);
+        if(!$switch){
+            $this->responseError('暂不开放');
+        }
+
+        // 验证二级密码
+        Service::auth()->isTransactionPasswordYesOrFail($request->get('paypass'));
+
+        // 验证锁
+        KuangjiLinghuo::getLinghuoRedeemLock(Service::auth()->getUser()->id);
+
+        // 判断有木有灵活矿位信息
+        $kjl = KuangjiLinghuo::where('uid', Service::auth()->getUser()->id)->first();
+        if (!$kjl) {
+            $this->responseError('未购买矿位');
+        }
+
+        // 判断余额是否充足
+        if($kjl->num < $request->get('num')){
+            $this->responseError('质押数量不足');
+        }
+
+        \DB::beginTransaction();
+        try {
+
+            // 质押表数据减少
+            KuangjiLinghuo::where('uid', Service::auth()->getUser()->id)->decrement('num', $request->get('num'));
+
+            // 用户余额增加
+            Account::addAmount(Service::auth()->getUser()->id, 2, $request->get('num'));
+
+            // 用户余额日志增加
+            AccountLog::addLog(Service::auth()->getUser()->id, 2, $request->get('num'), 20, 1, Account::TYPE_LC, '灵活矿机质押赎回');
+
+            \DB::commit();
+
+        } catch (\Exception $exception) {
+
+            \DB::rollBack();
+
+            \Log::info('矿机赎回异常');
+
+            $this->responseError('操作异常');
+
+        }
+
+        $this->responseSuccess('操作成功');
 
     }
 
