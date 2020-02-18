@@ -61,7 +61,7 @@ class NewKuangchiRelease extends Command
             }
 
             // 获取本次释放的比例
-            $releaseBl = config('new_kuangchi.new_kuangchi_static_release_bl', 0.0001);
+            $releaseBl = config('release.kuangchi_static_release_bl', 0.0001);
 
             // 获取本次释放数量
             $oneNum = bcmul($v->buy_total, $releaseBl, 8);
