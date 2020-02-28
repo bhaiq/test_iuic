@@ -59,14 +59,14 @@ class AddIuicLsLog extends Command
             $bbFrozenNum = 0;
 
             // 获取用户法币IUIC余额信息
-            $fb = Account::where(['uid' => $v->id, 'type' => 1])->first();
+            $fb = Account::where(['uid' => $v->id, 'coin_id' => 2, 'type' => 1])->first();
             if($fb){
                 $fbNum = $fb->amount;
                 $fbFrozenNum = $fb->amount_freeze;
             }
 
             // 获取用户币币IUIC余额信息
-            $bb = Account::where(['uid' => $v->id, 'type' => 0])->first();
+            $bb = Account::where(['uid' => $v->id, 'coin_id' => 2, 'type' => 0])->first();
             if($bb){
                 $bbNum = $bb->amount;
                 $bbFrozenNum = $bb->amount_freeze;
