@@ -91,9 +91,6 @@ class UpdateAdminBonus implements ShouldQueue
 
         \Log::info('===== 直推额外奖励 =====');
 
-        // 先获取高级管理员的用户
-        $this->seniorAdminUsers= SeniorAdmin::where('status', 1)->pluck('uid')->toArray();
-
         \Log::info('===== 直推高级管理奖 =====');
 
         $this->toSeniorAdmin($this->uid, $this->num);
@@ -410,16 +407,10 @@ class UpdateAdminBonus implements ShouldQueue
     }
 
     // 直推高级管理奖
-    public function toSeniorAdmin($uid, $num)
+    public function toSeniorAdmin($uid, $num, $oldLevel = 0, $oldBl = 0)
     {
 
-        \Log::info('进来直推额外的奖励的数据', ['uid' => $uid, 'num' => $num]);
-
-        // 判断有没有管理奖用户信息
-        if(empty($this->seniorAdminUsers)){
-            \Log::info('没有高级管理奖用户信息', ['users' => $this->seniorAdminUsers, 'bl' => $this->extraRewardBl]);
-            return false;
-        }
+        \Log::info('进来直推高级管理奖的数据', ['uid' => $uid, 'num' => $num]);
 
         // 获取用户信息
         $user = User::find($uid);
@@ -435,16 +426,33 @@ class UpdateAdminBonus implements ShouldQueue
             return false;
         }
 
-        // 判断用户上级是否有高级管理奖权限
-        if(!in_array($user->pid, $this->seniorAdminUsers)){
+        // 判断上级有没有高级管理奖
+        $sa = SeniorAdmin::where(['uid' => $pidUser->id, 'status' => 1])->first();
+        if(!$sa){
             \Log::info('用户没有高级管理奖权限，跳过');
-            return $this->toSeniorAdmin($user->pid, $num);
+            return $this->toSeniorAdmin($user->pid, $num, $oldLevel, $oldBl);
         }
 
-        $rewardBl = config('senior_admin.senior_admin_reward_bl', 0.15);
+        // 判断当前级别有没有大于之前的级别
+        if($sa->type <= $oldLevel){
+            \Log::info('当前级别小于或等于上一个级别，跳过');
+            return $this->toSeniorAdmin($user->pid, $num, $oldLevel, $oldBl);
+        }
+
+        // 获取奖励的比例
+        if($sa->type == 2){
+            $rewardBl = config('senior_admin.senior_admin_2_reward_bl', 0.2);
+        }else if($sa->type == 3){
+            $rewardBl = config('senior_admin.senior_admin_3_reward_bl', 0.25);
+        }else{
+            $rewardBl = config('senior_admin.senior_admin_1_reward_bl', 0.15);
+        }
+
+        // 换算新的比例
+        $newBl = bcsub($rewardBl, $oldBl, 8);
 
         // 计算用户得到的奖励数量
-        $oneNum = bcmul($num, $rewardBl, 8);
+        $oneNum = bcmul($num, $newBl, 8);
         if ($oneNum < 0.00000001) {
             \Log::info('数量太少，放弃', ['num' => $oneNum]);
             return false;
@@ -456,7 +464,12 @@ class UpdateAdminBonus implements ShouldQueue
         // 用户余额日志表更新
         AccountLog::addLog($user->pid, 1, $oneNum, 18, 1, Account::TYPE_LC, '直推高级管理奖');
 
-        return true;
+        if($sa->type == 3){
+            \Log::info('达到最高级，结束', ['num' => $oneNum]);
+            return false;
+        }
+
+        return $this->toSeniorAdmin($user->pid, $num, $sa->type, $rewardBl);
 
     }
 
