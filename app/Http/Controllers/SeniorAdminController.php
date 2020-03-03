@@ -136,4 +136,27 @@ class SeniorAdminController extends Controller
 
     }
 
+    // 获取高级管理奖成功页面数据
+    public function index(Request $request)
+    {
+
+        Service::auth()->isLoginOrFail();
+
+        // 获取用户管理奖数据
+        $sa = SeniorAdmin::where(['uid' => Service::auth()->getUser()->id, 'status' => 1])->first();
+        if(!$sa){
+            $this->responseError('数据有误');
+        }
+
+        $result = [
+            'cur_level' => $sa->type,
+            'one_count' => SeniorAdmin::getUserLineCount(Service::auth()->getUser()->id, 1),
+            'two_count' => SeniorAdmin::getUserLineCount(Service::auth()->getUser()->id, 2),
+            'exp' => '注: 分享2个1星，可升级为2星；分享3个2星可升为3星。',
+        ];
+
+        return $this->response($result);
+
+    }
+
 }
