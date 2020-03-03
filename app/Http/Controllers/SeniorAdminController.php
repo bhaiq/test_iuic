@@ -76,8 +76,11 @@ class SeniorAdminController extends Controller
         $userCount = config('senior_admin.senior_admin_lower_user_count', 5);
         if($userCount > 0){
 
+            // 获取用户直推的用户ID
+            $lowUsers = User::where('pid', Service::auth()->getUser()->id)->pluck('id')->toArray();
+
             // 获取用户直推高级用户的数量
-            $count = $this->getLineUndexLevelCount(Service::auth()->getUser()->id);
+            $count = UserInfo::whereIn('uid', $lowUsers)->where('level', 2)->count();
 
             if($count < $userCount){
                 $this->responseError('分享的高级用户数不足');
@@ -130,39 +133,6 @@ class SeniorAdminController extends Controller
         }
 
         return $this->responseSuccess('操作成功');
-
-    }
-
-    // 获取用户线下高级用户条数
-    private function getLineUndexLevelCount($uid)
-    {
-
-        // 获取用户手下信息
-        $lowerUsers = User::where('pid', $uid)->get();
-        if ($lowerUsers->isEmpty()) {
-            return 0;
-        }
-
-        $result = 0;
-
-        foreach ($lowerUsers as $v) {
-
-            // 获取用户本身级别
-            $ui = UserInfo::where('uid', $v->id)->first();
-            if($ui && $ui->level == 2){
-                $result++;
-                continue;
-            }
-
-            // 获取手下是否存在高级的
-            if(UserInfo::whereIn('pid_path', 'like', '%,' . $v->id . ',%')->where('level', 2)->exists()){
-                $result++;
-                continue;
-            }
-
-        }
-
-        return $result;
 
     }
 
