@@ -281,6 +281,7 @@ Route::group(['middleware' => ['auth.api']], function () {
     Route::group(['prefix' => 'senior_admin'], function () {
         Route::get('start', 'SeniorAdminController@start'); // 获取管理奖页面信息
         Route::post('submit', 'SeniorAdminController@submit'); // 质押申请高级管理奖提交信息页面
+        Route::get('index', 'SeniorAdminController@index'); // 获取管理奖成功页面数据
     });
 
 });
