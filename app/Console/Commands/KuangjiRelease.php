@@ -316,6 +316,9 @@ class KuangjiRelease extends Command
             // 质押的灵活矿机数量减少
             KuangjiLinghuo::where('uid', $uid)->decrement('num', $totalNum);
 
+            // 矿池表信息增加
+            UserWalletLog::addLog($uid, $dyTable, $orderId, '算力灵活矿机释放', '-', $totalNum, 2, 1);
+
             // 释放手续费费实时释放
             (new KuangjiBonus())->handle($tipNum);
 
