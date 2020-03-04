@@ -349,6 +349,9 @@ class TradeRelease
 
             UserInfo::where('uid', $uid)->increment('today_release', $newNum);
 
+            // 用户矿池日志表更新
+            UserWalletLog::addLog($uid, null, null, '交易释放', '-', $newNum, 2, 1);
+
         }else{
 
             \Log::info('交易释放，没有矿池的情况下进了灵活矿机质押页面');
@@ -397,6 +400,9 @@ class TradeRelease
 
             // 灵活矿机质押数量减少
             KuangjiLinghuo::where('uid', $uid)->decrement('num', $newNum);
+
+            // 用户矿池日志表更新
+            UserWalletLog::addLog($uid, null, null, '交易灵活矿机释放', '-', $newNum, 2, 1);
 
         }
 
