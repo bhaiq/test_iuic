@@ -161,32 +161,46 @@ class KuangJiController extends Controller
 
                 if ($kup->kuangji_id > 0 && $kup->order_id > 0) {
 
-                    $arr['is_use'] = 1;
+                    // 判断矿机是否存在，存在的话就照常，不存在的话就删除矿位里的矿机信息
+                    $newKj = Kuangji::find($kup->kuangji_id);
+                    if($newKj){
 
-                    $res = KuangjiOrder::from('kuangji_order as ko')
-                        ->select('ko.*', 'k.name', 'k.img', 'k.price', 'k.suanli', 'k.valid_day')
-                        ->join('kuangji as k', 'k.id', 'kuangji_id')
-                        ->where('ko.id', $kup->order_id)
-                        ->first();
+                        $arr['is_use'] = 1;
 
-                    $start = strtotime(substr($res->created_at, 0, 10) . ' 00:00:00');
-                    $cur = time();
+                        $res = KuangjiOrder::from('kuangji_order as ko')
+                            ->select('ko.*', 'k.name', 'k.img', 'k.price', 'k.suanli', 'k.valid_day')
+                            ->join('kuangji as k', 'k.id', 'kuangji_id')
+                            ->where('ko.id', $kup->order_id)
+                            ->first();
 
-                    $kjInfo = [];
-                    $kjInfo['sy_time'] = bcdiv(bcsub(bcadd($start, 181 * 24 * 3600), $cur), 24 * 3600);
-                    $kjInfo['name'] = $res->name;
-                    $kjInfo['img'] = $res->img;
-                    $kjInfo['price'] = $res->price;
-                    $kjInfo['suanli'] = $res->suanli;
-                    $kjInfo['valid_day'] = $res->valid_day;
+                        $start = strtotime(substr($res->created_at, 0, 10) . ' 00:00:00');
+                        $cur = time();
 
-                    // 获取赎回比例
-                    $redeemBl = $this->getRedeemBl(bcsub(180, $kjInfo['sy_time']));
+                        $kjInfo = [];
+                        $kjInfo['sy_time'] = bcdiv(bcsub(bcadd($start, 181 * 24 * 3600), $cur), 24 * 3600);
+                        $kjInfo['name'] = $res->name;
+                        $kjInfo['img'] = $res->img;
+                        $kjInfo['price'] = $res->price;
+                        $kjInfo['suanli'] = $res->suanli;
+                        $kjInfo['valid_day'] = $res->valid_day;
 
-                    // 获取赎回数量
-                    $kjInfo['redeem_num'] = bcmul($redeemBl, $res->price);
+                        // 获取赎回比例
+                        $redeemBl = $this->getRedeemBl(bcsub(180, $kjInfo['sy_time']));
 
-                    $arr['kj_info'] = $kjInfo;
+                        // 获取赎回数量
+                        $kjInfo['redeem_num'] = bcmul($redeemBl, $res->price);
+
+                        $arr['kj_info'] = $kjInfo;
+
+                    }else{
+
+                        // 矿机订单关闭
+                        KuangjiOrder::where('id', $kup->order_id)->update(['status' => 3]);
+
+                        // 矿位表更新
+                        KuangjiUserPosition::where('id', $kup->id)->update(['order_id' => 0, 'kuangji_id' => 0]);
+
+                    }
 
                 }
 
