@@ -25,7 +25,7 @@
 <div class="tet_box">
     <p class="title">幸运大转盘游戏规则</p>
     <p class="content">
-        抽奖一次徐消耗 <span class="span">{{ $one_num }} IUIC</span>，
+        抽奖一次需消耗 <span class="span">{{ $one_num }} IUIC</span>，
         十连抽需要消耗<span class="span">{{ $one_num*10 }} IUIC</span>。
         且中奖机会会大大提升！实际情况以抽奖结果为准，感谢您的参与！
     </p>
