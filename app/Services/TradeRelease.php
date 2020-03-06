@@ -15,6 +15,7 @@ use App\Models\KuangjiLinghuo;
 use App\Models\ReleaseOrder;
 use App\Models\UserInfo;
 use App\Models\UserWalletLog;
+use Carbon\Carbon;
 
 class TradeRelease
 {
@@ -277,27 +278,37 @@ class TradeRelease
 
         \Log::info('=====   开始交易释放   =====');
 
+        // 验证交易时间是否符合
+        $ccMinTime = config('trade.trade_release_min_time', '10:00:00');
+        $ccMaxTime = config('trade.trade_release_max_time', '15:59:59');
+
+        // 增加时间限制
+        if (!Carbon::now()->between(Carbon::create(now()->toDateString() . ' ' . $ccMinTime), Carbon::create(now()->toDateString() . ' ' . $ccMaxTime))) {
+            \Log::info('不在时间段之内，不进行是释放', ['uid' => $uid, 'minTime' => $ccMinTime, 'maxTime' => $ccMaxTime]);
+            return false;
+        }
+
         // 判断当日释放次数是否超限
         $userInfo = UserInfo::where('uid', $uid)->first();
-        if(!$userInfo){
+        if (!$userInfo) {
             \Log::info('用户数据有误，不进行是释放', ['uid' => $uid]);
             return false;
         }
 
-        if(!config('kuangji.trade_release_status', 0)){
+        if (!config('kuangji.trade_release_status', 0)) {
             \Log::info('交易释放总开关关闭，不进行释放', ['uid' => $uid]);
             return false;
         }
 
         // 先判断当日可释放多少次
         $rCount = config('release.today_release_count', 0);
-        if($rCount <= 0){
+        if ($rCount <= 0) {
             \Log::info('当日设置不能释放', ['uid' => $uid, 'r_count' => $rCount]);
             return false;
         }
 
-        if(now()->toDateString() == substr($userInfo->release_time, 0, 10)){
-            if($rCount <= $userInfo->today_count){
+        if (now()->toDateString() == substr($userInfo->release_time, 0, 10)) {
+            if ($rCount <= $userInfo->today_count) {
                 \Log::info('今天释放次数超限，不进行是释放', ['uid' => $uid, 'r_count' => $rCount]);
                 return false;
             }
@@ -307,15 +318,15 @@ class TradeRelease
         $newNum = bcmul($num, config('release.trade_bl'), 8);
 
         // 在矿池数量未释放完成的情况下, 释放矿池的IUIC, 未完成的情况下释放灵活矿机的质押IUIC
-        if($userInfo->release_total < $userInfo->buy_total){
+        if ($userInfo->release_total < $userInfo->buy_total) {
 
-            if(bcadd($userInfo->release_total, $newNum, 8) > $userInfo->buy_total){
+            if (bcadd($userInfo->release_total, $newNum, 8) > $userInfo->buy_total) {
                 $newNum = bcsub($userInfo->buy_total, $userInfo->release_total, 8);
             }
 
             // 获取一天最多释放数量
             $todayReleaseNum = config('release.today_release_num', 10000);
-            if(bcadd($userInfo->today_release, $newNum, 8) > $todayReleaseNum){
+            if (bcadd($userInfo->today_release, $newNum, 8) > $todayReleaseNum) {
                 $newNum = bcsub($todayReleaseNum, $userInfo->today_release, 8);
             }
 
@@ -328,9 +339,9 @@ class TradeRelease
 
             // 先增加释放时间和次数
             $uiNewData = [];
-            if(now()->toDateString() == substr($userInfo->release_time, 0, 10)){
+            if (now()->toDateString() == substr($userInfo->release_time, 0, 10)) {
                 $uiNewData['today_count'] = $userInfo->today_count + 1;
-            }else{
+            } else {
                 $uiNewData['today_count'] = 1;
             }
             $uiNewData['release_time'] = now()->toDateTimeString();
@@ -352,25 +363,25 @@ class TradeRelease
             // 用户矿池日志表更新
             UserWalletLog::addLog($uid, null, null, '交易释放', '-', $newNum, 2, 1);
 
-        }else{
+        } else {
 
             \Log::info('交易释放，没有矿池的情况下进了灵活矿机质押页面');
 
             // 获取灵活矿机信息
             $kjLinghuo = KuangjiLinghuo::where('uid', $uid)->first();
-            if(!$kjLinghuo){
+            if (!$kjLinghuo) {
                 \Log::info('没有矿池的情况下也没有灵活矿机，结束');
                 return false;
             }
 
             // 判断还有没有质押的IUIC
-            if($kjLinghuo->num <= 0){
+            if ($kjLinghuo->num <= 0) {
                 \Log::info('没有矿池的情况下已经没有质押的IUIC了，结束');
                 return false;
             }
 
             // 判断本次释放是否超过质押数量
-            if($newNum > $kjLinghuo->num){
+            if ($newNum > $kjLinghuo->num) {
                 $newNum = $kjLinghuo->num;
             }
 
@@ -381,9 +392,9 @@ class TradeRelease
 
             // 先增加释放时间和次数
             $uiNewData = [];
-            if(now()->toDateString() == substr($userInfo->release_time, 0, 10)){
+            if (now()->toDateString() == substr($userInfo->release_time, 0, 10)) {
                 $uiNewData['today_count'] = $userInfo->today_count + 1;
-            }else{
+            } else {
                 $uiNewData['today_count'] = 1;
             }
             $uiNewData['release_time'] = now()->toDateTimeString();
