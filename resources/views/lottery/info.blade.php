@@ -29,6 +29,24 @@
         十连抽需要消耗<span class="span">{{ $one_num*10 }} IUIC</span>。
         且中奖机会会大大提升！实际情况以抽奖结果为准，感谢您的参与！
     </p>
+    <p class="msg"><img src="/script/lottery/img/jp_bt.png" class="img"/></p>
+
+    @foreach($goods as $k => $v)
+
+        <div class="list">
+            <div class="item">
+                <p class="titl">
+                    {{$v['name']}}
+                </p>
+                <div class="con_box">
+                    <img src="{{$v['img']}}" alt=""  class="coin"/>
+                    <div class="jp_msg">{{$v['info']}}</div>
+                </div>
+            </div>
+        </div>
+
+    @endforeach
+
 </div>
 
 <p class="msg"> 游戏最终解释权归IUIC所有</p>

@@ -350,9 +350,13 @@ class LotteryController extends Controller
         // 获取每次抽奖需要的数量
         $oneNum = config('lottery.lottery_one_num', 100);
 
+        // 获取需要展示的商品信息
+        $goods = LotteryGoods::where('is_display', 1)->get()->toArray();
+
         $data = [
             'x_token' => $access_token->token,
             'one_num' => $oneNum,
+            'goods' => $goods
         ];
 
         return view('lottery.info', $data);
