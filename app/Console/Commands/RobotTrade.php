@@ -53,7 +53,7 @@ class RobotTrade extends Command
     {
 
         // 先判断机器人开关是否开启
-        if(config('robot.robot_switch', 0)){
+        if(!config('robot.robot_switch', 0)){
             \Log::info('机器人总开关关闭，结束');
             return false;
         }
