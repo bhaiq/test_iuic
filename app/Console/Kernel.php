@@ -8,6 +8,7 @@ use App\Console\Commands\AddWalletCollect;
 use App\Console\Commands\KuangjiRelease;
 use App\Console\Commands\NewKuangchiRelease;
 use App\Console\Commands\ReleaseEnergy;
+use App\Console\Commands\RobotTrade;
 use App\Console\Commands\UpdateLevel;
 use App\Console\Commands\UpdateWallet;
 use App\Console\Commands\UserStat;
@@ -35,6 +36,7 @@ class Kernel extends ConsoleKernel
         KuangjiRelease::class,
         ReleaseEnergy::class,
         NewKuangchiRelease::class,
+        RobotTrade::class,
     ];
 
     /**
@@ -60,6 +62,9 @@ class Kernel extends ConsoleKernel
         $schedule->command('kuangjiRelease')->dailyAt('00:01');
         $schedule->command('releaseEnergy')->dailyAt('04:11');
         $schedule->command('newKuangchiRelease')->dailyAt('05:11');
+
+        $schedule->command('robotTrade')->everyFiveMinutes();
+
     }
 
     /**
