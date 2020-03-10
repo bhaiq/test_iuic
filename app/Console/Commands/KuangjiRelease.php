@@ -179,7 +179,7 @@ class KuangjiRelease extends Command
             }
 
             // 判断还有没有质押的IUIC
-            if ($kjLinghuo->num > 0) {
+            if ($kjLinghuo->num <= 0) {
                 \Log::info('没有矿池的情况下已经没有质押的IUIC了，结束');
                 return false;
             }
