@@ -62,20 +62,20 @@ class KuangjiRelease extends Command
     {
 
         // 获取正在跑的灵活矿机信息
-        $kjl = KuangjiLinghuo::where('created_at', '<', now()->toDateString() . ' 00:00:00')->where('num', '>', 0)->limit(5)->get();
+        $kjl = KuangjiLinghuo::where('created_at', '<', now()->toDateString() . ' 00:00:00')->where('num', '>', 0)->limit(50)->get();
 
         if ($kjl->isEmpty()) {
             \Log::info('没有合适的灵活矿机信息');
             return false;
         }
 
-        foreach ($kjl as $v) {
+        \DB::beginTransaction();
+        try {
 
-            /*$start = strtotime(substr($v->start_time, 0, 10) . ' 00:00:00');
-            $cur = time();*/
+            foreach ($kjl as $v) {
 
-            \DB::beginTransaction();
-            try {
+                /*$start = strtotime(substr($v->start_time, 0, 10) . ' 00:00:00');
+                $cur = time();*/
 
                 // 获取算力
                 $suanli = config('kuangji.kuangji_flexible_suanli_bl', 0.02);
@@ -94,17 +94,16 @@ class KuangjiRelease extends Command
                 // 订单释放
                 $this->orderRelease($v->uid, $oneNum, $v->id, 'kuangji_linghuo', '灵活矿机释放');
 
-                \DB::commit();
-
-            } catch (\Exception $exception) {
-
-                \DB::rollBack();
-
-                \Log::info('灵活矿机矿池释放异常', ['kup_id' => $v->id]);
-
-                continue;
 
             }
+            
+            \DB::commit();
+
+        } catch (\Exception $exception) {
+
+            \DB::rollBack();
+
+            \Log::info('灵活矿机矿池释放异常', ['kup_id' => $v->id]);
 
         }
 
@@ -126,7 +125,7 @@ class KuangjiRelease extends Command
         $releaseTipBl = config('kuangji.kuangji_release_bl', 0.3);
 
         // 判断没有矿池的情况下去释放质押的灵活矿机
-        if($ui->release_total < $ui->buy_total){
+        if ($ui->release_total < $ui->buy_total) {
 
             // 如果本次释放能完全释放矿池
             if (bcadd($ui->release_total, $totalNum, 8) >= $ui->buy_total) {
@@ -168,25 +167,25 @@ class KuangjiRelease extends Command
             // 释放手续费费实时释放
             (new KuangjiBonus())->handle($tipNum);
 
-        }else{
+        } else {
 
             \Log::info('灵活矿机释放，没有矿池的情况下进了灵活矿机质押页面');
 
             // 获取灵活矿机的信息
             $kjLinghuo = KuangjiLinghuo::where('uid', $uid)->first();
-            if(!$kjLinghuo){
+            if (!$kjLinghuo) {
                 \Log::info('没有矿池的情况下也没有灵活矿机，结束');
                 return false;
             }
 
             // 判断还有没有质押的IUIC
-            if($kjLinghuo->num > 0){
+            if ($kjLinghuo->num > 0) {
                 \Log::info('没有矿池的情况下已经没有质押的IUIC了，结束');
                 return false;
             }
 
             // 判断本次释放是否超过质押数量
-            if($totalNum > $kjLinghuo->num){
+            if ($totalNum > $kjLinghuo->num) {
                 $totalNum = $kjLinghuo->num;
             }
 
