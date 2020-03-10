@@ -74,6 +74,7 @@ class RobotTrade extends Command
             return false;
         }
 
+        $buyStatus = 1;
         // 获取当前买方最高价格
         $exBuy = ExOrder::where(['status' => 0, 'type' => 1, 'team_id' => 1])->latest('price')->first();
         if($exBuy){
@@ -81,8 +82,10 @@ class RobotTrade extends Command
         }else{
             // 获取当前实时价格
             $buyPrice = ExTeam::curPrice(1);
+            $buyStatus = 0;
         }
 
+        $sellStatus = 1;
         // 获取当前卖方最低价格
         $exSell = ExOrder::where(['status' => 0, 'type' => 0, 'team_id' => 1])->oldest('price')->first();
         if($exSell){
@@ -90,6 +93,7 @@ class RobotTrade extends Command
         }else{
             // 获取当前实时价格
             $sellPrice = ExTeam::curPrice(1);
+            $sellStatus = 0;
         }
 
         \Log::info('获取到的买卖双方价格', ['buy_price' => $buyPrice, 'sell_price' => $sellPrice]);
@@ -124,11 +128,13 @@ class RobotTrade extends Command
             // 自增的价格
             $realPrice = bcadd($buyPrice, $addPrice, 4);
 
-            // 实际的价格
-            $newPrice = $realPrice > $sellPrice ? $sellPrice : $realPrice;
+            if($buyStatus){
+                // 实际的价格
+                $realPrice = $realPrice > $sellPrice ? $sellPrice : $realPrice;
+            }
 
             // 实际的价格
-            $newPrice = $newPrice > $maxPrice ? $maxPrice : $newPrice;
+            $newPrice = $realPrice > $maxPrice ? $maxPrice : $realPrice;
 
             // 请求的地址
 //            $url = url()->current() . '/api/ex/buy/1';
@@ -142,11 +148,13 @@ class RobotTrade extends Command
             // 自减的价格
             $realPrice = bcsub($sellPrice, $reducePrice, 4);
 
-            // 实际的价格
-            $newPrice = $realPrice > $buyPrice ? $realPrice : $buyPrice;
+            if($sellStatus){
+                // 实际的价格
+                $realPrice = $realPrice > $buyPrice ? $realPrice : $buyPrice;
+            }
 
             // 实际的价格
-            $newPrice = $newPrice < $minPrice ? $minPrice : $newPrice;
+            $newPrice = $realPrice < $minPrice ? $minPrice : $realPrice;
 
             // 请求的地址
 //            $url = url()->current() . '/api/ex/sell/1';
