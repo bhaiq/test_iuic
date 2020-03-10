@@ -164,8 +164,15 @@ class RobotTrade extends Command
             "x-token:" . $at->token
         ];
 
+        $data = [
+            'price' => $newPrice,
+            'amount' => $addTradeNum
+        ];
+
+        \Log::info('发送的data数据', $data);
+
         // 挂单请求
-        @$this->sendCurl($url, ['price' => $newPrice, 'amount' => $addTradeNum], $header);
+        @$this->sendCurl($url, $data, $header);
 
     }
 
