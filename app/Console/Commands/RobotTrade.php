@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\AccessToken;
 use App\Models\ExOrder;
+use App\Models\ExTeam;
 use Illuminate\Console\Command;
 
 class RobotTrade extends Command
@@ -74,17 +75,21 @@ class RobotTrade extends Command
         }
 
         // 获取当前买方最高价格
-        $buyPrice = 0;
         $exBuy = ExOrder::where(['status' => 0, 'type' => 1, 'team_id' => 1])->latest('price')->first();
         if($exBuy){
             $buyPrice = $exBuy->price;
+        }else{
+            // 获取当前实时价格
+            $buyPrice = ExTeam::curPrice(1);
         }
 
         // 获取当前卖方最低价格
-        $sellPrice = 0;
         $exSell = ExOrder::where(['status' => 0, 'type' => 0, 'team_id' => 1])->oldest('price')->first();
         if($exSell){
             $sellPrice = $exSell->price;
+        }else{
+            // 获取当前实时价格
+            $sellPrice = ExTeam::curPrice(1);
         }
 
         \Log::info('获取到的买卖双方价格', ['buy_price' => $buyPrice, 'sell_price' => $sellPrice]);
