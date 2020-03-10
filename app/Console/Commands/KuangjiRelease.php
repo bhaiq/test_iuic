@@ -62,7 +62,7 @@ class KuangjiRelease extends Command
     {
 
         // 获取正在跑的灵活矿机信息
-        $kjl = KuangjiLinghuo::where('created_at', '<', now()->toDateString() . ' 00:00:00')->where('num', '>', 0)->limit(50)->get();
+        $kjl = KuangjiLinghuo::where('created_at', '<', now()->toDateString() . ' 00:00:00')->where('num', '>', 0)->get();
 
         if ($kjl->isEmpty()) {
             \Log::info('没有合适的灵活矿机信息');
@@ -96,7 +96,7 @@ class KuangjiRelease extends Command
 
 
             }
-            
+
             \DB::commit();
 
         } catch (\Exception $exception) {
