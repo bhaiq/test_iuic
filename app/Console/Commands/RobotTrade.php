@@ -184,7 +184,7 @@ class RobotTrade extends Command
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         $output = curl_exec($curl);
         curl_close($curl);
-        \Log::info('接口返回的数据', ['res' => $output]);
+        \Log::info('接口返回的数据', ['res' => json_decode($output,true)]);
         return json_decode($output,true);
 
     }
