@@ -74,7 +74,7 @@ class RobotTrade extends Command
             return false;
         }
 
-        $buyStatus = 1;
+        $buyStatus = 0;
         // 获取当前买方最高价格
         $exBuy = ExOrder::where(['status' => 0, 'type' => 1, 'team_id' => 1])->latest('price')->first();
         if($exBuy){
@@ -82,10 +82,10 @@ class RobotTrade extends Command
         }else{
             // 获取当前实时价格
             $buyPrice = ExTeam::curPrice(1);
-            $buyStatus = 0;
+            $buyStatus = 1;
         }
 
-        $sellStatus = 1;
+        $sellStatus = 0;
         // 获取当前卖方最低价格
         $exSell = ExOrder::where(['status' => 0, 'type' => 0, 'team_id' => 1])->oldest('price')->first();
         if($exSell){
@@ -93,7 +93,7 @@ class RobotTrade extends Command
         }else{
             // 获取当前实时价格
             $sellPrice = ExTeam::curPrice(1);
-            $sellStatus = 0;
+            $sellStatus = 1;
         }
 
         \Log::info('获取到的买卖双方价格', ['buy_price' => $buyPrice, 'sell_price' => $sellPrice]);
