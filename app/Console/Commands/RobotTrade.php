@@ -99,7 +99,7 @@ class RobotTrade extends Command
         // 获取机器人最低挂卖价格
         $minPrice = config('robot.robot_min_price', 0.0001);
         if($sellPrice <= $minPrice){
-            \Log::info('当前价格已经超过机器人可挂买价格，结束', ['sell_price' => $sellPrice, 'min_price' => $minPrice]);
+            \Log::info('当前价格已经超过机器人可挂卖价格，结束', ['sell_price' => $sellPrice, 'min_price' => $minPrice]);
             return false;
         }
 

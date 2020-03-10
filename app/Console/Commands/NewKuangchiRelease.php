@@ -64,7 +64,7 @@ class NewKuangchiRelease extends Command
             $releaseBl = config('release.kuangchi_static_release_bl', 0.0001);
 
             // 获取本次释放数量
-            $oneNum = bcmul($v->buy_total, $releaseBl, 8);
+            $oneNum = bcmul(bcsub($v->buy_total, $v->release_total, 8), $releaseBl, 8);
 
             // 判读本次释放是否超出
             if(bcadd($v->release_total, $oneNum, 8) > $v->buy_total){
