@@ -98,20 +98,6 @@ class RobotTrade extends Command
 
         \Log::info('获取到的买卖双方价格', ['buy_price' => $buyPrice, 'sell_price' => $sellPrice]);
 
-        // 获取机器人挂买最高价格
-        $maxPrice = config('robot.robot_max_price', 10);
-        if($buyPrice >= $maxPrice){
-            \Log::info('当前价格已经超过机器人可挂买价格，结束', ['buy_price' => $buyPrice, 'max_price' => $maxPrice]);
-            return false;
-        }
-
-        // 获取机器人最低挂卖价格
-        $minPrice = config('robot.robot_min_price', 0.0001);
-        if($sellPrice <= $minPrice){
-            \Log::info('当前价格已经超过机器人可挂卖价格，结束', ['sell_price' => $sellPrice, 'min_price' => $minPrice]);
-            return false;
-        }
-
         // 获取机器人挂单的最小幅度
         $minRange = config('robot.robot_min_range', 0.0001);
 
@@ -121,6 +107,13 @@ class RobotTrade extends Command
         // 获取本次是做空还是做多
         $tradeStatus = config('robot.robot_trade_status', 1);
         if($tradeStatus){
+
+            // 获取机器人挂买最高价格
+            $maxPrice = config('robot.robot_max_price', 10);
+            if($buyPrice >= $maxPrice){
+                \Log::info('当前价格已经超过机器人可挂买价格，结束', ['buy_price' => $buyPrice, 'max_price' => $maxPrice]);
+                return false;
+            }
 
             // 价格自增的随机数
             $addPrice = bcdiv(rand(bcmul($minRange, 100000), bcmul($maxRange, 100000)), 100000, 4);
@@ -141,6 +134,13 @@ class RobotTrade extends Command
             $url = 'http://iuic.9dg.com/api/ex/buy/1';
 
         }else{
+
+            // 获取机器人最低挂卖价格
+            $minPrice = config('robot.robot_min_price', 0.0001);
+            if($sellPrice <= $minPrice){
+                \Log::info('当前价格已经超过机器人可挂卖价格，结束', ['sell_price' => $sellPrice, 'min_price' => $minPrice]);
+                return false;
+            }
 
             // 价格自减的随机数
             $reducePrice = bcdiv(rand(bcmul($minRange, 100000), bcmul($maxRange, 100000)), 100000, 4);
