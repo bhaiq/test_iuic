@@ -30,12 +30,12 @@ class LotteryController extends Controller
     {
 
         $access_token = AccessToken::whereToken($request->get('x-token', 'xx'))->first();
-        if(!$access_token){
+        if (!$access_token) {
             return '服务器错误';
         }
 
         // 限制PC端访问
-        if(!$this->isMobile()){
+        if (!$this->isMobile()) {
             return '非移动端禁止访问';
         }
 
@@ -51,7 +51,7 @@ class LotteryController extends Controller
         $data['wallet_num'] = 0;
 
         $account = Account::whereUid($access_token->uid)->whereCoinId(2)->whereType(Account::TYPE_LC)->first();
-        if($account){
+        if ($account) {
             $data['wallet_num'] = bcmul($account->amount, 1, 4);
         }
 
@@ -60,8 +60,8 @@ class LotteryController extends Controller
 
         // 获取中奖记录
         $xcArr = [];
-        foreach ($data['goods'] as $k => $v){
-            if($v['is_xc'] == 1){
+        foreach ($data['goods'] as $k => $v) {
+            if ($v['is_xc'] == 1) {
                 $xcArr[] = $v['id'];
             }
         }
@@ -99,14 +99,14 @@ class LotteryController extends Controller
         }
 
         $access_token = AccessToken::whereToken($request->get('x-token', 'xx'))->first();
-        if(!$access_token){
+        if (!$access_token) {
             return returnJson(0, '数据有误');
         }
 
         // 验证支付密码是否正确
         $newPass = StringLib::password($request->get('paypass'));
         $user = User::find($access_token->uid);
-        if(!$user || $user->transaction_password != $newPass){
+        if (!$user || $user->transaction_password != $newPass) {
             return returnJson(0, '交易密码错误');
         }
 
@@ -115,7 +115,7 @@ class LotteryController extends Controller
 
         // 验证用户余额是否充足
         $account = Account::whereUid($access_token->uid)->whereCoinId(2)->whereType(Account::TYPE_LC)->first();
-        if(!$account || $account->amount < $totalNum){
+        if (!$account || $account->amount < $totalNum) {
             return returnJson(0, '余额不足');
         }
 
@@ -130,7 +130,7 @@ class LotteryController extends Controller
 
             // 进行抽奖,获取中奖信息
             $result = $this->toLottery($access_token->uid, $request->get('count'), $oneNum);
-            if(empty($result)){
+            if (empty($result)) {
                 new \Exception('操作异常');
             }
 
@@ -168,7 +168,7 @@ class LotteryController extends Controller
 
         // 获取商品信息
         $goods = LotteryGoods::get();
-        foreach ($goods as $v){
+        foreach ($goods as $v) {
 
             $goodsNo = bcmul($v->zj_bl, 10000000);
             $min = $lsNo;
@@ -187,14 +187,14 @@ class LotteryController extends Controller
         }
 
         // 判断抽奖次数
-        for ($i = 0; $i < $count; $i++){
+        for ($i = 0; $i < $count; $i++) {
 
             // 随机生成中奖号码
             $lotteryNo = rand(1, 10000000);
 
-            foreach ($noArr as $v){
+            foreach ($noArr as $v) {
 
-                if($lotteryNo > $v['min'] && $lotteryNo <= $v['max']){
+                if ($lotteryNo > $v['min'] && $lotteryNo <= $v['max']) {
                     $result[] = [
                         'goods_id' => $v['goods_id'],
                         'goods_name' => $v['goods_name'],
@@ -211,11 +211,11 @@ class LotteryController extends Controller
                     ];
 
                     // 判断有没有返矿
-                    if($v->return_bl > 0){
+                    if ($v->return_bl > 0) {
 
                         // 计算赠送的数量
                         $giveNum = bcmul($oneNum, $v->return_bl, 8);
-                        if($giveNum > 0){
+                        if ($giveNum > 0) {
 
                             // 用户矿池增加
                             UserInfo::where('uid', $uid)->increment('buy_total', $giveNum);
@@ -234,7 +234,7 @@ class LotteryController extends Controller
 
         }
 
-        if(empty($result)){
+        if (empty($result)) {
 
             $result[] = [
                 'goods_id' => 0,
@@ -256,7 +256,7 @@ class LotteryController extends Controller
     private function getDushu($id)
     {
 
-        switch ($id){
+        switch ($id) {
 
             case 1:
                 $result = 0;
@@ -300,21 +300,22 @@ class LotteryController extends Controller
     }
 
     // 抽奖记录
-    public function log(Request $request){
+    public function log(Request $request)
+    {
 
         $access_token = AccessToken::whereToken($request->get('x-token', 'xx'))->first();
-        if(!$access_token){
+        if (!$access_token) {
             return '服务器错误';
         }
 
         // 限制PC端访问
-        if(!$this->isMobile()){
+        if (!$this->isMobile()) {
             return '非移动端禁止访问';
         }
 
         $page = $request->get('page', 1);
 
-        if($page != 'all'){
+        if ($page != 'all') {
 
             // 获取用户抽奖记录
             $log = LotteryLog::with('goods')
@@ -325,7 +326,7 @@ class LotteryController extends Controller
                 ->get()
                 ->toArray();
 
-        }else{
+        } else {
 
             // 获取用户抽奖记录
             $log = LotteryLog::with('goods')
@@ -338,9 +339,9 @@ class LotteryController extends Controller
 
 
         $result = [];
-        foreach ($log as $k => $v){
+        foreach ($log as $k => $v) {
             $result[] = [
-                'created_at' => date( 'Y-m-d H:s', strtotime($v['created_at'])),
+                'created_at' => date('Y-m-d H:s', strtotime($v['created_at'])),
                 'goods_name' => $v['goods']['name'],
             ];
         }
@@ -359,12 +360,12 @@ class LotteryController extends Controller
     {
 
         $access_token = AccessToken::whereToken($request->get('x-token', 'xx'))->first();
-        if(!$access_token){
+        if (!$access_token) {
             return '服务器错误';
         }
 
         // 限制PC端访问
-        if(!$this->isMobile()){
+        if (!$this->isMobile()) {
             return '非移动端禁止访问';
         }
 
@@ -391,7 +392,7 @@ class LotteryController extends Controller
 
         if (isset ($_SERVER['HTTP_X_WAP_PROFILE'])) {
 
-            return TRUE;
+            return true;
 
         }
 
@@ -399,7 +400,7 @@ class LotteryController extends Controller
 
         if (isset ($_SERVER['HTTP_VIA'])) {
 
-            return stristr($_SERVER['HTTP_VIA'], "wap") ? TRUE : FALSE;// 找不到为flase,否则为TRUE
+            return stristr($_SERVER['HTTP_VIA'], "wap") ? true : false;// 找不到为flase,否则为TRUE
 
         }
 
@@ -479,7 +480,7 @@ class LotteryController extends Controller
 
             if (preg_match("/(" . implode('|', $clientkeywords) . ")/i", strtolower($_SERVER['HTTP_USER_AGENT']))) {
 
-                return TRUE;
+                return true;
 
             }
 
@@ -491,15 +492,15 @@ class LotteryController extends Controller
 
             // 如果支持wml和html但是wml在html之前则是移动设备
 
-            if ((strpos($_SERVER['HTTP_ACCEPT'], 'vnd.wap.wml') !== FALSE) && (strpos($_SERVER['HTTP_ACCEPT'], 'text/html') === FALSE || (strpos($_SERVER['HTTP_ACCEPT'], 'vnd.wap.wml') < strpos($_SERVER['HTTP_ACCEPT'], 'text/html')))) {
+            if ((strpos($_SERVER['HTTP_ACCEPT'], 'vnd.wap.wml') !== false) && (strpos($_SERVER['HTTP_ACCEPT'], 'text/html') === false || (strpos($_SERVER['HTTP_ACCEPT'], 'vnd.wap.wml') < strpos($_SERVER['HTTP_ACCEPT'], 'text/html')))) {
 
-                return TRUE;
+                return true;
 
             }
 
         }
 
-        return FALSE;
+        return false;
 
     }
 
