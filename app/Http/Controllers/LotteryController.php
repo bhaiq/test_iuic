@@ -16,6 +16,8 @@ use App\Models\AccountLog;
 use App\Models\LotteryGoods;
 use App\Models\LotteryLog;
 use App\Models\User;
+use App\Models\UserInfo;
+use App\Models\UserWalletLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use function Psy\debug;
@@ -177,6 +179,7 @@ class LotteryController extends Controller
                 'goods_id' => $v->id,
                 'goods_name' => $v->name,
                 'goods_img' => $v->img,
+                'return_bl' => $v->return_bl,
                 'min' => $min,
                 'max' => $max
             ];
@@ -206,6 +209,24 @@ class LotteryController extends Controller
                         'num' => $oneNum,
                         'created_at' => now()->toDateTimeString(),
                     ];
+
+                    // 判断有没有返矿
+                    if($v->return_bl > 0){
+
+                        // 计算赠送的数量
+                        $giveNum = bcmul($oneNum, $v->return_bl, 8);
+                        if($giveNum > 0){
+
+                            // 用户矿池增加
+                            UserInfo::where('uid', $uid)->increment('buy_total', $giveNum);
+
+                            // 矿池余额日志增加
+                            UserWalletLog::addLog($uid, 0, 0, '抽奖返矿', '+', $giveNum, 2, 1);
+
+                        }
+
+
+                    }
 
                 }
 
