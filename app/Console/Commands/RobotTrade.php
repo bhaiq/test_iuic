@@ -59,7 +59,7 @@ class RobotTrade extends Command
         }
 
         // 获取机器人信息
-        $at = AccessToken::where('uid', 297)->first();
+        $at = AccessToken::where('uid', 4158)->first();
         if(!$at){
             \Log::info('机器人信息有误，结束');
             return false;
