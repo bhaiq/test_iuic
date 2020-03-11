@@ -211,10 +211,10 @@ class LotteryController extends Controller
                     ];
 
                     // 判断有没有返矿
-                    if ($v->return_bl > 0) {
+                    if ($v['return_bl'] > 0) {
 
                         // 计算赠送的数量
-                        $giveNum = bcmul($oneNum, $v->return_bl, 8);
+                        $giveNum = bcmul($oneNum, $v['return_bl'], 8);
                         if ($giveNum > 0) {
 
                             // 用户矿池增加
