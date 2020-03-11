@@ -520,4 +520,18 @@ class EnergyController extends Controller
 
     }
 
+    // 能量兑换币种列表
+    public function coin(Request $request)
+    {
+
+        $result = [
+            [
+                'id' => 1,
+                'name' => 'USDT',
+            ]
+        ];
+
+        return $this->response($result);
+    }
+
 }

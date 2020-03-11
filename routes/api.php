@@ -259,6 +259,7 @@ Route::group(['middleware' => ['auth.api']], function () {
         Route::post('exchange', 'EnergyController@exchange'); // 能量兑换
         Route::get('exchange/start', 'EnergyController@exchangeStart'); // 能量兑换页面
         Route::get('exchange/compute', 'EnergyController@exchangeCompute'); // 能量兑换数量计算
+        Route::get('exchange/coin', 'EnergyController@coin'); // 能量兑换的币种信息
         Route::post('transfer', 'EnergyController@transfer'); // 能量划转
         Route::get('transfer/start', 'EnergyController@transferStart'); // 能量划转页面
 
