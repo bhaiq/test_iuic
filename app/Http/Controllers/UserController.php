@@ -99,10 +99,20 @@ class UserController extends Controller
             return $this->responseError('账号已经存在');
         }
 
-        // 验证手机是否超过10个
-        $mobileCount = User::where('mobile', $request->get('username'))->count();
-        if($mobileCount > 10){
-            return $this->responseError('该手机号可注册的账号已超限');
+        // 获取注册时手机开关
+        $registerSwitch = config('extract.register_mobile_switch', 0);
+        if($registerSwitch){
+            // 验证手机是否已经注册
+            $mobileBool = User::where('mobile', $request->get('username'))->exists();
+            if($mobileBool){
+                return $this->responseError('该手机号已被注册');
+            }
+        }else{
+            // 验证手机是否超过10个
+            $mobileCount = User::where('mobile', $request->get('username'))->count();
+            if($mobileCount > 10){
+                return $this->responseError('该手机号可注册的账号已超限');
+            }
         }
 
         $pid = 0;
@@ -321,7 +331,15 @@ class UserController extends Controller
         $img_back = Storage::url($path);
 
         $user          = Service::auth()->getUser();
-        $user->is_auth = User::AUTH_ON;
+
+        // 获取用户验证开关
+        $userAuthSwitch = config('extract.user_auth_switch', 0);
+        if($userAuthSwitch){
+            $user->is_auth = User::AUTH_ON;
+        }else{
+            $user->is_auth = User::AUTH_SUCCESS;
+        }
+
         $user->save();
 
         $auth            = Authentication::firstOrCreate(['uid' => Service::auth()->getUser()->id]);
