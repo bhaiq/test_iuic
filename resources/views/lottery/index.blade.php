@@ -300,7 +300,7 @@
 
                         rotateFnn(d.data[timesRun-1].ds, d.data[timesRun-1].goods_name, d.data[timesRun-1].goods_img);
 
-                    }, 2000);
+                    }, 300);
 
                 }else{
                     kfClick();
@@ -351,7 +351,7 @@
         $(".lun1").rotate({
             angle:0,                //旋转的角度
             animateTo:angles+1800,  //从当前角度旋转多少度
-            duration:3000,          //持续时间
+            duration:300,          //持续时间
             callback:function(){    //回调函数
                 // alert(txt);
                 // tt +="   "+txt
