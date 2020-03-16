@@ -59,7 +59,7 @@ class RobotTrade extends Command
         }
 
         // 获取机器人信息
-        $at = AccessToken::where('uid', 4158)->first();
+        $at = AccessToken::where('uid', 0)->first();
         if(!$at){
             \Log::info('机器人信息有误，结束');
             return false;
@@ -130,8 +130,7 @@ class RobotTrade extends Command
             $newPrice = $realPrice > $maxPrice ? $maxPrice : $realPrice;
 
             // 请求的地址
-//            $url = url()->current() . '/api/ex/buy/1';
-            $url = 'http://iuic.9dg.com/api/ex/buy/1';
+            $url = 'http://iuic.too86.com/api/ex/buy/1';
 
         }else{
 
@@ -157,8 +156,8 @@ class RobotTrade extends Command
             $newPrice = $realPrice < $minPrice ? $minPrice : $realPrice;
 
             // 请求的地址
-//            $url = url()->current() . '/api/ex/sell/1';
-            $url = 'http://iuic.9dg.com/api/ex/sell/1';
+            $url = 'http://iuic.too86.com/api/ex/buy/1';
+
         }
 
         // 获取机器人挂买挂卖的最小量
