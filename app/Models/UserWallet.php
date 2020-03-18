@@ -130,4 +130,14 @@ class UserWallet extends Model
         return true;
     }
 
+    // 锁仓能量资产增加
+    public static function addEnergyLockNum($uid, $num)
+    {
+        UserWallet::where('uid', $uid)->increment('energy_lock_num', $num);
+
+        \Log::info('用户' . $uid . '的锁仓能量数量增加' . $num);
+
+        return true;
+    }
+
 }

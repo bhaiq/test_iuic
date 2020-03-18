@@ -50,6 +50,23 @@ class AccountController extends Controller
             ];
 
             $result['account'][] = [
+                'coin_id' => 1003,
+                'type' => 0,
+                'amount' => 0,
+                'amount_freeze' => 0,
+                'total' => 0,
+                'amount_cny' => 0,
+                'amount_freeze_cny' => 0,
+                'cny' => 0,
+                'coin' => [
+                    'id' => 1003,
+                    'name' => '锁仓能量'
+                ],
+                'is_open' => 1,
+
+            ];
+
+            $result['account'][] = [
                 'coin_id' => 1002,
                 'type' => 0,
                 'amount' => 0,
@@ -84,13 +101,19 @@ class AccountController extends Controller
             $result['account'][0]['cny'] = bcmul($uw->total_cny, 1, 4);
 
 
-            $result['account'][1]['amount'] = bcmul($uw->consumer_num, 1, 4);
+            $result['account'][1]['amount'] = bcmul($uw->energy_lock_num, 1, 4);
             $result['account'][1]['amount_freeze'] = 0;
-            $result['account'][1]['total'] = bcmul($uw->consumer_num, 1, 4);
-            $result['account'][1]['amount_cny'] = bcmul($uw->consumer_cny, 1, 4);
+            $result['account'][1]['total'] = bcmul($uw->energy_lock_num, 1, 4);
+            $result['account'][1]['amount_cny'] = bcmul($uw->energy_lock_num, 1, 4);
             $result['account'][1]['amount_freeze_cny'] = 0;
-            $result['account'][1]['cny'] = bcmul($uw->consumer_cny, 1, 4);
+            $result['account'][1]['cny'] = bcmul($uw->energy_lock_num, 1, 4);
 
+            $result['account'][2]['amount'] = bcmul($uw->consumer_num, 1, 4);
+            $result['account'][2]['amount_freeze'] = 0;
+            $result['account'][2]['total'] = bcmul($uw->consumer_num, 1, 4);
+            $result['account'][2]['amount_cny'] = bcmul($uw->consumer_cny, 1, 4);
+            $result['account'][2]['amount_freeze_cny'] = 0;
+            $result['account'][2]['cny'] = bcmul($uw->consumer_cny, 1, 4);
 
             $result['cur_total'] = bcdiv(bcadd($uw->total_cny, $uw->consumer_cny, 8), Account::getRate(), 4);
             $result['cur_total_cny'] = bcadd($uw->total_cny, $uw->consumer_cny, 4);
@@ -214,6 +237,38 @@ class AccountController extends Controller
                     'amount' => $uw->consumer_num,
                     'amount_freeze' => 0,
                     'cny' => $uw->consumer_cny,
+                ];
+            }
+
+            return $this->response(array_merge($eLogs, $result));
+
+        }else if($coin_id == '1003'){
+
+            $eLogs = EnergyLog::where('wallet_type', 3)->where('uid', Service::auth()->getUser()->id)->latest()->paginate()->toArray();
+            foreach ($eLogs['data'] as $k => $v){
+
+                $eLogs['data'][$k] = [
+                    'uid' => $v['uid'],
+                    'coin_id' => $coin_id,
+                    'amount' => $v['num'],
+                    'type' => $v['sign'] == '+' ? 1 : 0,
+                    'remark' => $v['exp'],
+                    'created_at' => strtotime($v['created_at'])
+                ];
+            }
+
+            $result = [
+                'amount' => 0,
+                'amount_freeze' => 0,
+                'cny' => 0
+            ];
+
+            $uw = UserWallet::where('uid', Service::auth()->getUser()->id)->first();
+            if($uw){
+                $result = [
+                    'amount' => $uw->energy_lock_num,
+                    'amount_freeze' => 0,
+                    'cny' => $uw->energy_lock_num,
                 ];
             }
 
