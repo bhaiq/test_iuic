@@ -79,6 +79,7 @@ class EnergyLockController extends Controller
 
         $data = [
             'uid' => Service::auth()->getUser()->id,
+            'account' => $request->get('new_account'),
             'num' => $request->get('num'),
             'to_uid' => $toUser->id,
             'created_at' => now()->toDateTimeString()
