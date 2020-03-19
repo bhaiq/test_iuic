@@ -122,7 +122,7 @@ class EnergyService
                 ];
                 EnergyOrder::where('id', $v->id)->update($updData);
 
-                $num = bcmul($num, $oneNum, 8);
+                $num = bcsub($num, $oneNum, 8);
 
             } else {
 
