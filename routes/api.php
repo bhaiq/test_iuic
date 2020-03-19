@@ -264,6 +264,7 @@ Route::group(['middleware' => ['auth.api']], function () {
         Route::get('transfer/start', 'EnergyController@transferStart'); // 能量划转页面
         Route::post('lock/transfer', 'EnergyLockController@transfer'); // 锁仓能量转账
         Route::get('lock/start', 'EnergyLockController@transferStart'); // 锁仓能量转账页面
+        Route::get('lock/log', 'EnergyLockController@transferLog'); // 锁仓能量转账日志
 
     });
 

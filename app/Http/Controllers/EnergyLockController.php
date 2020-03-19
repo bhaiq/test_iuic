@@ -119,4 +119,31 @@ class EnergyLockController extends Controller
 
     }
 
+    // 获取锁仓能量转账日志
+    public function transferLog(Request $request)
+    {
+
+        Service::auth()->isLoginOrFail();
+
+        $result = EnergyLockTransfer::from('energy_lock_transfer as elt')
+            ->select('elt.num', 'elt.created_at', 'u.nickname')
+            ->join('user as u', 'u.id', 'elt.to_uid')
+            ->where('uid', Service::auth()->getUser()->id)
+            ->latest()
+            ->paginate($request->get('per_page', 10))
+            ->toArray();
+
+        foreach ($result['data'] as $k => $v){
+
+            $result['data'][$k]['exp'] = '能量资产转出';
+            $result['data'][$k]['status'] = 1;
+            $result['data'][$k]['status_name'] = '已完成';
+            $result['data'][$k]['created_at'] = date('Y/m/d H:i:s', strtotime($v['created_at']));
+
+        }
+
+        return $this->response($result);
+
+    }
+
 }
