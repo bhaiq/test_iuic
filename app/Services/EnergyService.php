@@ -108,8 +108,10 @@ class EnergyService
 
                 // 进行释放
                 if (in_array($v->uid, $uidArr) && $v->type == 2) {
+                    \Log::info('准备进入锁仓能量释放');
                     EnergyService::orderLockRelease($v->uid, $oneNum, $v->id, $exp, $dyUid);
                 } else {
+                    \Log::info('准备进入可用能量释放');
                     EnergyService::orderRelease($v->uid, $oneNum, $v->id, $exp, $dyUid);
                 }
 
@@ -126,8 +128,10 @@ class EnergyService
 
                 // 进行释放
                 if (in_array($v->uid, $uidArr) && $v->type == 2) {
+                    \Log::info('准备进入锁仓能量释放');
                     EnergyService::orderLockRelease($v->uid, $num, $v->id, $exp, $dyUid);
                 } else {
+                    \Log::info('准备进入可用能量释放');
                     EnergyService::orderRelease($v->uid, $num, $v->id, $exp, $dyUid);
                 }
 
