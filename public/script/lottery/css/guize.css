@@ -1,0 +1,106 @@
+body{
+  background: #2F1F94;
+}
+.head{
+  width: 100%;
+  font-size: 0.36rem;
+  line-height: 0.9rem;
+  text-align: center;
+  position: fixed;
+  left: 0;
+  top:0;
+  background: #fff;
+  color: #333333;
+  z-index: 10000;
+}
+.head .box{
+  width: 100%;
+  line-height: 0.90rem;
+
+
+  box-sizing: border-box;
+  padding: 0 0.28rem;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.head .box img {
+     height: 0.36rem;
+     width: auto;
+    margin: 0.27rem 0;
+}
+
+.tet_box{
+  width: calc(100% - 0.6rem);
+  margin: 1.2rem auto 0;
+  box-sizing: border-box;
+  background: rgba(0,0,0,0.3);
+  color: #AAA8C3;
+  padding: 0.47rem 0.3rem;
+}
+
+
+.title{
+  color: #fff;
+  text-align: center;
+  font-size: 0.36rem;
+}
+
+
+.content{
+  font-size: 0.28rem;
+  margin-top: 0.38rem;
+  text-indent: 2em;
+}
+.span{
+  color: #CED757;
+}
+.msg{
+  color: #7470A0;
+  font-size: 0.24rem;
+  margin:0.48rem 0 0.24rem;
+  text-align: center;
+}
+
+
+
+.img{
+	width: 2.36rem;
+	margin: 0 auto;
+}
+
+.list{
+	width: 100%;
+	box-sizing: border-box;
+	padding: 0 0.3rem;
+}
+
+.item{
+	width: 100%;
+	border-radius: 10px;
+	background: #261A78;
+	box-sizing: border-box;
+	padding: 0.3rem;
+	margin-bottom: 0.3rem;
+}
+.titl{
+	font-size:0.32rem ;
+	margin-bottom: 0.3rem;
+	color: #fff;
+}
+.con_box{
+	width: 100%;
+	display: flex;
+	
+}
+.coin{
+	width: 1.6rem;
+	height: 1.6rem;
+	margin-right: 0.3rem;
+}
+.jp_msg{
+	width: calc(100% - 1.9rem);
+	font-size: 0.28rem;
+	line-height: 0.42rem;
+	color: #AAA8C3;
+}

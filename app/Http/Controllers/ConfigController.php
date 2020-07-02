@@ -39,7 +39,7 @@ class ConfigController extends Controller
 
     public function version(Request $request)
     {
-        $this->validate($request->all(), [
+       $this->validate($request->all(), [
             'type'    => 'required|between:0,1',
             'version' => 'required'
         ]);

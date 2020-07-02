@@ -11,6 +11,8 @@ use App\Models\User;
 use App\Models\UserBonus;
 use App\Models\UserInfo;
 use App\Models\UserPartner;
+
+use App\Models\ShopOrder;
 use App\Services\LevelService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
@@ -53,7 +55,22 @@ class UpdateAdminBonus implements ShouldQueue
      */
     public function handle()
     {
+		
+      
+      	\Log::info('===== 独立团队长奖 =====');
 
+        $this->indeHead($this->uid,$this->num);
+
+        \Log::info('===== 独立团队长奖 =====');
+      
+      
+      	\Log::info('===== 独立管理奖 =====');
+
+       	$this->indeMana($this->uid,$this->num);
+
+        \Log::info('===== 独立管理奖 =====');
+      
+      
         \Log::info('===== 用户递归更新用户节点奖 =====');
 
         $this->updateNode($this->uid);
@@ -472,5 +489,53 @@ class UpdateAdminBonus implements ShouldQueue
         return $this->toSeniorAdmin($user->pid, $num, $sa->type, $rewardBl);
 
     }
+  
+  	//独立团队长奖
+	public function indeHead($uid,$num)
+	{
+		$pid_path = trim(User::where('id',$uid)->value('pid_path'),',');
+		$pid_arr=explode(',',$pid_path);
+		$pid_list=User::where('is_independent_head',1)->whereIn('id',$pid_arr)->get();
+		
+		$admin_mall_head_bl = config('senior_admin.admin_mall_head_bl');
+		$reward_num=$energy_num=bcmul($admin_mall_head_bl, $num, 2);
+		
+		foreach($pid_list as $v){
+			//为给个合伙人账户加usdt
+			$m=Account::addAmount($v->id,1,$reward_num);
+			// 用户余额日志表更新
+			$n=AccountLog::addLog($v->id,1,$reward_num, 26, 1, Account::TYPE_LC, '独立团队长奖');
+		}
+	}
+	
+	//独立管理奖
+	public function indeMana($uid,$num)
+	{
+		
+      $mana_list=User::where('is_independent_management',1)->get();
+
+      //$admin_mall_mana_bl = config('senior_admin.admin_mall_mana_bl');
+      //$reward_num=$energy_num=bcmul($admin_mall_mana_bl, $num, 2);
+
+      foreach($mana_list as $v){
+        
+        $admin_mall_mana_bl = User::where('id',$v->id)->value('independent_management_bl');
+        
+        if($admin_mall_mana_bl<=0){
+        	continue;
+        }
+        
+      	$reward_num=bcmul($admin_mall_mana_bl, $num, 2);
+
+        
+        //为给个合伙人账户加usdt
+        $m=Account::addAmount($v->id,1,$reward_num);
+        // 用户余额日志表更新
+        $n=AccountLog::addLog($v->id,1,$reward_num, 27, 1, Account::TYPE_LC, '独立管理奖');
+      }
+
+		      	
+	}
+
 
 }

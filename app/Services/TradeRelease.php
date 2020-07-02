@@ -276,7 +276,7 @@ class TradeRelease
     public function release($uid, $num)
     {
 
-        \Log::info('=====   开始交易释放   =====');
+        \Log::info('=====   开始交易释放   =====',['uid'=>$uid,'num'=>$num]);
 
         // 验证交易时间是否符合
         $ccMinTime = config('trade.trade_release_min_time', '10:00:00');
@@ -316,18 +316,21 @@ class TradeRelease
 
         // 获取本次释放的有效数量
         $newNum = bcmul($num, config('release.trade_bl'), 8);
+        \Log::info('本次释放有效数',['uid'=>$uid,'newNum'=>$newNum]);
 
         // 在矿池数量未释放完成的情况下, 释放矿池的IUIC, 未完成的情况下释放灵活矿机的质押IUIC
         if ($userInfo->release_total < $userInfo->buy_total) {
 
             if (bcadd($userInfo->release_total, $newNum, 8) > $userInfo->buy_total) {
                 $newNum = bcsub($userInfo->buy_total, $userInfo->release_total, 8);
+                \Log::info('release_total > buy_total',['uid' => $uid,'release_total' => $userInfo->release_total,'buy_total' => $userInfo->buy_total,'newNum' => $newNum]);
             }
 
             // 获取一天最多释放数量
             $todayReleaseNum = config('release.today_release_num', 10000);
             if (bcadd($userInfo->today_release, $newNum, 8) > $todayReleaseNum) {
                 $newNum = bcsub($todayReleaseNum, $userInfo->today_release, 8);
+                \Log::info('today_release + newNum > todayReleaseNum',['uid' => $uid,'today_release+' => bcadd($userInfo->today_release, $newNum, 8),'todayReleaseNum' => $todayReleaseNum,'newNum' => $newNum]);
             }
 
             if ($newNum <= 0) {

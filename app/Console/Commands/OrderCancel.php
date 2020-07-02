@@ -48,6 +48,7 @@ class OrderCancel extends Command
 
     public function cancelSell()
     {
+        \Log::info('卖单取消开启');
         $order = OtcOrder::whereIsPay(false)->where('type', OtcOrder::TYPE_SELL)
             ->whereIn('status', [OtcOrder::STATUS_INIT, OtcOrder::STATUS_OVER])
             ->whereTime('created_at', '<', Carbon::createFromTimestamp(time() - 15 * 60))
@@ -61,10 +62,12 @@ class OrderCancel extends Command
             $item->status = OtcOrder::STATUS_CANCEL;
             $item->save();
         });
+        \Log::info('卖单取消结束');
     }
 
     public function cancelBuy()
     {
+        \Log::info('买单取消开启');
         $order = OtcOrder::whereIsPay(false)->where('type', OtcOrder::TYPE_BUY)
             ->whereTime('created_at', '<', Carbon::createFromTimestamp(time() - 15 * 60))
             ->whereIn('status', [OtcOrder::STATUS_INIT, OtcOrder::STATUS_OVER])
@@ -81,5 +84,6 @@ class OrderCancel extends Command
             $item->status = OtcOrder::STATUS_CANCEL;
             $item->save();
         });
+        \Log::info('买单取消结束');
     }
 }

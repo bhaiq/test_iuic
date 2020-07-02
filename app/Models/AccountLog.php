@@ -59,6 +59,13 @@ class AccountLog extends Model
     const SCENE_AUTH_BUSINESS = 16;
     const SCENE_REMOVE_BUSINESS = 17;
     const SCENE_EXTRA_BONUS = 18;
+  
+  	const SCENE_CAPTAIN_AWARD = 100;
+  
+  	const SCENE_INDE_HEAD = 26;
+  	const SCENE_INDE_MANA = 27;
+  	const SCENE_ALL_FIRST = 28;
+  	const SCENE_COMM_SANXIA = 29;
 
     const SCENE_IN = [
         self::SCENE_RECHARGE, self::SCENE_EX_IN, self::SCENE_EX_BACK, self::SCENE_LEGAL_IN, self::SCENE_EX_DEL,
@@ -109,6 +116,16 @@ class AccountLog extends Model
                 return '取消商家认证';
             case self::SCENE_EXTRA_BONUS:
                 return '额外的奖励';
+            case self::SCENE_CAPTAIN_AWARD:
+                return '能量团队长奖';
+            case self::SCENE_INDE_HEAD:
+                return '独立团队长奖';
+            case self::SCENE_INDE_MANA:
+                return '独立管理奖';
+            case self::SCENE_ALL_FIRST:
+                return '全网首次能量报单合伙人奖';
+            case self::SCENE_COMM_SANXIA:
+                return '社群分享奖-伞下';
         }
     }
 

@@ -515,7 +515,7 @@ class MallGoodsController extends Controller
             'num' => $request->get('num'),
             'goods_name' => $goods->goods_name,
             'goods_price' => $goods->goods_price,
-            'goods_cost' => $goods->goods_cost,
+            //'goods_cost' => $goods->goods_cost,
             'goods_img' => implode(',', $goods->goods_img),
             'goods_info' => $goods->goods_info,
             'ore_pool' => $goods->ore_pool,

@@ -155,7 +155,8 @@ class EnergyController extends Controller
         try {
 
             // 生成订单
-            EnergyOrder::create($eoData);
+            $eno = EnergyOrder::create($eoData);
+          	$orid=$eno->id;
 
             // 用户余额减少
             Account::reduceAmount($user->id, $coin->id, $totalPrice);
@@ -192,7 +193,7 @@ class EnergyController extends Controller
         }
 
         // 加入队列
-        dispatch(new EnergyDynamicRelease(Service::auth()->getUser()->id, $oNum));
+        dispatch(new EnergyDynamicRelease(Service::auth()->getUser()->id, $oNum,$totalPrice,$orid));
 
         $this->responseSuccess('操作成功');
 

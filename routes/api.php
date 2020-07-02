@@ -14,7 +14,10 @@ use Illuminate\Http\Request;
 */
 
 Route::group(['middleware' => ['auth.api']], function () {
-
+    
+    //jl释放已取消的订单
+    Route::post('jl_jiedong', 'ExOrderBuyController@jl_jiedong');
+    
     Route::get('ex/history/{team_id}', 'ExOrderController@_list')->where('team_id', '[0-9]+');
     Route::get('ex/history_price/{team_id}', 'ExOrderController@price')->where('team_id', '[0-9]+');
 
@@ -287,6 +290,14 @@ Route::group(['middleware' => ['auth.api']], function () {
         Route::post('submit', 'SeniorAdminController@submit'); // 质押申请高级管理奖提交信息页面
         Route::get('index', 'SeniorAdminController@index'); // 获取管理奖成功页面数据
     });
+  
+  	//星级社群
+    Route::group(['prefix' => 'star'], function(){
+        Route::get('index', 'StarCommunityController@index'); // 星级社群列表
+        Route::post('price_spread', 'StarCommunityController@price_spread'); // 反差价
+        Route::get('agreement', 'StarCommunityController@agreement'); // 免责协议
+       Route::post('buy', 'StarCommunityController@buy'); // 购买
+    });
 
 });
 
@@ -304,6 +315,24 @@ Route::group(['prefix' => 'lottery'], function () {
     Route::get('log', 'LotteryController@log'); // 抽奖记录
     Route::get('info', 'LotteryController@info'); // 抽奖说明
     Route::post('submit', 'LotteryController@submit'); // 抽奖提交
+});
+
+// 导入导出
+Route::group(['prefix' => 'excel'], function () {
+    Route::post('one', 'ExcelController@one'); // 清数据
+    Route::post('two', 'ExcelController@two'); // 转换资产
+    Route::post('zheng1', 'ExcelController@zheng1'); // 整合资产1
+    Route::post('zheng2', 'ExcelController@zheng2'); // 整合资产2
+    Route::post('zhenghe', 'ExcelController@zhenghe'); // 整合负数
+
+  	Route::post('jlzhuan','ExcelController@jlzhuan'); //转换资产
+  	Route::post('jlzhengs','ExcelController@jlzhengs'); //整合资产s
+  	Route::post('jlqing','ExcelController@jlqing'); //清空资产
+  
+  	Route::post('pyhighcomm', 'ExcelController@pyHighComm'); //将高级管理将的用户平移到社群奖
+  	
+    // Route::get('export','ExcelController@export');
+    // Route::get('import','ExcelController@import');
 });
 
 

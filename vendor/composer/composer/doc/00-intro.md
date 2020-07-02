@@ -10,7 +10,7 @@ Composer is **not** a package manager in the same sense as Yum or Apt are. Yes,
 it deals with "packages" or libraries, but it manages them on a per-project
 basis, installing them in a directory (e.g. `vendor`) inside your project. By
 default it does not install anything globally. Thus, it is a dependency
-manager. It does however support a "global" project for convenience via the
+manager. It does however support a "global" project for convenience via the 
 [global](03-cli.md#global) command.
 
 This idea is not new and Composer is strongly inspired by node's
@@ -19,13 +19,14 @@ This idea is not new and Composer is strongly inspired by node's
 Suppose:
 
 1. You have a project that depends on a number of libraries.
-1. Some of those libraries depend on other libraries.
+2. Some of those libraries depend on other libraries.
 
 Composer:
 
 1. Enables you to declare the libraries you depend on.
-1. Finds out which versions of which packages can and need to be installed, and
+2. Finds out which versions of which packages can and need to be installed, and
    installs them (meaning it downloads them into your project).
+3. You can update all your dependencies in one command.
 
 See the [Basic usage](01-basic-usage.md) chapter for more details on declaring
 dependencies.
@@ -47,7 +48,7 @@ Linux and macOS.
 ### Downloading the Composer Executable
 
 Composer offers a convenient installer that you can execute directly from the
-commandline. Feel free to [download this file](https://getcomposer.org/installer)
+command line. Feel free to [download this file](https://getcomposer.org/installer)
 or review it on [GitHub](https://github.com/composer/getcomposer.org/blob/master/web/installer)
 if you wish to know more about the inner workings of the installer. The source
 is plain PHP.
@@ -82,7 +83,7 @@ Now run `php bin/composer` in order to run Composer.
 #### Globally
 
 You can place the Composer PHAR anywhere you wish. If you put it in a directory
-that is part of your `PATH`, you can access it globally. On unixy systems you
+that is part of your `PATH`, you can access it globally. On Unix systems you
 can even make it executable and invoke it without directly using the `php`
 interpreter.
 
@@ -106,7 +107,8 @@ Linux distributions.
 > `mkdir -p /usr/local/bin`.
 
 > **Note:** For information on changing your PATH, please read the
-> [Wikipedia article](https://en.wikipedia.org/wiki/PATH_(variable)) and/or use Google.
+> [Wikipedia article](https://en.wikipedia.org/wiki/PATH_(variable)) and/or use
+> your search engine of choice.
 
 Now run `composer` in order to run Composer instead of `php composer.phar`.
 
@@ -139,7 +141,7 @@ C:\bin>echo @php "%~dp0composer.phar" %*>composer.bat
 Add the directory to your PATH environment variable if it isn't already.
 For information on changing your PATH variable, please see
 [this article](https://www.computerhope.com/issues/ch000549.htm) and/or
-use Google.
+use your search engine of choice.
 
 Close your current terminal. Test usage with a new terminal:
 

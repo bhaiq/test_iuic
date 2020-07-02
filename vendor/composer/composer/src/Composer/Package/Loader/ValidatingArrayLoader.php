@@ -49,6 +49,10 @@ class ValidatingArrayLoader implements LoaderInterface
         $this->warnings = array();
         $this->config = $config;
 
+        if ($err = self::hasPackageNamingError($config['name'])) {
+            $this->warnings[] = 'Deprecation warning: Your package name '.$err.' Make sure you fix this as Composer 2.0 will error.';
+        }
+
         if ($this->strictName) {
             $this->validateRegex('name', '[A-Za-z0-9][A-Za-z0-9_.-]*/[A-Za-z0-9][A-Za-z0-9_.-]*', true);
         } else {
@@ -189,13 +193,41 @@ class ValidatingArrayLoader implements LoaderInterface
             }
         }
 
+        if ($this->validateArray('funding') && !empty($this->config['funding'])) {
+            foreach ($this->config['funding'] as $key => $fundingOption) {
+                if (!is_array($fundingOption)) {
+                    $this->errors[] = 'funding.'.$key.' : should be an array, '.gettype($fundingOption).' given';
+                    unset($this->config['funding'][$key]);
+                    continue;
+                }
+                foreach (array('type', 'url') as $fundingData) {
+                    if (isset($fundingOption[$fundingData]) && !is_string($fundingOption[$fundingData])) {
+                        $this->errors[] = 'funding.'.$key.'.'.$fundingData.' : invalid value, must be a string';
+                        unset($this->config['funding'][$key][$fundingData]);
+                    }
+                }
+                if (isset($fundingOption['url']) && !$this->filterUrl($fundingOption['url'])) {
+                    $this->warnings[] = 'funding.'.$key.'.url : invalid value ('.$fundingOption['url'].'), must be an http/https URL';
+                    unset($this->config['funding'][$key]['url']);
+                }
+                if (empty($this->config['funding'][$key])) {
+                    unset($this->config['funding'][$key]);
+                }
+            }
+            if (empty($this->config['funding'])) {
+                unset($this->config['funding']);
+            }
+        }
+
         $unboundConstraint = new Constraint('=', $this->versionParser->normalize('dev-master'));
         $stableConstraint = new Constraint('=', '1.0.0');
 
         foreach (array_keys(BasePackage::$supportedLinkTypes) as $linkType) {
             if ($this->validateArray($linkType) && isset($this->config[$linkType])) {
                 foreach ($this->config[$linkType] as $package => $constraint) {
-                    if (!preg_match('{^[A-Za-z0-9_./-]+$}', $package)) {
+                    if ($err = self::hasPackageNamingError($package, true)) {
+                        $this->warnings[] = 'Deprecation warning: '.$linkType.'.'.$err.' Make sure you fix this as Composer 2.0 will error.';
+                    } elseif (!preg_match('{^[A-Za-z0-9_./-]+$}', $package)) {
                         $this->warnings[] = $linkType.'.'.$package.' : invalid key, package names must be strings containing only [A-Za-z0-9_./-]';
                     }
                     if (!is_string($constraint)) {

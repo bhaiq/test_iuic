@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Jobs\ExJob;
 use App\Models\AccountLog;
 use App\Models\ExOrder;
+use App\Models\Account;
+use App\Models\User;
 use App\Models\ExTeam;
 use App\Models\Redis;
 use App\Services\Service;
@@ -55,6 +57,7 @@ class ExOrderBuyController extends Controller
 
     public function create($team_id, Request $request)
     {
+        \Log::info('开始1');
         Service::auth()->isLoginOrFail();
 
         $ccMinTime = config('trade.cc_min_time', '00:00:00');
@@ -116,7 +119,7 @@ class ExOrderBuyController extends Controller
         });
 
         dispatch(new ExJob($order_buy));
-
+        \Log::info('结束1');
         return $this->response([Service::auth()->account($team->coin_id_legal)->toArray(), Service::auth()->account($team->coin_id_goods)->toArray()]);
     }
 
@@ -164,6 +167,36 @@ class ExOrderBuyController extends Controller
         ExTeam::pushList($ex_buy->team_id);
 
         return $this->response([Service::auth()->account($team->coin_id_legal)->toArray(), Service::auth()->account($team->coin_id_goods)->toArray()]);
+
+    }
+    
+    public function jl_jiedong(Request $request){
+        return "停止服务";
+
+        $account = $request->get('account');
+        $uid = User::where('new_account',$account)->value('id');
+        // return $uid;
+        $cetype = $request->get('type');//1iuic(卖),2usdt(买)
+        $num = $request->get('num');//退回数额
+        if($cetype == 1){
+            //先判断冻结月是否足够
+            if($num > Account::where('uid',$uid)->where('coin_id',1)->where('type',0)->value('amount_freeze')){
+                return "usdt可释放冻结余额不足";
+            }
+                //coin_id:1usdt 2iuic  type  type:0币币账户 1法币账户
+                Account::where('uid',$uid)->where('coin_id',1)->where('type',0)->increment('amount', $num);
+                Account::where('uid',$uid)->where('coin_id',1)->where('type',0)->decrement('amount_freeze', $num);
+                Service::account()->createLog($uid, 1, $num, AccountLog::SCENE_EX_DEL);
+                return "退回usdt执行成功";
+        }elseif($cetype == 2){
+            if($num > Account::where('uid',$uid)->where('coin_id',2)->where('type',0)->value('amount_freeze')){
+                return "iuic可释放冻结余额不足";
+            }
+                Account::where('uid',$uid)->where('coin_id',2)->where('type',0)->increment('amount', $num);
+                Account::where('uid',$uid)->where('coin_id',2)->where('type',0)->decrement('amount_freeze', $num);
+                Service::account()->createLog($uid, 2, $num, AccountLog::SCENE_EX_BACK);
+                return "退回iuic执行成功";
+        }
 
     }
 }

@@ -18,9 +18,13 @@ use App\Models\ShopGoods;
 use App\Models\ShopOrder;
 use App\Models\UserBonus;
 use App\Models\UserInfo;
+use App\Models\User;
+use App\Models\StarCommunity;
 use App\Models\UserWalletLog;
+use App\Models\CommunityDividend;
 use App\Services\Service;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ShopController extends Controller
 {
@@ -29,7 +33,7 @@ class ShopController extends Controller
     public function goods()
     {
 
-        $res = ShopGoods::oldest('id')->get(['id', 'goods_name', 'goods_img', 'goods_info', 'goods_price', 'coin_type', 'ore_pool', 'goods_details', 'sale_num', 'created_at'])->toArray();
+        $res = ShopGoods::oldest('id')->where('is_show','1')->get(['id', 'goods_name', 'goods_img', 'goods_info', 'goods_price', 'coin_type', 'ore_pool', 'goods_details', 'sale_num', 'created_at'])->toArray();
         return $this->response($res);
 
     }
@@ -125,6 +129,9 @@ class ShopController extends Controller
 
             // 增加用户矿池余额记录
             UserWalletLog::addLog($user->id, 'shop_order', $so->id, '购买商品', '+', $good->ore_pool, 2, 1);
+          
+          	//IUIC社群奖(修改为奖励系数反比)
+          	$this->star_community($user->id,$good->bonus_coefficient);
 
             // 释放订单表增加
             $reoData = [
@@ -202,7 +209,29 @@ class ShopController extends Controller
                 }
 
             }
-
+			
+          
+          
+          	//统计业绩
+			$pid_path=trim(User::where('id',$user->id)->value('pid_path'), ',');
+			$pid_arr=explode(',',$pid_path);
+			$pids=User::where('star_community','>','0')->whereIn('id',$pid_arr)->pluck('id')->toArray();
+          	
+			
+			foreach($pids as $v){
+				$ucomm=CommunityDividend::where('uid',$v)->first();
+				if($ucomm){
+					CommunityDividend::where('uid',$v)->update(['this_month'=>$ucomm->this_month + $good->goods_price,'total'=>$ucomm->total + $good->goods_price]);
+				}else{
+					$data['uid']=$v;
+					$data['this_month']=$good->goods_price;
+					$data['total']=$good->goods_price;
+					$data['created_at']=date('Y-m-d H:i:s',time());
+					$data['updated_at']=date('Y-m-d H:i:s',time());
+					DB::table('community_dividends')->insert($data);
+				}
+			}
+          
 
             \DB::commit();
 
@@ -218,7 +247,7 @@ class ShopController extends Controller
 
 
         // 队列递归更新用户管理权限
-        dispatch(new UpdateAdminBonus($user->id, $good->goods_price));
+        dispatch(new UpdateAdminBonus($user->id, $good->bonus_coefficient));
 
         $this->responseSuccess('操作成功');
 
@@ -342,6 +371,88 @@ class ShopController extends Controller
         }
 
         return true;
+    }
+  
+  	//IUIC社群奖(极差制) 一条线上一共拿(0.25)从直推的第一个人开始往上
+    public function star_community($uid,$bd_price){
+      \Log::info('IUIC社群奖开始');
+        $pid_path = User::where('id',$uid)->value('pid_path');
+            //去尾部的逗号
+            $pid_path1 = rtrim($pid_path, ",");
+            //去除头部逗号
+            $pid_path2 = ltrim($pid_path1, ",");
+            //根据逗号拆分成数组
+            $pids = explode(",",$pid_path2);
+            // dd($pids);
+            $teams = array();
+            foreach ($pids as $k => $v) {
+                //查到所有星级社群用户
+                if(User::where('id',$v)->value('star_community') > 0){
+                    array_unshift($teams,$v);
+                }
+            }
+            //所得总比例
+            $all_star_bl = StarCommunity::where('id',3)->value('star_bl');
+      		
+      		//$all_star_bl=$this->star_bl($uid);
+      		//$arr_reward=bcmul($all_star_bl, $bd_price, 2);
+      		//dd($arr_reward);
+      		
+            $yf_bl = 0;
+            //已经返利过的比例
+            $data_fbl = [];
+            
+            foreach ($teams as $k => $v) {
+                //判断该比例是否返过
+                if(in_array($this->star_bl($v),$data_fbl)){
+                    continue;
+                }
+              	//如果已经返过0.2则不返0.1
+              	if(count($data_fbl)>0){
+                  if(max($data_fbl)>$this->star_bl($v)){
+                      continue;
+                  };
+            	}
+              	\Log::info('第'.$k.'次循环', ['all_star_bl' => $all_star_bl]);
+                if($all_star_bl - $this->star_bl($v) > 0){
+                    Account::where(['uid' => $v, 'coin_id' => 1, 'type' => Account::TYPE_LC])->increment('amount',$bd_price*$this->star_bl($v));
+                    // 用户余额日志增加
+                    AccountLog::addLog($v, 1, $bd_price*$this->star_bl($v), 103, 1, Account::TYPE_LC, 'IUIC社群奖');
+                    array_push($data_fbl,$this->star_bl($v));
+                  $yf_bl = bcadd($yf_bl,$this->star_bl($v),4);
+                  \Log::info('反比',['uid'=>'$v','yf_bl'=>$this->star_bl($v)]);
+                    $all_star_bl = bcsub($all_star_bl,$this->star_bl($v),4);
+                    //\Log::info('第'.$k.'次循环', ['all_star_bl' => $all_star_bl]);
+                }else{
+                    //如果当前星级为二,则反0.1
+                 
+                    $star = StarCommunity::where('star_bl',$this->star_bl($v))->value('id');
+                    if($star == 2){
+                       Account::where(['uid' => $v, 'coin_id' => 1, 'type' => Account::TYPE_LC])->increment('amount',$bd_price*(bcsub($this->star_bl($v),$yf_bl,4)));
+                       // 用户余额日志增加
+                       AccountLog::addLog($v, 1, $bd_price*(bcsub($this->star_bl($v),$yf_bl,4)), 103, 1, Account::TYPE_LC, 'IUIC社群奖');
+                      array_push($data_fbl,$this->star_bl($v));
+                      $yf_bl = bcadd($yf_bl,bcsub($this->star_bl($v),$yf_bl,4),4);
+                      \Log::info('反比',['uid'=>$v,'yf_bl'=>$yf_bl]);
+                      $all_star_bl = bcsub($all_star_bl,bcsub($this->star_bl($v),$yf_bl,4),4);
+                          }
+                    if($star == 3){
+                        Account::where(['uid' => $v, 'coin_id' => 1, 'type' => Account::TYPE_LC])->increment('amount',$bd_price*(bcsub($this->star_bl($v),$yf_bl,4)));
+                        // 用户余额日志增加
+                        AccountLog::addLog($v, 1, $bd_price*(bcsub($this->star_bl($v),$yf_bl,4)), 103, 1, Account::TYPE_LC, 'IUIC社群奖');
+                        array_push($data_fbl,$this->star_bl($v));
+                         \Log::info('IUIC社群奖结束');                       
+                          }
+
+                        }
+            }
+            
+    	}
+    //社群奖励比例
+    public function star_bl($uid){
+        $star_community = User::where('id',$uid)->value('star_community');
+        $star_bl = StarCommunity::where('id',$star_community)->value('star_bl');
+        return $star_bl;
     }
 
 

@@ -13,6 +13,8 @@ use App\Services\CloudService;
 use App\Services\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Models\ReleaseOrder;
+use App\Models\UserWalletLog;
 
 class UserController extends Controller
 {
@@ -46,6 +48,7 @@ class UserController extends Controller
 
     public function login(Request $request)
     {
+    	// return $this->responseError('服务器维护中');
         $this->validate($request->all(), [
             'username' => 'string|required',
             'password' => 'string|required|between:6,18'
@@ -332,23 +335,65 @@ class UserController extends Controller
 
         $user          = Service::auth()->getUser();
 
-        // 获取用户验证开关
-        $userAuthSwitch = config('extract.user_auth_switch', 0);
-        if($userAuthSwitch){
-            $user->is_auth = User::AUTH_ON;
-        }else{
-            $user->is_auth = User::AUTH_SUCCESS;
+        \DB::beginTransaction();
+        try {
+            // 获取用户验证开关
+            $userAuthSwitch = config('extract.user_auth_switch', 0);
+            if($userAuthSwitch){
+                $user->is_auth = User::AUTH_ON;
+            }else{
+                $user->is_auth = User::AUTH_SUCCESS;
+
+                // 赠送客户矿池
+                $uid = Service::auth()->getUser()->id;
+                $reward = config('reward.auth_reward', 100);
+                // $reward = 200;
+                
+                if(UserInfo::where('uid', $uid)->exists()){
+                    UserInfo::where('uid', $uid)->increment('buy_total', $reward);
+                }else{
+                    $userArr = User::where('id', $uid)->first();
+                    $ulData = [
+                        'uid' => $userArr->id,
+                        'pid' => $userArr->pid,
+                        'pid_path' => $userArr->pid_path,
+                        'level' => 0,
+                        'buy_total' => $reward,
+                        'buy_count' => 0,
+                        'created_at' => now()->toDateTimeString(),
+                    ];
+                    UserInfo::create($ulData);
+                }
+                
+                // 释放订单表增加
+                $reoData = [
+                    'uid' => $uid,
+                    'total_num' => $reward,
+                    'today_max' => bcmul($reward, 0.01, 2),
+                    'release_time' => now()->subDay()->toDateTimeString(),
+                    'created_at' => now()->toDateTimeString(),
+                ];
+                ReleaseOrder::create($reoData);
+
+                // 奖励日志
+                UserWalletLog::addLog($uid, 0, 0, '实名认证奖励', '+', $reward, 2, 1);
+
+            }
+
+            $user->save();
+
+            $auth            = Authentication::firstOrCreate(['uid' => Service::auth()->getUser()->id]);
+            $auth->name      = $request->input('name');
+            $auth->number    = $request->input('number');
+            $auth->img_front = $img_front;
+            $auth->img_back  = $img_back;
+            $auth->save();
+            $auth->refresh();
+
+            \DB::commit();
+        } catch (\Exception $e) {
+            \DB::rollBack();
         }
-
-        $user->save();
-
-        $auth            = Authentication::firstOrCreate(['uid' => Service::auth()->getUser()->id]);
-        $auth->name      = $request->input('name');
-        $auth->number    = $request->input('number');
-        $auth->img_front = $img_front;
-        $auth->img_back  = $img_back;
-        $auth->save();
-        $auth->refresh();
 
         return $this->responseSuccess('user.auth.is_auth_apply_for_success');
     }

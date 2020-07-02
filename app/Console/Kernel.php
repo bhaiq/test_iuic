@@ -64,6 +64,24 @@ class Kernel extends ConsoleKernel
         $schedule->command('newKuangchiRelease')->dailyAt('05:11');
 
         $schedule->command('robotTrade')->everyFiveMinutes();
+      
+        $schedule->command('todayReleaseClear')->dailyAt('05:11');
+      
+      	$schedule->command('CommDivid')->monthlyOn(1,'01:01');
+      	$schedule->command('CommDividMonth')->monthlyOn(5,'02:35');
+      	
+      	$schedule->command('Mytestds')->dailyAt('11:33');
+      	
+      	
+      	//=====================
+    //      $schedule->command('addInfoCollect')->dailyAt('13:03');
+    //     $schedule->command('updateWallet')->dailyAt('13:08');
+    //     $schedule->command('addBaodan')->dailyAt('13:13');
+    //     $schedule->command('updateLevel')->dailyAt('13:18');
+    //     $schedule->command('kuangjiRelease')->dailyAt('13:23');
+    //     $schedule->command('releaseEnergy')->dailyAt('13:28');
+    //     $schedule->command('newKuangchiRelease')->dailyAt('13:31');
+    //     $schedule->command('todayReleaseClear')->dailyAt('13:36');
 
     }
 

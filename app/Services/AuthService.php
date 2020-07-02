@@ -33,6 +33,7 @@ class AuthService
 
     function init(Request $request)
     {
+        // return null;
         $this->user    = null;
         $this->request = $request;
         $this->client  = $request->header(HeaderConstant::AUTH_CLIENT, AccountConstant::CLIENT_WEB);
@@ -203,6 +204,7 @@ class AuthService
      */
     public function isLoginOrFail()
     {
+
         $this->isLogin() || abort(HttpConstant::CODE_401_UNAUTHORIZED, trans('user.auth.not_login'));
 
         return $this;

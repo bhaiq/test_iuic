@@ -75,7 +75,10 @@ class OtcOrderService
 
         switch ($this->order->type) {
             case OtcOrder::TYPE_SELL:
+                
                 if (Service::auth()->getUser()->id == $this->getSeller()->id) abort(400, trans('system.illegal'));
+                
+                
                 $this->order->otcPublishSell()->increment('amount_lost', $this->order->amount);
                 $publish = $this->order->otcPublishSell;
                 break;

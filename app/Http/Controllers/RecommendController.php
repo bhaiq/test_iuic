@@ -139,7 +139,10 @@ class RecommendController extends Controller
         // 获取用户部门的所有用户ID
         $lowerIds = User::where('pid_path', 'like', '%,' . $uid . ',%')->pluck('id')->toArray();
 
-        return UserWallet::whereIn('uid', $lowerIds)->count();
+        $user = EnergyOrder::whereIn('uid', $lowerIds)->pluck('uid')->toArray();
+        //去重
+        return count(array_unique($user));
+
 
     }
 
@@ -150,8 +153,8 @@ class RecommendController extends Controller
         // 获取用户手下的所有用户ID
         $lowerIds = User::where('pid', $uid)->pluck('id')->toArray();
 
-        return UserWallet::whereIn('uid', $lowerIds)->count();
-
+        $user = EnergyOrder::whereIn('uid', $lowerIds)->pluck('id')->toArray();
+        return count(array_unique($user));
     }
 
     // 能量报单当日新增有效
@@ -160,9 +163,12 @@ class RecommendController extends Controller
 
         // 获取用户部门的所有用户ID
         $lowerIds = User::where('pid_path', 'like', '%,' . $uid . ',%')->pluck('id')->toArray();
+        //今日报单
+        $user = EnergyOrder::whereIn('uid', $lowerIds)->whereDate('created_at', now()->toDateString())->pluck('uid')->toArray();
+        //去重
+        $yb = count(array_unique(EnergyOrder::whereIn('uid', $user)->pluck('uid')->toArray())); //以报单数
+        return count($user)-$yb;
 
-        return UserWallet::whereIn('uid', $lowerIds)->whereDate('created_at', now()->toDateString())->count();
 
     }
-
 }

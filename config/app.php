@@ -181,6 +181,8 @@ return [
 
         // 阿里云短信
         Mrgoon\AliSms\ServiceProvider::class,
+        // 导入导出
+        Maatwebsite\Excel\ExcelServiceProvider::class,
 
     ],
 
@@ -237,7 +239,8 @@ return [
 
         // 阿里云短信
         'AliSms'=>Mrgoon\AliSms\ServiceProvider::class,
-
+        // 导入导出
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
     ],
 
 ];
