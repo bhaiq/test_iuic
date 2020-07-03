@@ -50,6 +50,7 @@ class JlKjRelease extends Command
             $kuangjis =  Kuangji::where('id',$kuangji->kuangji_id)->first();
             if(empty($kuangjis)){
                 Log::info('该矿机已关闭',['kuangji_id'=>$kuangji->kuangji_id,'uid'=>$kuangji->uid,'order_id'=>$kuangji->order_id]);
+                continue;
             }
             $suanli = Kuangji::where('id',$kuangji->kuangji_id)->value('suanli');
             Log::info("算力",['suanli'=>$suanli]);
