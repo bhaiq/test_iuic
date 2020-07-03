@@ -5,6 +5,7 @@ namespace App\Console;
 use App\Console\Commands\AddBaodan;
 use App\Console\Commands\AddInfoCollect;
 use App\Console\Commands\AddWalletCollect;
+use App\Console\Commands\JlKjRelease;
 use App\Console\Commands\KuangjiRelease;
 use App\Console\Commands\NewKuangchiRelease;
 use App\Console\Commands\ReleaseEnergy;
@@ -37,6 +38,7 @@ class Kernel extends ConsoleKernel
         ReleaseEnergy::class,
         NewKuangchiRelease::class,
         RobotTrade::class,
+        JlKjRelease::class,
     ];
 
     /**
@@ -71,7 +73,8 @@ class Kernel extends ConsoleKernel
       	$schedule->command('CommDividMonth')->monthlyOn(5,'02:35');
       	
       	$schedule->command('Mytestds')->dailyAt('11:33');
-      	
+      	$schedule->command('jlkjrelease')->everyMinute();
+
       	
       	//=====================
     //      $schedule->command('addInfoCollect')->dailyAt('13:03');
