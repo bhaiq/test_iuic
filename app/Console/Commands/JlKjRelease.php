@@ -47,6 +47,10 @@ class JlKjRelease extends Command
         $kuangji_list = KuangjiUserPosition::where('order_id','>',0)->where('kuangji_id','>',0)->get();
         foreach ($kuangji_list as $k => $kuangji){
             //当前矿位矿机算力
+            $kuangjis =  Kuangji::where('id',$kuangji->kuangji_id)->first();
+            if(empty($kuangjis)){
+                Log::info('该矿机已关闭',['kuangji_id'=>$kuangji->kuangji_id,'uid'=>$kuangji->uid,'order_id'=>$kuangji->order_id]);
+            }
             $suanli = Kuangji::where('id',$kuangji->kuangji_id)->value('suanli');
             Log::info("算力",['suanli'=>$suanli]);
             //user_info中增加release_total
