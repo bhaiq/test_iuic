@@ -823,8 +823,10 @@ class KuangJiController extends Controller
     {
 
         Service::auth()->isLoginOrFail();
+        $uid = Service::auth()->getUser()->id;
 
         $res = KuangjiLinghuoLog::from('kuangji_linghuo_log as kll')
+            ->where('uid',$uid)
             ->latest('kll.id')
             ->paginate($request->get('per_page', 10));
 
