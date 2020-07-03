@@ -43,6 +43,7 @@ class JlKjRelease extends Command
     public function handle()
     {
         //获取所有用户开通矿位信息
+        Log::info("矿机算力开始释放");
         $kuangji_list = KuangjiUserPosition::where('order_id','>',1)->where('kuangji_id','>',0)->get();
         foreach ($kuangji_list as $k => $kuangji){
             //当前矿位矿机算力
@@ -64,6 +65,7 @@ class JlKjRelease extends Command
             // 矿池表信息增加
             UserWalletLog::addLog($kuangji->uid, 'kuangji_user_position', $kuangji->order_id, '算力灵活矿机释放', '-', $true_num, 2, 1);
         }
+        Log::info("矿机算力结束释放");
 
     }
 }
