@@ -482,7 +482,7 @@ class ExcelController extends Controller
     }
   
   
-  public function jlzhengs(Request $request)
+    public function jlzhengs(Request $request)
     {
         \Log::info('整合资产开始');
 		$jlname = $request->get('name');
@@ -550,13 +550,13 @@ class ExcelController extends Controller
         \Log::info('整合资产结束', $returnArr);
         return returnJson('1','处理成功',$returnArr);
     }
-  	public function jlqing(Request $request)
+    public function jlqing(Request $request)
     {
         \Log::info('用户清资产开始');
 
-        $data = Excel::toArray(new UsersImport,storage_path('/exports/jlqing.xlsx'));
+        $data = Excel::toArray(new UsersImport,storage_path('/exports/jlqing7_4.xlsx'));
         $count = count($data);
-        if($count<1){
+        if($count < 1){
             return returnJson('0','未检测到有效数据');
         }
         // return returnJson(0, '终止');
@@ -579,17 +579,22 @@ class ExcelController extends Controller
                         array_push($wuArr, $new_account);
                         continue;
                     }
+                    //可用能量和冻结能量清空
+                    UserWallet::where('uid', $user['id'])->update(['energy_frozen_num'=>0]);
+                    UserWallet::where('uid', $user['id'])->update(['energy_num'=>0]);
 
-                    
+                    //正在释放的能量报单改为释放完成
+                    EnergyOrder::where('uid', $user['id'])->update(['status' => 1]);
+
                     // 能量矿池减少(500),可用能量增加(400)
-                    UserWallet::where('uid', $user['id'])->decrement('energy_frozen_num',500);
-                    UserWallet::where('uid', $user['id'])->increment('energy_num',400);
-                    if($user['new_account'] == "zwz001"){
-                        UserWallet::where('uid', $user['id'])->decrement('energy_frozen_num',500);
-                        UserWallet::where('uid', $user['id'])->increment('energy_num',400);
-                    }
+//                    UserWallet::where('uid', $user['id'])->decrement('energy_frozen_num',500);
+//                    UserWallet::where('uid', $user['id'])->increment('energy_num',400);
+//                    if($user['new_account'] == "zwz001"){
+//                        UserWallet::where('uid', $user['id'])->decrement('energy_frozen_num',500);
+//                        UserWallet::where('uid', $user['id'])->increment('energy_num',400);
+//                    }
                     // IUIC矿池 清空
-                    UserInfo::where('uid', $user['id'])->update(['buy_total'=>'0','release_total'=>'0']);
+//                    UserInfo::where('uid', $user['id'])->update(['buy_total'=>'0','release_total'=>'0']);
 
                     $yes += 1;
                     array_push($yesArr, $new_account);
