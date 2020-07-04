@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Account;
 use App\Models\Kuangji;
 use App\Models\KuangjiUserPosition;
 use App\Models\UserInfo;
