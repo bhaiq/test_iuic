@@ -67,6 +67,12 @@ class JlKjRelease extends Command
             }else{
                 $true_num = $suanli;
             }
+            // 用户余额增加
+            Account::addAmount($kuangji->uid, 2, $true_num);
+
+            // 用户余额日志增加
+            AccountLog::addLog($kuangji->uid, 2, $true_num, 20, 1, Account::TYPE_LC,$kuangjis->name.'机释放');
+
             UserInfo::where('uid', $kuangji->uid)->increment('release_total', $true_num);
             // 矿池表信息增加
             UserWalletLog::addLog($kuangji->uid, 'kuangji_user_position', $kuangji->order_id, $kuangjis->name.'机释放', '-', $true_num, 2, 1);
