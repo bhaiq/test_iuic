@@ -141,7 +141,8 @@ class RecommendController extends Controller
 
         $user = EnergyOrder::whereIn('uid', $lowerIds)->pluck('uid')->toArray();
         //去重
-        return count(array_unique($user));
+//        return count(array_unique($user));
+        return json_encode(array_unique($user));
 
 
     }
