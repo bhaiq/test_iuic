@@ -27,11 +27,11 @@ class StarCommunityController extends Controller
             $data[$k]['name'] = $v->name;
             $data[$k]['price'] = round($v->price, 0);
             if($v->id == 1){
-                $data[$k]['star_bl'] = round(config('senior_admin.senior_admin_1_reward_bl')*100, 4);
+                $data[$k]['star_bl'] = (string)round(config('senior_admin.senior_admin_1_reward_bl')*100, 4);
             }else if($v->id == 2){
-                $data[$k]['star_bl'] = round(config('senior_admin.senior_admin_2_reward_bl')*100, 4);
+                $data[$k]['star_bl'] = (string)round(config('senior_admin.senior_admin_2_reward_bl')*100, 4);
             }else if($v->id == 3){
-                $data[$k]['star_bl'] = round(config('senior_admin.senior_admin_3_reward_bl')*100, 4);
+                $data[$k]['star_bl'] = (string)round(config('senior_admin.senior_admin_3_reward_bl')*100, 4);
             }
 
         }
