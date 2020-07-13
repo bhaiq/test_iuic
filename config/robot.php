@@ -1,5 +1,5 @@
 <?php return array (
-    'robot_switch' => '1',
+    'robot_switch' => '0',
     'robot_start_time' => '00:00:00',
     'robot_end_time' => '23:59:59',
     'robot_min_range' => '0.0001',
