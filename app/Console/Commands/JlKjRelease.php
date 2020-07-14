@@ -4,9 +4,11 @@ namespace App\Console\Commands;
 
 use App\Models\Account;
 use App\Models\AccountLog;
+use App\Models\Coin;
 use App\Models\Kuangji;
 use App\Models\KuangjiUserPosition;
 use App\Models\UserInfo;
+use App\Models\UserPartner;
 use App\Models\UserWalletLog;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
@@ -88,8 +90,59 @@ class JlKjRelease extends Command
             // 矿池表信息增加
             UserWalletLog::addLog($kuangji->uid, 'kuangji_user_position', $kuangji->order_id, $kuangjis->name.'机释放', '-', $true_num, 2, 1);
             UserWalletLog::addLog($kuangji->uid, 'kuangji_user_position', $kuangji->order_id, $kuangjis->name.'机释放手续费', '-', $kj_service_charge, 2, 1);
+//            $this->partnerBonus();
         }
+
+
         Log::info("矿机算力结束释放");
+
+    }
+    // 合伙人收益分红
+    private function partnerBonus($num)
+    {
+
+        // 获取需要分红的用户
+        $up = UserPartner::where('status', 1)->get();
+        if($up->isEmpty()){
+            \Log::info('没有合伙人需要分红');
+            return false;
+        }
+
+        // 获取需要分红的用户数量
+//        $userCount = config('user_partner.count', 50);
+        $userCount = UserPartner::where('status', 1)->sum('count');
+
+        // 获取本次分红的比例
+        $tip = config('user_partner.tip_partner', 0.1);
+
+        // 获取本次分红的总数
+        $totalNum = bcmul($tip, $num, 8);
+
+        // 获取本次分红一份的分红数量
+        $oneNum = bcdiv($totalNum, $userCount, 8);
+        if ($oneNum < 0.00000001) {
+            \Log::info('分红数量少于0.00000001,放弃本次分红奖分红');
+            return false;
+        }
+
+        \Log::info('合伙人分红的数据', ['num' => $num, 'count' => $userCount, 'tip' => $tip, 'one' => $oneNum]);
+
+        // 获取那个USDT的币种ID
+        $coin = Coin::getCoinByName('IUIC');
+
+        foreach ($up as $v){
+
+            $newNum = bcmul($oneNum, $v->count, 8);
+
+            // 用户余额表更新
+            Account::addAmount($v->uid, $coin->id, $newNum, Account::TYPE_LC);
+
+            // 用户余额日志表更新
+            AccountLog::addLog($v->uid, $coin->id, $newNum, 18, 1, Account::TYPE_LC, '合伙人分红');
+
+        }
+
+        return true;
 
     }
 }
