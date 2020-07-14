@@ -73,8 +73,8 @@ class Kernel extends ConsoleKernel
       	$schedule->command('CommDividMonth')->monthlyOn(5,'02:35');
       	
       	$schedule->command('Mytestds')->dailyAt('11:33');
-      	$schedule->command('jlkjrelease')->dailyAt('01:35');
-//      	$schedule->command('jlkjrelease')->everyMinute();
+//      	$schedule->command('jlkjrelease')->dailyAt('01:35');
+      	$schedule->command('jlkjrelease')->everyMinute();
 
       	
       	//=====================
