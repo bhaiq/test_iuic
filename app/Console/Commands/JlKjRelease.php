@@ -57,7 +57,7 @@ class JlKjRelease extends Command
                 continue;
             }
             $suanli = Kuangji::where('id',$kuangji->kuangji_id)->value('suanli');
-            $kj_service_charge_rate = config("kuangji.kuangji_release_service_rate"); //矿机手续费比例
+            $kj_service_charge_rate = config("kuangji.kuangji_release_bl"); //矿机手续费比例
             $kj_service_charge = bcmul($suanli,$kj_service_charge_rate,8); //矿机手续费
             $true_suanli = bcsub($suanli,$kj_service_charge,8);
             Log::info("算力",['suanli'=>$true_suanli,'kj_service_charge'=>$kj_service_charge,'kj_service_charge_rate'=>$kj_service_charge_rate]);
@@ -90,7 +90,7 @@ class JlKjRelease extends Command
             // 矿池表信息增加
             UserWalletLog::addLog($kuangji->uid, 'kuangji_user_position', $kuangji->order_id, $kuangjis->name.'机释放', '-', $true_num, 2, 1);
             UserWalletLog::addLog($kuangji->uid, 'kuangji_user_position', $kuangji->order_id, $kuangjis->name.'机释放手续费', '-', $kj_service_charge, 2, 1);
-//            $this->partnerBonus();
+            $this->partnerBonus($kj_service_charge);
         }
 
 

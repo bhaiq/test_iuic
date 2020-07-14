@@ -11,6 +11,5 @@
   'kuangji_flexible_max' => '50000',
   'kuangji_cash_switch' => '0',
   'kuangji_linghuo_redeem_switch' => '0',
-    'kuangji_release_service_rate' => '0.3', //矿机释放手续费比例
 
 );
