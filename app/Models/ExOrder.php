@@ -74,7 +74,7 @@ class ExOrder extends Model
         $redis_qx_key = 'Ex_Order_Qx' . '_' . $id;
         $value = Redis::get($redis_key);
         $value && abort(400, '操作频繁！');
-        Redis::setex($redis_key, 30, 1);
+        Redis::setex($redis_key, 5, 1);
         Redis::setex($redis_qx_key, 60, 1);
     }
 
