@@ -48,7 +48,7 @@ class SymbolController extends Controller
         $team_name = $array[count($array) - 1];
 
         \Log::info('K线图数据有误', ['team_name' => $team_name]);
-
+        dd($team_name);
         $team      = ExTeam::whereName($team_name)->first()->toSql();
         dd($team);
 
