@@ -22,7 +22,7 @@
             return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
         }
 
-
+        console.log(getParameterByName('team_name'));
         TradingView.onready(function () {
             var udf_datafeed = new Datafeeds.UDFCompatibleDatafeed("{{url('market')}}");
             // var udf_datafeed = new Datafeeds.UDFCompatibleDatafeed("http://13.250.27.45:8081/market");
