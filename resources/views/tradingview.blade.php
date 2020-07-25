@@ -24,8 +24,8 @@
 
         console.log(getParameterByName('team_name'));
         TradingView.onready(function () {
-
-            var udf_datafeed = new Datafeeds.UDFCompatibleDatafeed("http://8.210.10.179:8081/market");
+            var udf_datafeed = new Datafeeds.UDFCompatibleDatafeed("{{url('market')}}");
+            // var udf_datafeed = new Datafeeds.UDFCompatibleDatafeed("http://13.250.27.45:8081/market");
             var widget = window.tvWidget = new TradingView.widget({
                 // debug: true, // uncomment this line to see Library errors and warnings in the console
                 fullscreen: true,
