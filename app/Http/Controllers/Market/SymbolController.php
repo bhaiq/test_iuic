@@ -49,7 +49,9 @@ class SymbolController extends Controller
 
         \Log::info('K线图数据有误', ['team_name' => $team_name]);
 
-        $team      = ExTeam::whereName($team_name)->first();
+        $team      = ExTeam::whereName($team_name)->first()->toSql();
+        dd($team);
+
 
         $model['description'] = $team->name;
         $model['name']        = $team->name;
