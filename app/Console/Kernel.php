@@ -76,7 +76,8 @@ class Kernel extends ConsoleKernel
       	
       	$schedule->command('Mytestds')->dailyAt('11:33');
       	$schedule->command('jlkjrelease')->dailyAt('01:35');
-      	$schedule->command('minus_day')->dailyAt('02:00'); //每天处理到期的矿机订单
+//      	$schedule->command('minus_day')->dailyAt('02:00'); //每天处理到期的矿机订单
+      	$schedule->command('minus_day')->everyMinute(); //每天处理到期的矿机订单
 //      	$schedule->command('jlkjrelease')->everyMinute();
 
       	
