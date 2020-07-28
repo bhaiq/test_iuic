@@ -336,13 +336,14 @@ class KuangJiController extends Controller
         if ($coinAccount->amount < $kj->price) {
             $this->responseError('用户余额不足');
         }
-
+        $days = Kuangji::where('id',$request->get('id'))->value('valid_day');
         $koData = [
             'uid' => Service::auth()->getUser()->id,
             'kuangji_id' => $request->get('id'),
+            'total_day'  => $days,
             'created_at' => now()->toDateTimeString(),
-            'total_day'  => Kuangji::where('id',$request->get('id'))->value('valid_day'),
         ];
+        \Log::info("购买矿机",['uid'=>Service::auth()->getUser()->id,'kuangji_id'=>$request->get('id')]);
 
         \DB::beginTransaction();
         try {
