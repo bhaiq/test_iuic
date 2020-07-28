@@ -172,7 +172,7 @@ class KuangJiController extends Controller
                             ->join('kuangji as k', 'k.id', 'kuangji_id')
                             ->where('ko.id', $kup->order_id)
                             ->first();
-
+                        dd($res);
                         $start = strtotime(substr($res->created_at, 0, 10) . ' 00:00:00');
                         $cur = time();
 
