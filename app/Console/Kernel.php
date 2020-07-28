@@ -7,6 +7,7 @@ use App\Console\Commands\AddInfoCollect;
 use App\Console\Commands\AddWalletCollect;
 use App\Console\Commands\JlKjRelease;
 use App\Console\Commands\KuangjiRelease;
+use App\Console\Commands\MinusDay;
 use App\Console\Commands\NewKuangchiRelease;
 use App\Console\Commands\ReleaseEnergy;
 use App\Console\Commands\RobotTrade;
@@ -39,6 +40,7 @@ class Kernel extends ConsoleKernel
         NewKuangchiRelease::class,
         RobotTrade::class,
         JlKjRelease::class,
+        MinusDay::class,
     ];
 
     /**
@@ -74,6 +76,7 @@ class Kernel extends ConsoleKernel
       	
       	$schedule->command('Mytestds')->dailyAt('11:33');
       	$schedule->command('jlkjrelease')->dailyAt('01:35');
+      	$schedule->command('minus_day')->dailyAt('02:00'); //每天处理到期的矿机订单
 //      	$schedule->command('jlkjrelease')->everyMinute();
 
       	

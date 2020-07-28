@@ -7,6 +7,7 @@ use App\Models\AccountLog;
 use App\Models\Coin;
 use App\Models\Kuangji;
 use App\Models\KuangjiUserPosition;
+use App\Models\User;
 use App\Models\UserInfo;
 use App\Models\UserPartner;
 use App\Models\UserWalletLog;
@@ -91,6 +92,7 @@ class JlKjRelease extends Command
             UserWalletLog::addLog($kuangji->uid, 'kuangji_user_position', $kuangji->order_id, $kuangjis->name.'机释放', '-', $true_num, 2, 1);
             UserWalletLog::addLog($kuangji->uid, 'kuangji_user_position', $kuangji->order_id, $kuangjis->name.'机释放手续费', '-', $kj_service_charge, 2, 1);
             $this->partnerBonus($kj_service_charge);
+            $this->kuangji_reward($kuangji->uid,$suanli);
         }
 
 
@@ -144,5 +146,18 @@ class JlKjRelease extends Command
 
         return true;
 
+    }
+
+    //质机奖,开发矿机产出的币给予奖励，上级可获得下级产出币的3%的奖励
+    public function kuangji_reward($uid,$reward_num)
+    {
+        $pid = User::where('id',$uid)->value('pid');
+        $rate = config("kuangji.kuangji_zhiji_rate"); //上级得奖比例
+        $reward = bcmul($reward_num,$rate,8);
+        // 用户余额增加
+        Account::addAmount($pid, 2, $reward);
+
+        // 用户余额日志增加
+        AccountLog::addLog($pid, 2, $reward, 20, 1, Account::TYPE_LC,'质机奖');
     }
 }

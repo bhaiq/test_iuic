@@ -177,7 +177,7 @@ class KuangJiController extends Controller
                         $cur = time();
 
                         $kjInfo = [];
-                        $kjInfo['sy_time'] = bcdiv(bcsub(bcadd($start, 181 * 24 * 3600), $cur), 24 * 3600);
+                        $kjInfo['sy_time'] = bcdiv(bcsub(bcadd($start, $res->total_day * 24 * 3600), $cur), 24 * 3600);
                         $kjInfo['name'] = $res->name;
                         $kjInfo['img'] = $res->img;
                         $kjInfo['price'] = $res->price;
@@ -341,6 +341,7 @@ class KuangJiController extends Controller
             'uid' => Service::auth()->getUser()->id,
             'kuangji_id' => $request->get('id'),
             'created_at' => now()->toDateTimeString(),
+            'total_day'  => Kuangji::where('id',$request->get('id'))->value('valid_day'),
         ];
 
         \DB::beginTransaction();
@@ -841,6 +842,20 @@ class KuangJiController extends Controller
 
         return $this->response($result);
 
+    }
+
+
+
+
+    //处理矿机订单,总天数
+    public function order_day(Request $request)
+    {
+        $orders = KuangjiOrder::where('status',1)->get();
+        foreach ($orders as $k => $v)
+        {
+            $day = Kuangji::where('id',$v->kuangji_id)->value('valid_day');
+            KuangjiOrder::where('id',$v->id)->update(['total_day'=>$day]);
+        }
     }
 
 }
