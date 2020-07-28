@@ -49,10 +49,10 @@ class MinusDay extends Command
             $times = bcdiv(bcsub(bcadd($start, $v->total_day * 24 * 3600), $cur), 24 * 3600);
             if($times < 1){
                 // 矿机订单关闭
-                KuangjiOrder::where('id', $v->order_id)->update(['status' => 3]);
-                Log::info('订单关闭',['order_id'=>$v->order_id]);
+                KuangjiOrder::where('id', $v->id)->update(['status' => 3]);
+                Log::info('订单关闭',['order_id'=>$v->id]);
                 // 矿位表更新
-                KuangjiUserPosition::where('order_id', $v->order_id)->update(['order_id' => 0, 'kuangji_id' => 0]);
+                KuangjiUserPosition::where('order_id', $v->id)->update(['order_id' => 0, 'kuangji_id' => 0]);
             }
         }
     }
