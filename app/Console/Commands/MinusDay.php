@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\KuangjiOrder;
+use App\Models\KuangjiUserPosition;
 use Illuminate\Console\Command;
 
 class MinusDay extends Command

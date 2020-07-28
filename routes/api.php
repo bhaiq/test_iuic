@@ -18,7 +18,7 @@ Route::group(['middleware' => ['auth.api']], function () {
     //jl释放已取消的订单
     Route::post('jl_jiedong', 'ExOrderBuyController@jl_jiedong');
 
-    Route::post('ceshi', 'kuangjiController@order_day'); //处理矿机天数
+    Route::post('ceshi', 'kuangJiController@order_day'); //处理矿机天数
 
     Route::get('ex/history/{team_id}', 'ExOrderController@_list')->where('team_id', '[0-9]+');
     Route::get('ex/history_price/{team_id}', 'ExOrderController@price')->where('team_id', '[0-9]+');
