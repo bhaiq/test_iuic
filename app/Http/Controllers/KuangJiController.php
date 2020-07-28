@@ -116,7 +116,7 @@ class KuangJiController extends Controller
 
                 $cur = time();
 
-                $result['data'][$k]['sy_time'] = bcdiv(bcsub(bcadd($start, 181 * 24 * 3600), $cur), 24 * 3600);
+                $result['data'][$k]['sy_time'] = bcdiv(bcsub(bcadd($start, $v['total_day'] * 24 * 3600), $cur), 24 * 3600);
 
             } else {
                 $result['data'][$k]['sy_time'] = 0;
