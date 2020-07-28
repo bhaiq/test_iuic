@@ -15,7 +15,7 @@ class KuangjiOrder extends Model
 
     protected $table = 'kuangji_order';
 
-    protected $fillable = ['total_day'];
+//    protected $fillable = ['uid','total_day'];
 
     protected $guarded = [];
 
