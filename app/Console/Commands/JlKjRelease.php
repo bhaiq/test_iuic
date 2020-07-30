@@ -148,10 +148,16 @@ class JlKjRelease extends Command
 
     }
 
-    //质机奖,开发矿机产出的币给予奖励，上级可获得下级产出币的3%的奖励
+    //质机奖,开发矿机产出的币给予奖励，上级可获得下级产出币的3%的奖励,上级也必须有矿机
     public function kuangji_reward($uid,$reward_num)
     {
+
         $pid = User::where('id',$uid)->value('pid');
+        $has = KuangjiUserPosition::where('uid',$pid)->where('kuangji_id','>',0)->where('order_id','>',0)->first();
+        if(empty($has)){
+            Log::info("上级没有矿机,无法得到奖励");
+            return;
+        }
         $rate = config("kuangji.kuangji_zhiji_rate"); //上级得奖比例
         $reward = bcmul($reward_num,$rate,8);
         // 用户余额增加
