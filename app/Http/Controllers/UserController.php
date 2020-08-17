@@ -48,7 +48,7 @@ class UserController extends Controller
 
     public function login(Request $request)
     {
-    	 return $this->responseError('服务器维护中');
+//    	 return $this->responseError('服务器维护中');
         $this->validate($request->all(), [
             'username' => 'string|required',
             'password' => 'string|required|between:6,18'
