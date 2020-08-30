@@ -64,7 +64,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('addBaodan')->dailyAt('05:22');
         $schedule->command('updateLevel')->dailyAt('00:25');
         $schedule->command('kuangjiRelease')->dailyAt('00:01');
-        $schedule->command('releaseEnergy')->dailyAt('04:11');
+//        $schedule->command('releaseEnergy')->dailyAt('04:11');
         $schedule->command('newKuangchiRelease')->dailyAt('05:11');
 
         $schedule->command('robotTrade')->everyFiveMinutes();
@@ -75,7 +75,7 @@ class Kernel extends ConsoleKernel
       	$schedule->command('CommDividMonth')->monthlyOn(5,'02:35');
       	
       	$schedule->command('Mytestds')->dailyAt('11:33');
-//      	$schedule->command('jlkjrelease')->dailyAt('01:35');
+      	$schedule->command('jlkjrelease')->dailyAt('01:35');
 //      	$schedule->command('jlkjrelease')->everyMinute();
       	$schedule->command('minus_day')->dailyAt('02:00'); //每天处理到期的矿机订单
 //      	$schedule->command('minus_day')->everyMinute(); //每天处理到期的矿机订单
