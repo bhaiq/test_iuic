@@ -688,6 +688,8 @@ class ExcelController extends Controller
                     Account::where('uid', $user['id'])->update(['amount'=>'0','amount_freeze'=>'0']);
                     // 能量资产清空
                     UserWallet::where('uid', $user['id'])->update(['energy_num'=>'0','energy_frozen_num'=>'0','consumer_num'=>'0','energy_lock_num'=>'0',]);
+                    //能量订单处理
+                    EnergyOrder::where('uid',$user['id'])->update(['status'=>"1"]);
                     // IUIC矿池 清空
                     UserInfo::where('uid', $user['id'])->update(['buy_total'=>'0','release_total'=>'0']);
                     // IUIC灵活矿机 清空
