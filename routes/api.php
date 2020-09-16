@@ -301,6 +301,12 @@ Route::group(['middleware' => ['auth.api']], function () {
        Route::post('buy', 'StarCommunityController@buy'); // 购买
     });
 
+    //矿池统计数据
+    Route::group(['prefix'=>'stat'],function(){
+        Route::get('infos','StatController@infos'); //统计数据
+        Route::get('logs','StatController@logs'); //回购销毁记录
+    });
+
 });
 
 Route::group(['prefix' => 'common'], function () {
