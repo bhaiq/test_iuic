@@ -17,25 +17,25 @@ class StatController extends Controller
     public function infos(Request $request)
     {
         //IUIC总量
-        $data['data'][0] = $this->ce("0");
+        $data['data']['all_iuic'] = $this->ce("0");
         //IUIC剩余总量(2.1亿 - IUIC剩余矿池 - 流通IUIC)
-        $data['data'][1] = $this->ce("1");
+        $data['data']['sy_iuic'] = $this->ce("1");
         //流通IUIC数量
-        $data['data'][2] = $this->ce("2");
+        $data['data']['lt_iuic'] = $this->ce("2");
         //IUIC矿池数量
-        $data['data'][3] = $this->ce("3");
+        $data['data']['iuic_num'] = $this->ce("3");
         //IUIC矿池每天产出数量
-        $data['data'][4] = $this->ce("4");
+        $data['data']['create_iuic'] = $this->ce("4");
         //交易买卖手续费分红总数
-        $data['data'][5] = $this->ce("5");
+        $data['data']['bouns_num'] = $this->ce("5");
         //交易买卖手续费回购销毁IUIC总数
-        $data['data'][6] = $this->ce("6");
+        $data['data']['buy_num'] = $this->ce("6");
         //交易买卖手续费累计手续费
-        $data['data'][7] = $this->ce("7");
+        $data['data']['service_num'] = $this->ce("7");
         //币币手续费比例
         $tipBl = config('trade.tip_bl');
-        $data['data'][8] = bcmul($tipBl,100,2)."%";
-        $data['data'][9] = "0.00%";
+        $data['data']['marker'] = bcmul($tipBl,100,2)."%";
+        $data['data']['taker'] = "0.00%";
         return $this->response($data);
     }
 
