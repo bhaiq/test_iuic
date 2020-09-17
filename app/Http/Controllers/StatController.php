@@ -27,11 +27,11 @@ class StatController extends Controller
         //IUIC矿池每天产出数量
         $data['data']['create_iuic'] = $this->ce("4");
         //交易买卖手续费分红总数
-        $data['data']['bouns_num'] = $this->ce("6");
-        //交易买卖手续费回购销毁IUIC总数
         $data['data']['buy_num'] = $this->ce("5");
+        //交易买卖手续费回购销毁IUIC总数
+        $data['data']['service_num'] = $this->ce("6");
         //交易买卖手续费累计手续费
-        $data['data']['service_num'] = $this->ce("7");
+        $data['data']['bouns_num'] = $this->ce("7");
         //币币手续费比例
         $tipBl = config('trade.tip_bl');
         $data['data']['marker'] = bcmul($tipBl,100,2)."%";
