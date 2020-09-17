@@ -313,7 +313,7 @@ class ExJob implements ShouldQueue
             $tip = max(bcmul($amount, $tipBl, 8), 0.01);
 
             $tipBonusBl = config('trade.tip_bonus_bl');
-            $tip2 = max(bcmul($amount, $tipBonusBl, 8), 0.01);
+            $tip2 = max(bcmul($tip, $tipBonusBl, 8), 0.01);
 
             // 记录手续费信息
             ExTip::addTip($tip, $tip2, $sell->id);
