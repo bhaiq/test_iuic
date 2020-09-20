@@ -760,7 +760,7 @@ class ExcelController extends Controller
                     //能量订单处理
                     EnergyOrder::where('uid',$user['id'])->update(['status'=>"1"]);
 //                  // 补上IUIC矿池
-                    UserInfo::where('uid', $user['id'])->increment(['buy_total'=>$v[1]]);
+                    UserInfo::where('uid', $user['id'])->increment('buy_total',$v[1]);
 //                    // IUIC灵活矿机 清空
 //                    KuangjiLinghuo::where('uid', $user['id'])->update(['num'=>'0']);
 
