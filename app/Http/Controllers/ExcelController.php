@@ -743,8 +743,8 @@ class ExcelController extends Controller
                 foreach ($value as $k => $v) {
                     # code...
 
-                     dump((string)$v[0]);
-                     dump((string)$v[1]);
+//                     dump((string)$v[0]);
+//                     dump((string)$v[1]);
                     $new_account = $v[0];
                     $user = User::with('user_info')->where('new_account', $new_account)->first();
                     if(!$user){
