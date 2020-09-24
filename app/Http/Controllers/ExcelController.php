@@ -659,7 +659,7 @@ class ExcelController extends Controller
     {
         \Log::info('用户清资产开始');
 
-        $data = Excel::toArray(new UsersImport,storage_path('/exports/jlqing9_24.xlsx'));
+        $data = Excel::toArray(new UsersImport,storage_path('/exports/jlqing9_24_2.xlsx'));
         $count = count($data);
         if($count < 1){
             return returnJson('0','未检测到有效数据');
@@ -690,10 +690,10 @@ class ExcelController extends Controller
                     UserWallet::where('uid', $user['id'])->update(['energy_num'=>'0','energy_frozen_num'=>'0','consumer_num'=>'0','energy_lock_num'=>'0',]);
                     //能量订单处理
                     EnergyOrder::where('uid',$user['id'])->update(['status'=>"1"]);
-//                    // IUIC矿池 清空
-//                    UserInfo::where('uid', $user['id'])->update(['buy_total'=>'0','release_total'=>'0']);
-//                    // IUIC灵活矿机 清空
-//                    KuangjiLinghuo::where('uid', $user['id'])->update(['num'=>'0']);
+                    // IUIC矿池 清空
+                    UserInfo::where('uid', $user['id'])->update(['buy_total'=>'0','release_total'=>'0']);
+                    // IUIC灵活矿机 清空
+                    KuangjiLinghuo::where('uid', $user['id'])->update(['num'=>'0']);
 
                     $yes += 1;
                     array_push($yesArr, $new_account);
