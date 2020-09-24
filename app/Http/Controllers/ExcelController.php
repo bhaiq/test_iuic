@@ -654,12 +654,12 @@ class ExcelController extends Controller
       		
 	}
 
-	//jl清资产 把这些账号里的所有能量矿池、IUIC、USDT全部清零
-    public function jlqingss(Request $request)
+	//jl清资产 把这些账号里的所有能量矿池、USDT全部清零
+    public function jlqing(Request $request)
     {
         \Log::info('用户清资产开始');
 
-        $data = Excel::toArray(new UsersImport,storage_path('/exports/jlqing9_9.xlsx'));
+        $data = Excel::toArray(new UsersImport,storage_path('/exports/jlqing9_24.xlsx'));
         $count = count($data);
         if($count < 1){
             return returnJson('0','未检测到有效数据');
@@ -684,16 +684,16 @@ class ExcelController extends Controller
                         array_push($wuArr, $new_account);
                         continue;
                     }
-                    // 法币/币币 资产清空
-                    Account::where('uid', $user['id'])->update(['amount'=>'0','amount_freeze'=>'0']);
+                    // usdt法币/币币 资产清空
+                    Account::where('uid', $user['id'])->where('coin_id',1)->update(['amount'=>'0','amount_freeze'=>'0']);
                     // 能量资产清空
                     UserWallet::where('uid', $user['id'])->update(['energy_num'=>'0','energy_frozen_num'=>'0','consumer_num'=>'0','energy_lock_num'=>'0',]);
                     //能量订单处理
                     EnergyOrder::where('uid',$user['id'])->update(['status'=>"1"]);
-                    // IUIC矿池 清空
-                    UserInfo::where('uid', $user['id'])->update(['buy_total'=>'0','release_total'=>'0']);
-                    // IUIC灵活矿机 清空
-                    KuangjiLinghuo::where('uid', $user['id'])->update(['num'=>'0']);
+//                    // IUIC矿池 清空
+//                    UserInfo::where('uid', $user['id'])->update(['buy_total'=>'0','release_total'=>'0']);
+//                    // IUIC灵活矿机 清空
+//                    KuangjiLinghuo::where('uid', $user['id'])->update(['num'=>'0']);
 
                     $yes += 1;
                     array_push($yesArr, $new_account);
@@ -723,72 +723,72 @@ class ExcelController extends Controller
 
 
     //账户能量资产与全部USDT资产全部清零，然后每个账户按表内数补上IUIC矿池
-    public function jlqing(Request $request)
-    {
-        \Log::info('用户处理资产开始');
-
-        $data = Excel::toArray(new UsersImport,storage_path('/exports/2020-9-20qing.xlsx'));
-        $count = count($data);
-        if($count < 1){
-            return returnJson('0','未检测到有效数据');
-        }
-        // return returnJson(0, '终止');
-        \DB::beginTransaction();
-        try {
-            $yes = 0;//处理数量
-            $yesArr = [];
-            $wu = 0;//未处理数量
-            $wuArr = [];
-            foreach($data as $key=>$value){
-                foreach ($value as $k => $v) {
-                    # code...
-
-//                     dump((string)$v[0]);
-//                     dump((string)$v[1]);
-                    $new_account = $v[0];
-                    $user = User::with('user_info')->where('new_account', $new_account)->first();
-                    if(!$user){
-                        // 无账号
-                        $wu += 1;
-                        array_push($wuArr, $new_account);
-                        continue;
-                    }
-//                    // USDT法币/币币 资产清空
-                    Account::where('uid', $user['id'])->where('coin_id',1)->update(['amount'=>'0','amount_freeze'=>'0']);
-                    // 能量资产清空
-                    UserWallet::where('uid', $user['id'])->update(['energy_num'=>'0','energy_frozen_num'=>'0','consumer_num'=>'0','energy_lock_num'=>'0']);
-                    //能量订单处理
-                    EnergyOrder::where('uid',$user['id'])->update(['status'=>"1"]);
-//                  // 补上IUIC矿池
-//                    UserInfo::where('uid', $user['id'])->increment('buy_total',$v[1]);
-//                    // IUIC灵活矿机 清空
-//                    KuangjiLinghuo::where('uid', $user['id'])->update(['num'=>'0']);
-
-                    $yes += 1;
-                    array_push($yesArr, $new_account);
-                }
-            }
-
-            \DB::commit();
-        } catch (\Exception $e) {
-            \DB::rollBack();
-            return returnJson(0, '操作异常'.$e);
-        }
-
-        $returnArr = [
-            'yes' => [
-                'count' => $yes,
-                'yesArr' => $yesArr
-            ],
-            'wu' => [
-                'count' => $wu,
-                'wuArr' => $wuArr
-            ]
-        ];
-
-        \Log::info('用户清资产结束', $returnArr);
-        return returnJson('1','处理成功',$returnArr);
-    }
+//    public function jlqing(Request $request)
+//    {
+//        \Log::info('用户处理资产开始');
+//
+//        $data = Excel::toArray(new UsersImport,storage_path('/exports/2020-9-20qing.xlsx'));
+//        $count = count($data);
+//        if($count < 1){
+//            return returnJson('0','未检测到有效数据');
+//        }
+//        // return returnJson(0, '终止');
+//        \DB::beginTransaction();
+//        try {
+//            $yes = 0;//处理数量
+//            $yesArr = [];
+//            $wu = 0;//未处理数量
+//            $wuArr = [];
+//            foreach($data as $key=>$value){
+//                foreach ($value as $k => $v) {
+//                    # code...
+//
+////                     dump((string)$v[0]);
+////                     dump((string)$v[1]);
+//                    $new_account = $v[0];
+//                    $user = User::with('user_info')->where('new_account', $new_account)->first();
+//                    if(!$user){
+//                        // 无账号
+//                        $wu += 1;
+//                        array_push($wuArr, $new_account);
+//                        continue;
+//                    }
+////                    // USDT法币/币币 资产清空
+//                    Account::where('uid', $user['id'])->where('coin_id',1)->update(['amount'=>'0','amount_freeze'=>'0']);
+//                    // 能量资产清空
+//                    UserWallet::where('uid', $user['id'])->update(['energy_num'=>'0','energy_frozen_num'=>'0','consumer_num'=>'0','energy_lock_num'=>'0']);
+//                    //能量订单处理
+//                    EnergyOrder::where('uid',$user['id'])->update(['status'=>"1"]);
+////                  // 补上IUIC矿池
+////                    UserInfo::where('uid', $user['id'])->increment('buy_total',$v[1]);
+////                    // IUIC灵活矿机 清空
+////                    KuangjiLinghuo::where('uid', $user['id'])->update(['num'=>'0']);
+//
+//                    $yes += 1;
+//                    array_push($yesArr, $new_account);
+//                }
+//            }
+//
+//            \DB::commit();
+//        } catch (\Exception $e) {
+//            \DB::rollBack();
+//            return returnJson(0, '操作异常'.$e);
+//        }
+//
+//        $returnArr = [
+//            'yes' => [
+//                'count' => $yes,
+//                'yesArr' => $yesArr
+//            ],
+//            'wu' => [
+//                'count' => $wu,
+//                'wuArr' => $wuArr
+//            ]
+//        ];
+//
+//        \Log::info('用户清资产结束', $returnArr);
+//        return returnJson('1','处理成功',$returnArr);
+//    }
   	
   
 }
