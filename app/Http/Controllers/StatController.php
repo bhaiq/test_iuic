@@ -80,7 +80,7 @@ class StatController extends Controller
                 $today_release = UserWalletLog::where(function ($q){
                     $q->where('exp', '交易释放')->orwhere('exp', '灵活矿机释放')->orwhere('exp', '矿池静态释放');
                 })->whereDate('created_at', now()->toDateString())->sum('num');
-                $data['data'][4] = number_format($today_release,4);
+                return number_format($today_release,4);
             }else if($id == 6){
                 //交易买卖手续费分红总数
                 $fenhong_service = ExTip::where('type',0)->sum('bonus_num');
