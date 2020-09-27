@@ -83,7 +83,7 @@ class StatController extends Controller
                 return number_format($today_release,4);
             }else if($id == 6){
                 //交易买卖手续费分红总数
-                $fenhong_service = ExTip::where('type',0)->where('created_at','>=','2020-09-25')->sum('bonus_num');
+                $fenhong_service = ExTip::where('type',0)->where('created_at','>=','2020-09-28')->sum('bonus_num');
                 return number_format($fenhong_service,4);
             }else if($id == 7) {
                 //交易买卖手续费回购销毁IUIC总数
@@ -91,7 +91,7 @@ class StatController extends Controller
                 return number_format($all_back,4);
             }else if($id == 8) {
                 //交易买卖手续费累计手续费
-                $all_service = ExTip::where('type',0)->where('created_at','>=','2020-09-25')->sum('num');
+                $all_service = ExTip::where('type',0)->where('created_at','>=','2020-09-28')->sum('num');
                 return number_format($all_service,4);
             }
         }
