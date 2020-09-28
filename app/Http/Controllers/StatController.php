@@ -78,7 +78,8 @@ class StatController extends Controller
             }else if($id == 5){
                 //IUIC矿池每天产出数量
                 $today_release = UserWalletLog::where(function ($q){
-                    $q->where('exp', '交易释放')->orwhere('exp', '灵活矿机释放')->orwhere('exp', '矿池静态释放');
+//                    $q->where('exp', '交易释放')->orwhere('exp', '灵活矿机释放')->orwhere('exp', '矿池静态释放');
+                    $q->orwhere('exp', '灵活矿机释放')->orwhere('exp', '矿池静态释放');
                 })->whereDate('created_at', now()->toDateString())->sum('num');
                 return number_format($today_release,4);
             }else if($id == 6){
