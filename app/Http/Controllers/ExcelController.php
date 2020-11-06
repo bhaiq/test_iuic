@@ -659,7 +659,7 @@ class ExcelController extends Controller
     {
         \Log::info('用户清资产开始');
 
-        $data = Excel::toArray(new UsersImport,storage_path('/exports/jlqing9_24_2.xlsx'));
+        $data = Excel::toArray(new UsersImport,storage_path('/exports/10_31qing.xls'));
         $count = count($data);
         if($count < 1){
             return returnJson('0','未检测到有效数据');
@@ -691,9 +691,9 @@ class ExcelController extends Controller
                     //能量订单处理
                     EnergyOrder::where('uid',$user['id'])->update(['status'=>"1"]);
                     // IUIC矿池 清空
-                    UserInfo::where('uid', $user['id'])->update(['buy_total'=>'0','release_total'=>'0']);
+                    // UserInfo::where('uid', $user['id'])->update(['buy_total'=>'0','release_total'=>'0']);
                     // IUIC灵活矿机 清空
-                    KuangjiLinghuo::where('uid', $user['id'])->update(['num'=>'0']);
+                    // KuangjiLinghuo::where('uid', $user['id'])->update(['num'=>'0']);
 
                     $yes += 1;
                     array_push($yesArr, $new_account);

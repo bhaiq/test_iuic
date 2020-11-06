@@ -10,6 +10,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Models\UserCode;
 
 class CommonController extends Controller
 {
@@ -47,6 +48,14 @@ class CommonController extends Controller
 
         return $this->response(['url' => $url]);
 
+    }
+    
+    //国家区号
+    public function countryCode(){
+        
+        // $list = UserCode::pluck('int_code')->toArray();
+        $list = UserCode::select('name','int_code')->get()->toArray();
+        return $this->response(['data'=>$list]);
     }
 
 }

@@ -20,16 +20,23 @@ class SmsService
     /**
      * @param $mobile
      */
-    public function send($mobile)
+    public function send($mobile, $int_code='86')
     {
 
         $code = rand(1000, 9999);
-
-        $template = config('aliyunsms.template');
-
         // 阿里云发送短信
         $aliSms = new AliSms();
-        $response = $aliSms->sendSms($mobile, $template, ['code'=> $code]);
+        if($int_code == '86'){
+            $template = config('aliyunsms.template');
+            $response = $aliSms->sendSms($mobile, $template, ['code'=> $code]);
+            \Log::info('国内', ['mobile'=>$mobile, '$int_code'=>$int_code, '$code'=>$code]);
+        }else{
+            //国际号码
+            $template = config('aliyunsmstwo.template');
+            $response = $aliSms->sendSms($mobile, $template, ['code'=> $code], config('aliyunsmstwo'));
+            \Log::info('国外', ['mobile'=>$mobile, '$int_code'=>$int_code, '$code'=>$code]);
+        }
+        
         \Log::info('发送验证码返回的数据', [$response]);
         if($response->Code != 'OK'){
             abort(400, trans('communication.send_fail'));

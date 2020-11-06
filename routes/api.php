@@ -30,14 +30,14 @@ Route::group(['middleware' => ['auth.api']], function () {
 
     Route::post('/userLogin', 'UserController@login');
     Route::post('/userLogout', 'UserController@logout');
-    Route::post('/user', 'UserController@create');
+    Route::post('/user', 'UserController@create'); //注册提交按钮
     Route::get('/userSelf', 'UserController@info');
     Route::get('/user/{username}', 'UserController@find');
-    Route::get('/userCode', 'UserController@getCode');
-    Route::put('/userForget', 'UserController@forgetPassword');
+    Route::get('/userCode', 'UserController@getCode'); //发送验证码
+    Route::put('/userForget', 'UserController@forgetPassword'); //忘记密码提交按钮
     Route::post('/userInfo', 'UserController@update');
     Route::post('/userAuth', 'UserController@auth');
-    Route::put('/userPay', 'UserController@payPassword');
+    Route::put('/userPay', 'UserController@payPassword'); // 修改二级密码提交按钮
     Route::put('/userPassword', 'UserController@setPassword');
 
     Route::get('/account_secret', 'AccountController@_listSecret');
@@ -312,6 +312,9 @@ Route::group(['middleware' => ['auth.api']], function () {
 Route::group(['prefix' => 'common'], function () {
 
     Route::post('upload/image', 'CommonController@uploadImage'); // 公共上传图片
+    Route::get('country/code', 'CommonController@countryCode'); // 国家区号
+    Route::post('country/code', 'CommonController@countryCode'); // 国家区号
+    Route::any('country/code', 'CommonController@countryCode'); // 国家区号
 
 });
 

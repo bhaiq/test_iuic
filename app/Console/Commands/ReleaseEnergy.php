@@ -42,8 +42,11 @@ class ReleaseEnergy extends Command
     {
 
         \Log::info('=====  定时释放能量资产  =====');
-
-        $this->toRelease();
+        $switch = config('energy.energy_switch');
+        if($switch == 1){
+            $this->toRelease();
+        }
+        
 
         \Log::info('=====  结束释放能量资产  =====');
 

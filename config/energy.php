@@ -3,7 +3,7 @@
   'energy_ky_release_bl' => '0.8',
   'energy_xfjf_release_bl' => '0',
   'energy_gyjjf_release_bl' => '0.2',
-  'energy_team_reward_bl' => '0.1',
+  'energy_team_reward_bl' => '0.05',
   'energy_recommend_1_reward_bl' => '0',
   'energy_recommend_2_reward_bl' => '0',
   'energy_community_50000_reward_bl' => '0',
@@ -18,4 +18,5 @@
   'energy_head_lv1' => '0.4',
   'energy_head_lv2' => '0.35',
   'energy_head_lv3' => '0.3',
+  'energy_switch' => '0',
 );

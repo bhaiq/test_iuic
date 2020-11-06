@@ -18,7 +18,15 @@
         <input type="text" name="new_account" placeholder="请输入账号"/>
     </p>
     <p style="padding: 0px;">
-        <em>+86</em><input style="padding-left: 15px;" type="text" name="user" placeholder="请输入手机号码"/>
+        <!--<em>+86</em>-->
+        <select class="inputcolint">
+            <option >+86</option>
+            <option>+60</option>
+            <option>+65</option>
+            <option>+852</option>
+            <option>+1</option>
+        </select>
+        <input style="padding-left: 15px;" type="text" name="user" placeholder="请输入手机号码"/>
     </p>
     <p>
         <input type="text" name="captcha" placeholder="请输入验证码"/>
@@ -56,12 +64,12 @@
             var pass = $('input[name=pass]').val();
             var repass = $('input[name=repass]').val();
             var code = $('input[name=code]').val();
-
+            var int_code=$("select option:selected").val();
 
             $.ajax({
                 url:"/api/user",    //请求的url地址
                 dataType:"json",   //返回格式为json
-                data:{'new_account': new_account, 'username':user,'code':captcha,'password':pass,'re_password':repass,'invite_code':code,'type':1},
+                data:{'new_account': new_account, 'username':user,'code':captcha,'password':pass,'re_password':repass,'invite_code':code,'type':1,'int_code':int_code},
                 type:"POST",   //请求方式
                 success:function(d){
                     alert('注册成功');

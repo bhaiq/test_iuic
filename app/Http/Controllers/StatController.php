@@ -7,6 +7,7 @@ use App\Models\BuyBack;
 use App\Models\ExTip;
 use App\Models\IuicInfo;
 use App\Models\UserInfo;
+use App\Models\DeducionLog;
 use App\Models\UserWalletLog;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -62,15 +63,15 @@ class StatController extends Controller
         $values = IuicInfo::where('id',$id)->first();
         $iuic_kuagchi = UserInfo::sum(\DB::raw('(buy_total - release_total)'));
         $iuic_liutong = Account::where('coin_id',2)->sum(\DB::raw('(amount + amount_freeze)'));
-
+        $all_back = BuyBack::where('id','>',0)->sum('num');
         if($values['is_close'] == 0){
             return $values['value'];
         }else{
             if($id == 1){
                 return number_format("210000000"); //IUIC总量
             }else if($id == 2){
-                $shengy = 210000000 - $iuic_kuagchi - $iuic_liutong;
-                return number_format($shengy,4); //IUIC剩余总量(2.1亿 - IUIC剩余矿池 - 流通IUIC)
+                $shengy = 210000000 - $iuic_kuagchi - $iuic_liutong - $all_back;
+                return number_format($shengy,4); //IUIC剩余总量(2.1亿 - IUIC剩余矿池 - 流通IUIC - 回购总数)
             }else if($id == 3){
                 return number_format($iuic_liutong,4); //流通IUIC数量
             }else if($id == 4){
@@ -79,21 +80,23 @@ class StatController extends Controller
                 //IUIC矿池每天产出数量
                 $today_release = UserWalletLog::where(function ($q){
 //                    $q->where('exp', '交易释放')->orwhere('exp', '灵活矿机释放')->orwhere('exp', '矿池静态释放');
-                    $q->orwhere('exp', '灵活矿机释放')->orwhere('exp', '矿池静态释放');
+                    $q->where('exp', '灵活矿机释放')->orwhere('exp', '矿池静态释放');
                 })->whereDate('created_at', now()->toDateString())->sum('num');
                 return number_format($today_release,4);
             }else if($id == 6){
                 //交易买卖手续费分红总数
-                $fenhong_service = ExTip::where('type',0)->where('created_at','>=','2020-09-28')->sum('bonus_num');
+                $fenhong_service = ExTip::where('type',0)->where('created_at','>=','2020-10-16 17:09:00')->sum('bonus_num');
                 return number_format($fenhong_service,4);
             }else if($id == 7) {
                 //交易买卖手续费回购销毁IUIC总数
-                $all_back = BuyBack::where('id','>',0)->sum('num');
+               
                 return number_format($all_back,4);
             }else if($id == 8) {
-                //交易买卖手续费累计手续费
-                $all_service = ExTip::where('type',0)->where('created_at','>=','2020-09-28')->sum('num');
-                return number_format($all_service,4);
+                //交易买卖手续费累计手续费(手续费总数 - 交易手续费抵扣数)
+                $all_service = ExTip::where('type',0)->where('created_at','>=','2020-10-16 17:09:00')->sum('num');
+                $deducion_log = DeducionLog::where('id','>',0)->sum('num');
+                $all_services = $all_service - $deducion_log;
+                return number_format($all_services,4);
             }
         }
 

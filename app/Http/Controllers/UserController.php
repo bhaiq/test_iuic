@@ -76,7 +76,8 @@ class UserController extends Controller
         Service::auth()->logout();
         return $this->responseSuccess();
     }
-
+    
+    //注册提交按钮
     public function create(Request $request)
     {
         $rules = [
@@ -87,7 +88,8 @@ class UserController extends Controller
             'type'        => 'integer|required|between:1,2',
             'new_account'     => 'required|between:6,18',
         ];
-
+         \Log::info('info',['code'=> $request->get('int_code')]);
+        // return;
         //1为手机2为邮件
         $rules['username'] = $request->input('type') == 1 ? 'required|digits_between:8,16' : 'string|required|max:50|email';
 
@@ -130,18 +132,19 @@ class UserController extends Controller
         if ($request->input('type') == 1) {
             $data['mobile'] = $request->input('username');
 //            Service::cloud()->verifyCode($request->input('username'), $request->input('code'));
-            Service::mobile()->verifyCode($request->input('username'), $request->input('code'));
+            // Service::mobile()->verifyCode($request->get('int_code','86').$request->input('username'), $request->input('code'));
         } else {
             $data['email'] = $request->input('username');
             Service::email()->verifyCode($request->input('username'), $request->input('code'));
         }
 
+        $data['int_code'] = $request->get('int_code');//区号
         $data['new_account'] = $request->get('new_account');
         $data['nickname'] = $request->get('new_account');
         $data['password'] = $request->input('password');
         $data['pid']      = $pid;
         $data['pid_path'] = $pid_path;
-
+        \Log::info('info',['code'=> $request->get('int_code')]);
         $user = User::create($data);
         $user->refresh();
 
@@ -167,9 +170,11 @@ class UserController extends Controller
         return $this->response($user->toArray());
 
     }
-
+    
+    //发送验证码
     public function getCode(Request $request)
     {
+        // \Log::info('测试', [$request->get('type'),$request->get('username'),$request->get('int_code')]);
         $username = 0;
         switch ($request->get('type')) {
             //用户注册
@@ -220,12 +225,19 @@ class UserController extends Controller
             (new EmailService())->sendByType($username, $request->get('type'));
             return $this->responseSuccess('communication.email.send_success');
         } else {
-//            (new CloudService())->sendForReg($username);
-            Service::mobile()->send($username);
+            $qint_code = $request->get('int_code','86');
+            if($request->get('type') == 3){
+                \Log::info('测试', [Service::auth()->getUser()->int_code]);
+                $qint_code = Service::auth()->getUser()->int_code;
+            }
+            Service::mobile()->send($qint_code.$username, $qint_code);
+            
+            
             return $this->responseSuccess('communication.mobile.send_success');
         }
     }
-
+    
+    //忘记密码提交按钮
     public function forgetPassword(Request $request)
     {
         $this->validate($request->all(), [
@@ -250,7 +262,7 @@ class UserController extends Controller
             Service::email()->verifyCode($user->email, $request->input('code'));
         } else {
             //Service::cloud()->verifyCode($request->input('username'), $request->input('code'));
-            Service::mobile()->verifyCode($user->mobile, $request->input('code'));
+            Service::mobile()->verifyCode($user->int_code.$user->mobile, $request->input('code'));
         }
         $user->password = StringLib::password($password);
         $user->save();
@@ -276,7 +288,8 @@ class UserController extends Controller
 
         return $this->responseSuccess('user.password.change_success');
     }
-
+    
+    //修改二级密码提交按钮
     public function payPassword(Request $request)
     {
         Service::auth()->isLoginOrFail();
@@ -293,7 +306,7 @@ class UserController extends Controller
             Service::email()->verifyCode($user->email, $request->input('code'));
         } else {
 //            Service::cloud()->verifyCode($user->mobile, $request->input('code'));
-            Service::mobile()->verifyCode($user->mobile, $request->input('code'));
+            Service::mobile()->verifyCode($user->int_code.$user->mobile, $request->input('code'));
         }
         $user->transaction_password = StringLib::password($password);
         $user->save();

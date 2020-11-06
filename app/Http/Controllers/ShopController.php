@@ -33,7 +33,7 @@ class ShopController extends Controller
     public function goods()
     {
 
-        $res = ShopGoods::oldest('id')->where('is_show','1')->get(['id', 'goods_name', 'goods_img', 'goods_info', 'goods_price', 'coin_type', 'ore_pool', 'goods_details', 'sale_num', 'created_at'])->toArray();
+        $res = ShopGoods::oldest('id')->where('is_show','1')->get(['id', 'goods_name', 'goods_img', 'goods_info', 'goods_price', 'coin_type', 'ore_pool', 'shop_attr','goods_details', 'sale_num', 'created_at'])->toArray();
         return $this->response($res);
 
     }
