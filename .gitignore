@@ -3,3 +3,4 @@
 .config/*
 config/*
 storage/*
+public/script/load/*

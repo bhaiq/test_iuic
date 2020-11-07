@@ -88,6 +88,25 @@ class PartnerController extends Controller
             // 合伙人表新增
             UserPartner::create($upData);
 
+            //给上级加业绩
+            $pid_path=trim(User::where('id',$user->id)->value('pid_path'), ',');
+            $pid_arr=explode(',',$pid_path);
+
+
+            foreach($pid_arr as $v){
+                $ucomm=CommunityDividend::where('uid',$v)->first();
+                if($ucomm){
+                    CommunityDividend::where('uid',$v)->update(['this_month'=>$ucomm->this_month + $total,'total'=>$ucomm->total + $total]);
+                }else{
+                    $data['uid']=$v;
+                    $data['this_month']=$total;
+                    $data['total']=$total;
+                    $data['created_at']=date('Y-m-d H:i:s',time());
+                    $data['updated_at']=date('Y-m-d H:i:s',time());
+                    DB::table('community_dividends')->insert($data);
+                }
+            }
+
             // 用户表状态改变
             $user->is_partner = 2;
             $user->save();
