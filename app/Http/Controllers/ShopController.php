@@ -221,7 +221,8 @@ class ShopController extends Controller
 			foreach($pids as $v){
 				$ucomm=CommunityDividend::where('uid',$v)->first();
 				if($ucomm){
-					CommunityDividend::where('uid',$v)->update(['this_month'=>$ucomm->this_month + $good->goods_price,'total'=>$ucomm->total + $good->goods_price]);
+					CommunityDividend::where('uid',$v)->update(['this_month'=>$ucomm->this_month + $good->goods_price
+                        ,'total'=>$ucomm->total + $good->goods_price,'true_num'=>$ucomm->true_num + $good->goods_price]);
 				}else{
 					$data['uid']=$v;
 					$data['this_month']=$good->goods_price;

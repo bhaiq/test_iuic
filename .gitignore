@@ -4,3 +4,4 @@
 config/*
 storage/*
 public/script/load/*
+vendor/*

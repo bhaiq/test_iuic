@@ -19,6 +19,7 @@ Route::group(['middleware' => ['auth.api']], function () {
     Route::post('jl_jiedong', 'ExOrderBuyController@jl_jiedong');
 
     Route::post('ceshi', 'KuangJiController@order_day'); //处理矿机天数
+    Route::post('jl_ceshi', 'PartnerController@jl_ceshi'); //处理矿机天数
 
     Route::get('ex/history/{team_id}', 'ExOrderController@_list')->where('team_id', '[0-9]+');
     Route::get('ex/history_price/{team_id}', 'ExOrderController@price')->where('team_id', '[0-9]+');

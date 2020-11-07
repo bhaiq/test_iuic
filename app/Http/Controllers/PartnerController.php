@@ -11,6 +11,7 @@ namespace App\Http\Controllers;
 use App\Models\Account;
 use App\Models\AccountLog;
 use App\Models\Coin;
+use App\Models\CommunityDividend;
 use App\Models\UserPartner;
 use App\Services\Service;
 use Illuminate\Http\Request;
@@ -96,7 +97,8 @@ class PartnerController extends Controller
             foreach($pid_arr as $v){
                 $ucomm=CommunityDividend::where('uid',$v)->first();
                 if($ucomm){
-                    CommunityDividend::where('uid',$v)->update(['this_month'=>$ucomm->this_month + $total,'total'=>$ucomm->total + $total]);
+                    CommunityDividend::where('uid',$v)->update(['this_month'=>$ucomm->this_month + $total,
+                        'total'=>$ucomm->total + $total,'true_num'=>$ucomm->true_num + $total]);
                 }else{
                     $data['uid']=$v;
                     $data['this_month']=$total;
@@ -169,6 +171,17 @@ class PartnerController extends Controller
 
         return $this->response(array_merge($result, $res));
 
+    }
+
+    //将原本业绩(this_month)复制一份到(true_num)
+    public function jl_ceshi(Request $request)
+    {
+        $list = CommunityDividend::all();
+        foreach ($list as $k => $v)
+        {
+            CommunityDividend::where('id',$v->id)->update(['true_num'=>$v->this_month]);
+        }
+        $this->responseSuccess('操作成功');
     }
 
 }
