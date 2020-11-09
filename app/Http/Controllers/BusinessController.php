@@ -31,7 +31,7 @@ class BusinessController extends Controller
 
             $ab = AuthBusiness::where('uid', Service::auth()->getUser()->id)->first();
             if(!$ab){
-                $this->responseError('用户认证数据有误');
+                $this->responseError(trans('api.authentication_incorrect'));
             }
 
             $res['coin_name'] = $ab->coin_name;
@@ -54,17 +54,17 @@ class BusinessController extends Controller
 
         // 判断用户认证商家状态
         if($user->is_business != 0){
-            $this->responseError('用户已认证或已申请认证');
+            $this->responseError(trans('api.been_authenticated'));
         }
 
         // 判断用户是否实名认证
         if($user->is_auth != 1){
-            $this->responseError('用户未实名认证');
+            $this->responseError(trans('api.dont_authenticated'));
         }
 
         // 判断用户有木有提交
         if(AuthBusiness::where('uid', Service::auth()->getUser()->id)->exists()){
-            $this->responseError('操作有误');
+            $this->responseError(trans('api.wrong_operation'));
         }
 
         // 获取认证商家需要的信息
@@ -78,7 +78,7 @@ class BusinessController extends Controller
 
         // 判断用户余额是否充足
         if($coinAccount->amount < $coinNum){
-            $this->responseError('用户余额不足');
+            $this->responseError(trans('api.insufficient_user_balance'));
         }
 
         $bData = [
@@ -113,11 +113,11 @@ class BusinessController extends Controller
 
             \Log::info('认证商家提交出现异常');
 
-            $this->responseError('认证异常');
+            $this->responseError(trans('api.authentication_exception'));
 
         }
 
-        $this->responseSuccess('提交成功');
+        $this->responseSuccess(trans('api.submit_successfully'));
 
     }
 
@@ -129,11 +129,11 @@ class BusinessController extends Controller
 
         $ab = AuthBusiness::where('uid', Service::auth()->getUser()->id)->first();
         if(!$ab){
-            $this->responseError('用户还未认证商家');
+            $this->responseError(trans('api.user_has_not_authenticated'));
         }
 
         if($ab->status != 1){
-            $this->responseError('用户商家状态已改变');
+            $this->responseError(trans('api.user_business_status'));
         }
 
         $ab->status = 2;
@@ -141,7 +141,7 @@ class BusinessController extends Controller
 
         User::where('id', Service::auth()->getUser()->id)->update(['is_business' => 2]);
 
-        $this->responseSuccess('操作成功');
+        $this->responseSuccess(trans('api.operate_successfully'));
 
     }
 

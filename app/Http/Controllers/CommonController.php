@@ -22,8 +22,8 @@ class CommonController extends Controller
         $this->validate($request->all(), [
             'file' => 'required|image'
         ], [
-            'file.required' =>'图片不能为空',
-            'file.image' => '文件必须是只图片',
+            'file.required' =>trans('api.picture_cannot_empty'),
+            'file.image' => trans('api.file_must_picture'),
         ]);
 
 

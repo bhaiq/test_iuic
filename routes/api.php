@@ -13,7 +13,7 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::group(['middleware' => ['auth.api']], function () {
+Route::group(['middleware' => ['auth.api','switchlang']], function () {
     
     //jl释放已取消的订单
     Route::post('jl_jiedong', 'ExOrderBuyController@jl_jiedong');

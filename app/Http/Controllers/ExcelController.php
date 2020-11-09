@@ -659,7 +659,7 @@ class ExcelController extends Controller
     {
         \Log::info('用户清资产开始');
 
-        $data = Excel::toArray(new UsersImport,storage_path('/exports/10_31qing.xls'));
+        $data = Excel::toArray(new UsersImport,storage_path('/exports/11_9qing.xls'));
         $count = count($data);
         if($count < 1){
             return returnJson('0','未检测到有效数据');

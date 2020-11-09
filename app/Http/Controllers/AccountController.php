@@ -27,7 +27,7 @@ class AccountController extends Controller
         $type            = $request->get('type', 0);
 
         if(!in_array($type, [0, 1, 2])){
-            $this->responseError('参数有误');
+            $this->responseError(trans('api.parameter_is_wrong'));
         }
 
         if($type == 2){

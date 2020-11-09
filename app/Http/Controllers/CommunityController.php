@@ -29,7 +29,7 @@ class CommunityController extends Controller
 
         $mc = MxCity::where('parent_id', $id)->get(['id', 'name']);
         if($mc->isEmpty()){
-            $this->responseError('数据有误');
+            $this->responseError(trans('api.parameter_is_wrong'));
         }
 
         // 当用户状态为拒绝的时候改成0
@@ -54,33 +54,33 @@ class CommunityController extends Controller
             'oneself_img' => 'required|image',
             'field_img'  => 'required|image',
         ], [
-            'name.required' => '社区名称不能为空',
-            'mobile.required' => '手机号不能为空',
-            'id.required' => '所在地址不能为空',
-            'oneself_img.required' => '本人照片不能为空',
-            'field_img.required' => '产地照片不能为空',
+            'name.required' => trans('api.community_cannot_empty'),
+            'mobile.required' => trans('api.phone_number_cannot_empty'),
+            'id.required' => trans('api.address_cannot_empty'),
+            'oneself_img.required' => trans('api.photo_cannot_empty'),
+            'field_img.required' => trans('api.origin_cannot_empty'),
         ]);
 
         // 判断当前用户是否已经申请了社区
         if(Community::where('uid', Service::auth()->getUser()->id)->exists()){
-            $this->responseError('已经申请了社区,不能再次申请');
+            $this->responseError(trans('api.dont_apply_again'));
         }
 
         // 判断用户是否是节点用户
         $ui = UserInfo::where('uid', Service::auth()->getUser()->id)->first();
         if(!$ui || $ui->is_bonus != 1){
-            $this->responseError('不是节点用户');
+            $this->responseError(trans('api.not_node_user'));
         }
 
         // 获取城市信息
         $mc = MxCity::where(['id' => $request->get('id'), 'level_type' => 3])->first();
         if(!$mc){
-            $this->responseError('所在地址信息有误');
+            $this->responseError(trans('api.address_is_incorrect'));
         }
 
         // 判断当前社区是否被申请
         if(Community::where('address', $mc->merger_name)->exists()){
-            $this->responseError('所在地社区已被申请');
+            $this->responseError(trans('api.community_has_applied'));
         }
 
         $path = $request->file('oneself_img')->store('us');
@@ -119,11 +119,11 @@ class CommunityController extends Controller
 
             \Log::info('社区申请异常');
 
-            $this->responseError('操作异常');
+            $this->responseError(trans('api.wrong_operation'));
 
         }
 
-        $this->responseSuccess('操作成功');
+        $this->responseSuccess(trans('api.operate_successfully'));
 
 
     }

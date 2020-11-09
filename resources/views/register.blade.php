@@ -19,7 +19,7 @@
     </p>
     <p style="padding: 0px;">
         <!--<em>+86</em>-->
-        <select class="inputcolint">
+        <select class="inputcolint" name="int_codeddd">
             <option >+86</option>
             <option>+60</option>
             <option>+65</option>
@@ -112,9 +112,10 @@
     function gettwoma(){
 
         var username = $('input[name=user]').val();
+        var int_code = $('select[name=int_code]').val();
 
         $.ajax({
-            url:"/api/userCode?username=" + username + "&type=1",    //请求的url地址
+            url:"/api/userCode?username=" + username + "&type=1" + "&int_code=" + int_code,    //请求的url地址
             dataType:"json",   //返回格式为json
             type:"GET",   //请求方式
             success:function(d){
