@@ -15,7 +15,7 @@ use Illuminate\Http\Request;
 
 Route::group(['middleware' => ['auth.api','switchlang']], function () {
     
-    //jl释放已取消的订单
+    //jl释放已取消的订单 1
     Route::post('jl_jiedong', 'ExOrderBuyController@jl_jiedong');
 
     Route::post('ceshi', 'KuangJiController@order_day'); //处理矿机天数
