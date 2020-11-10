@@ -176,11 +176,11 @@ class PartnerController extends Controller
     //将原本业绩(this_month)复制一份到(true_num)
     public function jl_ceshi(Request $request)
     {
-        $list = CommunityDividend::all();
-        foreach ($list as $k => $v)
-        {
-            CommunityDividend::where('id',$v->id)->update(['true_num'=>$v->this_month]);
-        }
+//        $list = CommunityDividend::all();
+//        foreach ($list as $k => $v)
+//        {
+//            CommunityDividend::where('id',$v->id)->update(['true_num'=>$v->this_month]);
+//        }
 //        $this->responseSuccess(trans('user.auth.exist'));
     }
 

@@ -29,6 +29,7 @@ return [
     'not_node_user' => 'Not a node user',
     'address_is_incorrect' => 'The address information is incorrect',
     'community_has_applied' => 'The local community has been applied',
+    'information_cannot_empty' => 'Item information cannot be empty',
 
 
 ];

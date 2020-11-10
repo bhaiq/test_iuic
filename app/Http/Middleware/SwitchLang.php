@@ -19,7 +19,7 @@ class SwitchLang
 //        return $next($request);
         $language = $request->header("lang");
         if(empty($language)){
-            App::setLocale('zh-CN');
+            App::setLocale('zh_cn');
         }else{
             App::setLocale($language);
         }
