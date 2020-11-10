@@ -19,7 +19,7 @@
     </p>
     <p style="padding: 0px;">
         <!--<em>+86</em>-->
-        <select class="inputcolint" name="int_codeddd">
+        <select class="inputcolint" name="int_code">
             <option >+86</option>
             <option>+60</option>
             <option>+65</option>
