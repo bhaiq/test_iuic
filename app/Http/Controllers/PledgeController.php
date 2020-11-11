@@ -73,12 +73,12 @@ class PledgeController extends Controller
             'type' => 'required|in:1,2',
             'paypass' => 'required',
         ], [
-            'num.required' => '数量不能为空',
-            'num.integer' => '数量必须是整数',
-            'num.min' => '数量不能小于5000',
-            'type.required' => '类型不能为空',
-            'type.in' => '类型参数不正确',
-            'paypass.required' => '交易密码不能为空',
+            'num.required' => trans('api.quantity_cannot_empty'),
+            'num.integer' => trans('api.quantity_must_integer'),
+            'num.min' =>trans('api.purchase_quantity_cannot_be_less_than').'5000',
+            'type.required' => trans('api.type_cannot_empty'),
+            'type.in' => trans('api.incorrect_type'),
+            'paypass.required' => trans('api.trade_password_cannot_empty'),
         ]);
 
         if ($validator->fails()) {
@@ -93,11 +93,11 @@ class PledgeController extends Controller
 
             // 验证用户是否有已申请的订单
             if(PledgeLog::where(['uid' => Service::auth()->getUser()->id, 'status' => 0])->exists()){
-                return $this->responseError('有申请未审核');
+                return $this->responseError(trans('api.applications_have_not_reviewed'));
             }
 
             if($request->get('num') > Service::auth()->getUser()->pledge_num){
-                return $this->responseError('用户余额不足');
+                return $this->responseError(trans('api.insufficient_user_balance'));
             }
 
             $status = 0;
@@ -109,7 +109,7 @@ class PledgeController extends Controller
 
             // 判断用户余额是否充足
             if($request->get('num') > $coinAccount->amount){
-                return $this->responseError('用户余额不足');
+                return $this->responseError(trans('api.insufficient_user_balance'));
             }
             $status = 1;
         }
@@ -150,11 +150,11 @@ class PledgeController extends Controller
 
             \Log::info('用户质押提交或质押取出出现异常');
 
-            return $this->responseError('操作异常');
+            return $this->responseError(trans('api.wrong_operation'));
 
         }
 
-        return $this->responseSuccess('操作成功');
+        return $this->responseSuccess(trans('api.operate_successfully'));
 
     }
 

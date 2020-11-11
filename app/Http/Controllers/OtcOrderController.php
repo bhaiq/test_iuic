@@ -67,6 +67,9 @@ class OtcOrderController extends Controller
         Service::auth()->isLoginOrFail();
         $this->validate($request->all(), [
             'password' => 'required|digits:6'
+        ],[
+            'password.required' => trans('api.trade_password_cannot_empty'),
+            'password.digits' => trans('api.trading_password_must_6_digits'),
         ]);
 
         Service::auth()->isTransactionPasswordYesOrFail($request->input('password'));

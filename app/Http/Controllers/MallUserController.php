@@ -42,8 +42,8 @@ class MallUserController extends Controller
         $this->validate($request->all(), [
             'type' => 'required|in:1,2,3,4',
         ], [
-            'type.required' => '类型不能为空',
-            'type.in' => '类型不能正确',
+            'type.required' => trans('api.category_cannot_empty'),
+            'type.in' => trans('api.incorrect_type'),
         ]);
 
         $p = MallOrder::where('uid', Service::auth()->getUser()->id);
@@ -85,18 +85,18 @@ class MallUserController extends Controller
         $this->validate($request->all(), [
             'order_id' => 'required',
         ], [
-            'order_id.required' => '订单信息不能为空',
+            'order_id.required' => trans('api.order_information_cannot_empty'),
         ]);
 
         $p = MallOrder::where(['uid' => Service::auth()->getUser()->id, 'status' => 1])->find($request->get('order_id'));
         if(!$p){
-            $this->responseError('数据有误');
+            $this->responseError(trans('api.parameter_is_wrong'));
         }
 
         $p->status = 2;
         $p->save();
 
-        $this->responseSuccess('操作成功');
+        $this->responseSuccess(trans('api.operate_successfully'));
 
     }
 

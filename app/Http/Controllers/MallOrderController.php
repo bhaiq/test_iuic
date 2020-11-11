@@ -26,12 +26,12 @@ class MallOrderController extends Controller
         $this->validate($request->all(), [
             'store_id'   => 'required',
         ], [
-            'store_id.required' => '店铺信息不能为空',
+            'store_id.required' => trans('api.store_information_cannot_empty'),
         ]);
 
         $store = MallStore::where(['uid' => Service::auth()->getUser()->id])->find($request->get('store_id'));
         if(!$store){
-            $this->responseError('数据有误');
+            $this->responseError(trans('api.parameter_is_wrong'));
         }
 
         $result = [
@@ -57,9 +57,9 @@ class MallOrderController extends Controller
             'store_id' => 'required',
             'type' => 'required|in:1,2,3,4',
         ], [
-            'store_id.required' => '店铺信息不能为空',
-            'type.required' => '类型不能为空',
-            'type.in' => '类型不能正确',
+            'store_id.required' => trans('api.store_information_cannot_empty'),
+            'type.required' => trans('api.category_cannot_empty'),
+            'type.in' => trans('api.incorrect_type'),
         ]);
 
         $p = MallOrder::where('store_id', $request->get('store_id'));
@@ -97,12 +97,12 @@ class MallOrderController extends Controller
         $this->validate($request->all(), [
             'order_id' => 'required',
         ], [
-            'order_id.required' => '订单信息不能为空',
+            'order_id.required' => trans('api.order_information_cannot_empty'),
         ]);
 
         $order = MallOrder::find($request->get('order_id'));
         if(!$order){
-            $this->responseError('数据有误');
+            $this->responseError(trans('api.parameter_is_wrong'));
         }
 
         $result = $order->toArray();
@@ -136,14 +136,14 @@ class MallOrderController extends Controller
             'kd_name' => 'required',
             'kd_no' => 'required',
         ], [
-            'order_id.required' => '订单信息不能为空',
-            'kd_name.required' => '快递名称',
-            'kd_no.required' => '快递单号',
+            'order_id.required' => trans('api.order_information_cannot_empty'),
+            'kd_name.required' => trans('api.courier_name'),
+            'kd_no.required' => trans('api.tracking_number'),
         ]);
 
         $order = MallOrder::whereIn('status', [0, 1])->find($request->get('order_id'));
         if(!$order){
-            $this->responseError('数据有误');
+            $this->responseError(trans('api.parameter_is_wrong'));
         }
 
         \DB::beginTransaction();
@@ -162,11 +162,11 @@ class MallOrderController extends Controller
 
             \Log::info('订单填写异常');
 
-            $this->responseError('操作异常');
+            $this->responseError(trans('api.wrong_operation'));
 
         }
 
-        $this->responseSuccess('操作成功');
+        $this->responseSuccess(trans('api.operate_successfully'));
 
     }
 

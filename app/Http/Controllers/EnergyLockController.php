@@ -51,10 +51,10 @@ class EnergyLockController extends Controller
             'new_account' => 'required',
             'paypass' => 'required',
         ], [
-            'num.required' => '数量不能为空',
-            'num.integer' => '数量必须是整数',
-            'num.min' => '数量不能小于1',
-            'paypass.required' => '交易密码不能为空',
+            'num.required' => trans('api.quantity_cannot_empty'),
+            'num.integer' => trans('api.quantity_must_integer'),
+            'num.min' => trans('api.quantity_cannot_less_than_0'),
+            'paypass.required' => trans('api.trade_password_cannot_empty'),
         ]);
 
         // 验证二级密码
@@ -63,18 +63,18 @@ class EnergyLockController extends Controller
         // 验证账号是否正确
         $toUser = User::where('new_account', $request->get('new_account'))->first();
         if(!$toUser){
-            $this->responseError('账号不存在');
+            $this->responseError(trans('api.account_does_not_exist'));
         }
 
         // 不能给自己转账
         if($toUser->id == Service::auth()->getUser()->id){
-            $this->responseError('不能给自己转账');
+            $this->responseError(trans('api.cant_transfer_money_to_yourself'));
         }
 
         // 获取用户能量资产信息
         $uw = UserWallet::where('uid', Service::auth()->getUser()->id)->first();
         if(!$uw || $uw->energy_lock_num < $request->get('num')){
-            $this->responseError('余额不足');
+            $this->responseError(trans('api.insufficient_user_balance'));
         }
 
         $data = [
@@ -111,11 +111,11 @@ class EnergyLockController extends Controller
 
             \Log::info('锁仓能量转账异常');
 
-            $this->responseError('操作异常');
+            $this->responseError(trans('api.wrong_operation'));
 
         }
 
-        $this->responseSuccess('操作成功');
+        $this->responseSuccess(trans('api.operate_successfully'));
 
     }
 
@@ -135,9 +135,9 @@ class EnergyLockController extends Controller
 
         foreach ($result['data'] as $k => $v){
 
-            $result['data'][$k]['exp'] = '能量资产转出';
+            $result['data'][$k]['exp'] = trans('api.energy_assets_are_transferred_out');
             $result['data'][$k]['status'] = 1;
-            $result['data'][$k]['status_name'] = '已完成';
+            $result['data'][$k]['status_name'] = trans('api.completed');
             $result['data'][$k]['created_at'] = date('Y/m/d H:i:s', strtotime($v['created_at']));
 
         }

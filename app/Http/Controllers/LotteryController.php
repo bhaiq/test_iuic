@@ -31,12 +31,12 @@ class LotteryController extends Controller
 
         $access_token = AccessToken::whereToken($request->get('x-token', 'xx'))->first();
         if (!$access_token) {
-            return '服务器错误';
+            return trans('api.server_error');
         }
 
         // 限制PC端访问
         if (!$this->isMobile()) {
-            return '非移动端禁止访问';
+            return trans('api.no_access_on_non_mobile_terminal');
         }
 
         // 获取用户今日抽奖次数
@@ -87,11 +87,11 @@ class LotteryController extends Controller
             'x-token' => 'required',
             'paypass' => 'required',
         ], [
-            'count.required' => '抽奖次数不能为空',
-            'count.integer' => '抽奖次数格式不正确',
-            'count.min' => '抽奖次数最小为1',
-            'x-token.required' => '令牌信息不能为空',
-            'paypass.required' => '交易密码不能为空',
+            'count.required' => trans('api.draws_cannot_be_empty'),
+            'count.integer' => trans('api.draws_not_correct_format'),
+            'count.min' => trans('api.number_of_draws_is_1'),
+            'x-token.required' => trans('api.token_information_cannot_empty'),
+            'paypass.required' => trans('api.trade_password_cannot_empty'),
         ]);
 
         if ($validator->fails()) {
@@ -100,14 +100,14 @@ class LotteryController extends Controller
 
         $access_token = AccessToken::whereToken($request->get('x-token', 'xx'))->first();
         if (!$access_token) {
-            return returnJson(0, '数据有误');
+            return returnJson(0, trans('api.parameter_is_wrong'));
         }
 
         // 验证支付密码是否正确
         $newPass = StringLib::password($request->get('paypass'));
         $user = User::find($access_token->uid);
         if (!$user || $user->transaction_password != $newPass) {
-            return returnJson(0, '交易密码错误');
+            return returnJson(0, trans('api.parameter_is_wrong'));
         }
 
         $oneNum = config('lottery.lottery_one_num', 100);
@@ -116,7 +116,7 @@ class LotteryController extends Controller
         // 验证用户余额是否充足
         $account = Account::whereUid($access_token->uid)->whereCoinId(2)->whereType(Account::TYPE_LC)->first();
         if (!$account || $account->amount < $totalNum) {
-            return returnJson(0, '余额不足');
+            return returnJson(0, trans('api.insufficient_user_balance'));
         }
 
         \DB::beginTransaction();
@@ -131,7 +131,7 @@ class LotteryController extends Controller
             // 进行抽奖,获取中奖信息
             $result = $this->toLottery($access_token->uid, $request->get('count'), $oneNum);
             if (empty($result)) {
-                new \Exception('操作异常');
+                new \Exception(trans('api.wrong_operation'));
             }
 
             \DB::commit();
@@ -142,11 +142,11 @@ class LotteryController extends Controller
 
             \Log::info('抽奖出现异常');
 
-            return returnJson(0, '操作异常');
+            return returnJson(0, trans('api.wrong_operation'));
 
         }
 
-        return returnJson(1, '操作成功', $result);
+        return returnJson(1, trans('api.submit_successfully'), $result);
 
     }
 
@@ -305,12 +305,12 @@ class LotteryController extends Controller
 
         $access_token = AccessToken::whereToken($request->get('x-token', 'xx'))->first();
         if (!$access_token) {
-            return '服务器错误';
+            return trans('api.server_error');
         }
 
         // 限制PC端访问
         if (!$this->isMobile()) {
-            return '非移动端禁止访问';
+            return trans('api.no_access_on_non_mobile_terminal');
         }
 
         $page = $request->get('page', 1);
@@ -361,12 +361,12 @@ class LotteryController extends Controller
 
         $access_token = AccessToken::whereToken($request->get('x-token', 'xx'))->first();
         if (!$access_token) {
-            return '服务器错误';
+            return trans('api.server_error');
         }
 
         // 限制PC端访问
         if (!$this->isMobile()) {
-            return '非移动端禁止访问';
+            return trans('api.no_access_on_non_mobile_terminal');
         }
 
         // 获取每次抽奖需要的数量

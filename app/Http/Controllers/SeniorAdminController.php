@@ -55,7 +55,7 @@ class SeniorAdminController extends Controller
         $this->validate($request->all(), [
             'paypass' => 'required',
         ], [
-            'paypass.required' => '交易密码不能为空',
+            'paypass.required' => trans('api.trade_password_cannot_empty'),
         ]);
 
         // 验证二级密码
@@ -63,13 +63,13 @@ class SeniorAdminController extends Controller
 
         // 验证用户之前是否有提交
         if(SeniorAdmin::where(['uid' => Service::auth()->getUser()->id])->whereIn('status', [0, 1])->exists()){
-            $this->responseError('数据有误');
+            $this->responseError(trans('api.parameter_is_wrong'));
         }
 
         $ui = UserInfo::where('uid', Service::auth()->getUser()->id)->first();
         // 判断用户是否是高级
         if(!$ui || $ui->level != 2){
-            $this->responseError('用户级别不是高级');
+            $this->responseError(trans('api.user_level_not_advanced'));
         }
 
         // 获取人数条件
@@ -83,7 +83,7 @@ class SeniorAdminController extends Controller
             $count = UserInfo::whereIn('uid', $lowUsers)->where('level', 2)->count();
 
             if($count < $userCount){
-                $this->responseError('分享的高级用户数不足');
+                $this->responseError(trans('api.insufficient_number_advanced_users_share'));
             }
 
         }
@@ -96,7 +96,7 @@ class SeniorAdminController extends Controller
 
         // 判断用户余额是否充足
         if($coinAccount->amount < $num){
-            $this->responseError('用户余额不足');
+            $this->responseError(trans('api.insufficient_user_balance'));
         }
 
         $saData = [
@@ -128,11 +128,11 @@ class SeniorAdminController extends Controller
 
             \Log::info('高级管理奖申请异常');
 
-            $this->responseError('申请异常');
+            $this->responseError(trans('api.wrong_operation'));
 
         }
 
-        return $this->responseSuccess('操作成功');
+        return $this->responseSuccess(trans('api.operate_successfully'));
 
     }
 
@@ -145,14 +145,14 @@ class SeniorAdminController extends Controller
         // 获取用户管理奖数据
         $sa = SeniorAdmin::where(['uid' => Service::auth()->getUser()->id, 'status' => 1])->first();
         if(!$sa){
-            $this->responseError('数据有误');
+            $this->responseError(trans('api.parameter_is_wrong'));
         }
 
         $result = [
             'cur_level' => $sa->type,
             'one_count' => SeniorAdmin::getUserLineCount(Service::auth()->getUser()->id, 1),
             'two_count' => SeniorAdmin::getUserLineCount(Service::auth()->getUser()->id, 2),
-            'exp' => '注: 分享2个1星，可升级为2星；分享3个2星可升为3星。',
+            'exp' => trans('api.notes'),
         ];
 
         return $this->response($result);

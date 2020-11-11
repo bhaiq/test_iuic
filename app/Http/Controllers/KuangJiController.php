@@ -229,15 +229,15 @@ class KuangJiController extends Controller
             'kp_id' => 'required|integer',
             'paypass' => 'required',
         ], [
-            'kp_id.required' => '矿位信息不能玩空',
-            'kp_id.integer' => '矿位信息必须是整数',
-            'paypass.required' => '交易密码不能为空',
+            'kp_id.required' => trans('api.mine_position_information_cannot_empty'),
+            'kp_id.integer' => trans('api.mine_position_information_must_integer'),
+            'paypass.required' => trans('api.trade_password_cannot_empty'),
         ]);
 
         // 获取矿位信息
         $kp = KuangjiPosition::where('status', 1)->find($request->get('kp_id'));
         if (!$kp) {
-            $this->responseError('数据有误');
+            $this->responseError(trans('api.parameter_is_wrong'));
         }
 
         // 验证二级密码
@@ -246,13 +246,13 @@ class KuangJiController extends Controller
         // 判断用户是否已经购买
         $kupBool = KuangjiUserPosition::where(['uid' => Service::auth()->getUser()->id, 'position_id' => $request->get('kp_id')])->exists();
         if ($kupBool) {
-            $this->responseError('该矿位已经购买了');
+            $this->responseError(trans('api.mine_has_been_purchased'));
         }
 
         // 判断用户矿池数量是否充足
         $ui = UserInfo::where('uid', Service::auth()->getUser()->id)->first();
         if (!$ui || $ui->buy_total <= 0 || $ui->buy_total <= $ui->release_total) {
-            $this->responseError('用户矿池不足');
+            $this->responseError(trans('api.insufficient_user_pool'));
         }
 
         // 获取那个USDT的币种ID
@@ -261,7 +261,7 @@ class KuangJiController extends Controller
 
         // 判断用户余额是否充足
         if ($coinAccount->amount < $kp->price) {
-            $this->responseError('用户余额不足');
+            $this->responseError(trans('api.insufficient_user_balance'));
         }
 
         $kupData = [
@@ -290,11 +290,11 @@ class KuangJiController extends Controller
 
             \Log::info('购买矿位异常');
 
-            $this->responseError('操作异常');
+            $this->responseError(trans('api.wrong_operation'));
 
         }
 
-        $this->responseSuccess('操作成功');
+        $this->responseSuccess(trans('api.operate_successfully'));
 
     }
 
@@ -308,15 +308,15 @@ class KuangJiController extends Controller
             'id' => 'required|integer',
             'paypass' => 'required',
         ], [
-            'id.required' => '矿机信息不能玩空',
-            'id.integer' => '矿机信息必须是整数',
-            'paypass.required' => '交易密码不能为空',
+            'id.required' => trans('api.miner_information_cannot_be_empty'),
+            'id.integer' => trans('api.miner_information_must_be_integer'),
+            'paypass.required' => trans('api.trade_password_cannot_empty'),
         ]);
 
         // 获取矿机信息
         $kj = Kuangji::find($request->get('id'));
         if (!$kj) {
-            $this->responseError('数据有误');
+            $this->responseError(trans('api.parameter_is_wrong'));
         }
 
         // 验证二级密码
@@ -325,7 +325,7 @@ class KuangJiController extends Controller
         // 验证用户是否有充足的矿位
         $kup = KuangjiUserPosition::where(['uid' => Service::auth()->getUser()->id, 'order_id' => 0, 'kuangji_id' => 0])->first();
         if (!$kup) {
-            $this->responseError('没有矿位');
+            $this->responseError(trans('api.no_ore'));
         }
 
         // 获取那个USDT的币种ID
@@ -334,7 +334,7 @@ class KuangJiController extends Controller
 
         // 判断用户余额是否充足
         if ($coinAccount->amount < $kj->price) {
-            $this->responseError('用户余额不足');
+            $this->responseError(trans('api.insufficient_user_balance'));
         }
         $days = Kuangji::where('id',$request->get('id'))->value('valid_day');
         $koData = [
@@ -377,11 +377,11 @@ class KuangJiController extends Controller
 
             \Log::info('购买矿机异常');
 
-            $this->responseError('操作异常');
+            $this->responseError(trans('api.wrong_operation'));
 
         }
 
-        $this->responseSuccess('操作成功');
+        $this->responseSuccess(trans('api.operate_successfully'));
 
     }
 
@@ -412,26 +412,26 @@ class KuangJiController extends Controller
             'id' => 'required|integer',
             'paypass' => 'required',
         ], [
-            'id.required' => '矿位信息不能玩空',
-            'id.integer' => '矿位信息必须是整数',
-            'paypass.required' => '交易密码不能为空',
+            'id.required' => trans('api.mine_position_information_cannot_empty'),
+            'id.integer' => trans('api.mine_position_information_must_integer'),
+            'paypass.required' => trans('api.trade_password_cannot_empty'),
         ]);
 
         // 判断矿机赎回功能是否开启
         if (empty(config('kuangji.kuangji_redeem_switch'))) {
-            $this->responseError('功能暂不开放');
+            $this->responseError(trans('api.function_not_open_yet'));
         }
 
         // 获取用户矿池信息
         $ui = UserInfo::where('uid', Service::auth()->getUser()->id)->first();
         if (!$ui) {
-            $this->responseError('数据有误');
+            $this->responseError(trans('api.parameter_is_wrong'));
         }
 
         // 获取那个USDT的币种ID
         $coin = Coin::getCoinByName('IUIC');
         if (!$coin) {
-            $this->responseError('币种信息');
+            $this->responseError(trans('api.currency_information_incorrect'));
         }
 
         // 验证二级密码
@@ -440,23 +440,23 @@ class KuangJiController extends Controller
         // 验证矿位信息是否正确
         $kup = KuangjiUserPosition::with(['order', 'kuangji'])->where(['uid' => Service::auth()->getUser()->id, 'id' => $request->get('id')])->first();
         if (!$kup) {
-            $this->responseError('矿位信息有误');
+            $this->responseError(trans('api.mine_location_information_is_incorrect'));
         }
 
         // 判断矿位有没有数据
         if (empty($kup->order_id) || empty($kup->kuangji_id)) {
-            $this->responseError('该矿位没有矿机');
+            $this->responseError(trans('api.there_no_miner_in_the_mine'));
         }
 
         // 判断矿池的剩余数量是否支持赎回
         if (bcsub($ui->buy_total, $ui->release_total, 8) < $kup->kuangji->num) {
-            $this->responseError('剩余矿池数量不足');
+            $this->responseError(trans('api.remaining_pools_is_insufficient'));
         }
 
         // 计算矿机释放的时间
         $buyDay = bcadd(bcdiv(bcsub(time(), strtotime($kup->order->created_at)), 3600 * 24), 1);
         if ($buyDay > 90) {
-            $this->responseError('矿机超过90天,不能赎回');
+            $this->responseError(trans('api.miner_cannot_called_more_than_90_days'));
         }
 
         // 计算本次释放赎回比例
@@ -494,11 +494,11 @@ class KuangJiController extends Controller
 
             \Log::info('矿机赎回异常');
 
-            $this->responseError('操作异常');
+            $this->responseError(trans('api.wrong_operation'));
 
         }
 
-        $this->responseSuccess('操作成功');
+        $this->responseSuccess(trans('api.operate_successfully'));
 
     }
 
@@ -524,7 +524,7 @@ class KuangJiController extends Controller
         Service::auth()->isLoginOrFail();
 
         $result = [
-            'kp_name' => '灵活矿位',
+            'kp_name' => trans('api.flexible_ore'),
             'kp_price' => config('kuangji.kuangji_flexible_price', 0),
             'is_open' => 0,
             'is_use' => 0,
@@ -552,7 +552,7 @@ class KuangJiController extends Controller
 
                 $result['kj_info'] = [
                     'sy_time' => bcdiv(bcsub(bcadd($start, 181 * 24 * 3600), $cur), 24 * 3600),
-                    'name' => '灵活算力',
+                    'name' => trans('api.flexible_calculate_force'),
                     'img' => url()->previous() . '/images/lh.png',
                     'price' => $kjl->num,
                     'suanli' => $suanli,
@@ -563,7 +563,7 @@ class KuangJiController extends Controller
 
                 $result['kj_info'] = [
                     'sy_time' => 0,
-                    'name' => '灵活算力',
+                    'name' => trans('api.flexible_calculate_force'),
                     'img' => url()->previous() . '/images/lh.png',
                     'price' => 0,
                     'suanli' => 0,
@@ -586,13 +586,13 @@ class KuangJiController extends Controller
         $this->validate($request->all(), [
             'paypass' => 'required',
         ], [
-            'paypass.required' => '交易密码不能为空',
+            'paypass.required' => trans('api.trade_password_cannot_empty'),
         ]);
 
         // 判断有木有灵活矿位信息
         $kjl = KuangjiLinghuo::where('uid', Service::auth()->getUser()->id)->first();
         if ($kjl) {
-            $this->responseError('已经购买了');
+            $this->responseError(trans('api.mine_has_been_purchased'));
         }
 
         // 验证二级密码
@@ -605,7 +605,7 @@ class KuangJiController extends Controller
         // 判断用户余额是否充足
         $price = config('kuangji.kuangji_flexible_price', 0);
         if ($coinAccount->amount < $price) {
-            $this->responseError('用户余额不足');
+            $this->responseError(trans('api.insufficient_user_balance'));
         }
 
         $kjlData = [
@@ -634,11 +634,11 @@ class KuangJiController extends Controller
 
             \Log::info('购买灵活矿位异常');
 
-            $this->responseError('操作异常');
+            $this->responseError(trans('api.wrong_operation'));
 
         }
 
-        $this->responseSuccess('操作成功');
+        $this->responseSuccess(trans('api.operate_successfully'));
 
     }
 
@@ -652,32 +652,32 @@ class KuangJiController extends Controller
             'num' => 'required|integer',
             'paypass' => 'required',
         ], [
-            'num.required' => '数量不能为空',
-            'num.integer' => '数量必须是整数',
-            'paypass.required' => '交易密码不能为空',
+            'num.required' => trans('api.quantity_cannot_empty'),
+            'num.integer' => trans('api.quantity_must_integer'),
+            'paypass.required' => trans('api.trade_password_cannot_empty'),
         ]);
 
         // 判断数量是否小于限制数量
         $minLh = config('kuangji.kuangji_flexible_min', 1);
         if ($request->get('num') < $minLh) {
-            $this->responseError('购买数量不能小于' . $minLh);
+            $this->responseError(trans('api.purchase_quantity_cannot_be_less_than') . $minLh);
         }
 
         // 判断数量是否大于于限制数量
         $maxLh = config('kuangji.kuangji_flexible_max', 200);
         if ($request->get('num') > $maxLh) {
-            $this->responseError('购买数量不能大于' . $maxLh);
+            $this->responseError(trans('api.purchase_quantity_should_not_greater_than') . $maxLh);
         }
 
         // 判断有木有灵活矿位信息
         $kjl = KuangjiLinghuo::where('uid', Service::auth()->getUser()->id)->first();
         if (!$kjl) {
-            $this->responseError('未购买矿位');
+            $this->responseError(trans('api.no_mine_position_purchased'));
         }
 
         // 判断用户已有的加上本次购买的是否超过限制的
         if(bcadd($request->get('num'), $kjl->num) > $maxLh){
-            $this->responseError('最多只能购买' . bcsub($maxLh, $kjl->num));
+            $this->responseError(trans('api.purchase_at_most') . bcsub($maxLh, $kjl->num));
         }
 
         // 验证二级密码
@@ -689,7 +689,7 @@ class KuangJiController extends Controller
 
         // 判断用户余额是否充足
         if ($coinAccount->amount < $request->get('num')) {
-            $this->responseError('用户余额不足');
+            $this->responseError(trans('api.insufficient_user_balance'));
         }
 
         \DB::beginTransaction();
@@ -722,11 +722,11 @@ class KuangJiController extends Controller
 
             \Log::info('购买灵活矿位异常');
 
-            $this->responseError('操作异常');
+            $this->responseError(trans('api.wrong_operation'));
 
         }
 
-        $this->responseSuccess('操作成功');
+        $this->responseSuccess(trans('api.operate_successfully'));
 
     }
 
@@ -756,15 +756,15 @@ class KuangJiController extends Controller
             'num' => 'required|integer',
             'paypass' => 'required',
         ], [
-            'num.required' => '数量不能为空',
-            'num.integer' => '数量必须是整数',
-            'paypass.required' => '交易密码不能为空',
+            'num.required' => trans('api.quantity_cannot_empty'),
+            'num.integer' => trans('api.quantity_must_integer'),
+            'paypass.required' => trans('api.trade_password_cannot_empty'),
         ]);
 
         // 验证灵活矿机赎回开关
         $switch = config('kuangji.kuangji_linghuo_redeem_switch', 0);
         if(!$switch){
-            $this->responseError('暂不开放');
+            $this->responseError(trans('api.function_not_open_yet'));
         }
 
         // 验证二级密码
@@ -776,12 +776,12 @@ class KuangJiController extends Controller
         // 判断有木有灵活矿位信息
         $kjl = KuangjiLinghuo::where('uid', Service::auth()->getUser()->id)->first();
         if (!$kjl) {
-            $this->responseError('未购买矿位');
+            $this->responseError(trans('api.no_mine_position_purchased'));
         }
 
         // 判断余额是否充足
         if($kjl->num < $request->get('num')){
-            $this->responseError('质押数量不足');
+            $this->responseError(trans('api.insufficient_pledges'));
         }
 
         \DB::beginTransaction();
@@ -812,11 +812,11 @@ class KuangJiController extends Controller
 
             \Log::info('矿机赎回异常');
 
-            $this->responseError('操作异常');
+            $this->responseError(trans('api.wrong_operation'));
 
         }
 
-        $this->responseSuccess('操作成功');
+        $this->responseSuccess(trans('api.operate_successfully'));
 
     }
 

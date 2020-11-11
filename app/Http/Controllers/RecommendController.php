@@ -26,7 +26,7 @@ class RecommendController extends Controller
 
         $res = $this->getUserInfo(Service::auth()->getUser()->id);
         if(!$res){
-            $this->responseError('数据有误');
+            $this->responseError(trans('api.parameter_is_wrong'));
         }
 
         if(Service::auth()->getUser()->id == 1){

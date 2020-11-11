@@ -32,6 +32,12 @@ class FeedbackController extends Controller
         $this->validate($request->all(), [
             'description' => 'required|string|min:10',
             'img'         => 'required|array'
+            ],[
+             'description.required' => trans('api.description_cannot_empty'),
+             'description.string' => trans('api.description_must_string'),
+             'description.min' => trans('api.description_words_is')."10",
+             'img.required' => trans('api.picture_cannot_empty'),
+             'img.array' => trans('api.images_must_arrays'),
         ]);
 
         $data          = $request->only('description', 'img');
@@ -47,6 +53,9 @@ class FeedbackController extends Controller
         Service::auth()->isLoginOrFail();
         $this->validate($request->all(), [
             'description' => 'required|min:10'
+            ],[
+             'description.required' => trans('api.description_cannot_empty'),
+             'description.min' => trans('api.description_words_is')."10",
         ]);
         $feedback         = Feedback::findOrFail($id);
         $feedback->status = Feedback::STATUS_STATUS_ON;

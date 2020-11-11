@@ -93,7 +93,7 @@ class StarCommunityController extends Controller
         $buy_id = $request->buy_id;
         $bid = User::where('id',Service::auth()->getUser()->id)->value('star_community');
         if($bid >= $buy_id && $bid > 0){
-            return $this->responseError('只可购买比当前星级高的社群');
+            return $this->responseError(trans('api.you_can_current_one'));
         }
         //算差价
         $now_starprice = StarCommunity::where('id',$bid)->value('price');
@@ -119,8 +119,8 @@ class StarCommunityController extends Controller
             'buy_id' => 'required|integer',
             'paypass' => 'required',
         ], [
-            'buy_id.required' => '商品信息不能为空',
-            'paypass.required' => '交易密码不能为空',
+            'buy_id.required' => trans('api.information_cannot_empty'),
+            'paypass.required' => trans('api.trade_password_cannot_empty'),
         ]);
         $buy_id = $request->buy_id;
         $paypass = $request->paypass;
@@ -128,7 +128,7 @@ class StarCommunityController extends Controller
         $bid = User::where('id',Service::auth()->getUser()->id)->value('star_community');
       	
         if($bid >= $buy_id && $bid > 0){
-            return $this->responseError('只可购买比当前星级高的社群');
+            return $this->responseError(trans('api.you_can_current_one'));
         }
         //算差价
         $now_starprice = StarCommunity::where('id',$bid)->value('price');
@@ -140,7 +140,7 @@ class StarCommunityController extends Controller
         // 验证商品信息
         $good = StarCommunity::where('id', $request->get('buy_id'))->first();
         if(!$good){
-            $this->responseError('商品信息有误');
+            $this->responseError(trans('api.incorrect_commodity_information'));
         }
         // 获取那个USDT的币种ID
         $coin = Coin::getCoinByName('USDT');
@@ -149,7 +149,7 @@ class StarCommunityController extends Controller
         // 判断用户余额是否充足
         $totalPrice = $good->price;
         if($coinAccount->amount < $price_spread){
-            $this->responseError('用户余额不足');
+            $this->responseError(trans('api.insufficient_user_balance'));
         }
         $eoData = [
             'uid' => Service::auth()->getUser()->id,
@@ -214,11 +214,11 @@ class StarCommunityController extends Controller
 
             \Log::info('购买星级社群异常');
 
-            $this->responseError('操作异常');
+            $this->responseError(trans('api.wrong_operation'));
 
         }
 
-        $this->responseSuccess('操作成功');
+        $this->responseSuccess(trans('api.operate_successfully'));
 
     }
   

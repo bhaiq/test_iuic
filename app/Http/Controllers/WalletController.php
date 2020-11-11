@@ -21,7 +21,7 @@ class WalletController extends Controller
 
     public function detail($coin_id)
     {
-        $this->responseError('暂不开放');
+        $this->responseError(trans('api.function_not_open_yet'));
       
         Service::auth()->isLoginOrFail();
         $coin    = Coin::find($coin_id)->toArray();

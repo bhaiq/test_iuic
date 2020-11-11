@@ -44,16 +44,16 @@ class PartnerController extends Controller
         $this->validate($request->all(), [
             'num'     => 'required|integer',
         ], [
-            'num.required' => '份数不能为空',
+            'num.required' => trans('api.quantity_cannot_empty'),
         ]);
 
         // 判断用户是否是合伙人
         $user = Service::auth()->getUser();
         if(!$user || $request->get('num') > 5 || $request->get('num') < 1){
-            $this->responseError('数据有误');
+            $this->responseError(trans('api.parameter_is_wrong'));
         }
         if($user->is_partner != 0 || UserPartner::where('uid', $user->id)->exists()){
-            $this->responseError('用户已经是合伙人或已经申请了');
+            $this->responseError(trans('api.user_already_partner_has_applied'));
         }
 
         // 操作频繁锁
@@ -70,7 +70,7 @@ class PartnerController extends Controller
 
         // 判断用户余额是否充足
         if($coinAccount->amount < $total){
-            $this->responseError('用户余额不足');
+            $this->responseError(trans('api.insufficient_user_balance'));
         }
 
         $upData = [
@@ -127,11 +127,11 @@ class PartnerController extends Controller
 
             \Log::info('合伙人申请异常');
 
-            $this->responseError('操作异常');
+            $this->responseError(trans('api.wrong_operation'));
 
         }
 
-        $this->responseSuccess('操作成功');
+        $this->responseSuccess(trans('api.operate_successfully'));
 
     }
 

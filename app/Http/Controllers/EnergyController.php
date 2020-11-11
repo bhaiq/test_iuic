@@ -71,23 +71,23 @@ class EnergyController extends Controller
             'address_id' => 'required|integer',
             'paypass' => 'required',
         ], [
-            'goods_id.required' => '商品信息不能为空',
-            'goods_id.integer' => '商品信息类型不正确',
-            'goods_num.required' => '商品数量不能为空',
-            'goods_num.integer' => '商品数量类型不正确',
-            'goods_num.min' => '商品数量不能小于1',
-            'address_id.required' => '地址信息不能为空',
-            'address_id.integer' => '地址信息类型不正确',
-            'paypass.required' => '交易密码不能为空',
+            'goods_id.required' => trans('api.information_cannot_empty'),
+            'goods_id.integer' => trans('api.information_type_incorrect'),
+            'goods_num.required' => trans('api.goods_cannot_empty'),
+            'goods_num.integer' => trans('api.item_quantity_incorrect'),
+            'goods_num.min' => trans('api.goods_not_less_than_1'),
+            'address_id.required' => trans('api.address_cannot_empty'),
+            'address_id.integer' => trans('api.address_is_incorrect'),
+            'paypass.required' => trans('api.trade_password_cannot_empty'),
         ]);
 
         // 判断用户是否实名验证
         $user = Service::auth()->getUser();
         if(!$user){
-            $this->responseError('数据有误');
+            $this->responseError(trans('api.parameter_is_wrong'));
         }
         if($user->is_auth != 1){
-            $this->responseError('未实名认证');
+            $this->responseError(trans('api.dont_authenticated'));
         }
 
         // 验证二级密码
@@ -96,19 +96,19 @@ class EnergyController extends Controller
         // 验证商品信息
         $good = EnergyGood::where('id', $request->get('goods_id'))->first();
         if(!$good){
-            $this->responseError('商品信息有误');
+            $this->responseError(trans('api.incorrect_commodity_information'));
         }
 
         // 验证购买的数量是否达到限购的数量
         $buyCount = EnergyOrder::geyBuyNum(Service::auth()->getUser()->id, $good->id);
         if(bcadd($buyCount, $request->get('goods_num')) > $good->xg_num){
-            $this->responseError('购买数量超过限制');
+            $this->responseError(trans('api.purchase_exceeds_limit'));
         }
 
         // 验证地址信息
         $address = MallAddress::where(['id' => $request->get('address_id'), 'uid' => $user->id])->first();
         if(!$address){
-            $this->responseError('地址信息有误');
+            $this->responseError(trans('api.address_is_incorrect'));
         }
 
         // 获取那个USDT的币种ID
@@ -118,7 +118,7 @@ class EnergyController extends Controller
         // 判断用户余额是否充足
         $totalPrice = bcmul($good->goods_price, $request->get('goods_num'), 8);
         if($coinAccount->amount < $totalPrice){
-            $this->responseError('用户余额不足');
+            $this->responseError(trans('api.insufficient_user_balance'));
         }
 
         $newAddress = '';
@@ -188,14 +188,14 @@ class EnergyController extends Controller
 
             \Log::info('购买能量商品出现异常');
 
-            $this->responseError('购买异常');
+            $this->responseError(trans('api.buy_abnormal'));
 
         }
 
         // 加入队列
         dispatch(new EnergyDynamicRelease(Service::auth()->getUser()->id, $oNum,$totalPrice,$orid));
 
-        $this->responseSuccess('操作成功');
+        $this->responseSuccess(trans('api.operate_successfully'));
 
     }
 
@@ -210,17 +210,17 @@ class EnergyController extends Controller
             'num' => 'required|integer|min:0',
             'paypass' => 'required',
         ], [
-            'coin_id.required' => '币种信息不能为空',
-            'num.required' => '数量不能为空',
-            'num.integer' => '数量必须是整数',
-            'num.min' => '数量不能小于1',
-            'paypass.required' => '交易密码不能为空',
+            'coin_id.required' => trans('api.currency_information_cannot_empty'),
+            'num.required' => trans('api.quantity_cannot_empty'),
+            'num.integer' => trans('api.quantity_must_integer'),
+            'num.min' => trans('api.quantity_cannot_less_than_0'),
+            'paypass.required' => trans('api.trade_password_cannot_empty'),
         ]);
 
         // 获取币种信息
         $coin = Coin::find($request->get('coin_id'));
         if(!$coin){
-            $this->responseError('币种信息有误');
+            $this->responseError(trans('api.currency_information_incorrect'));
         }
 
         // 验证二级密码
@@ -228,7 +228,7 @@ class EnergyController extends Controller
 
         // 验证用户余额是否充足
         if(!UserWallet::checkWallet(Service::auth()->getUser()->id, $request->get('num'))){
-            $this->responseError('用户余额不足');
+            $this->responseError(trans('api.insufficient_user_balance'));
         }
 
         $totalNum = $request->get('num');
@@ -300,11 +300,11 @@ class EnergyController extends Controller
 
             \Log::info('能量资产兑换异常');
 
-            $this->responseError('操作异常');
+            $this->responseError(trans('api.wrong_operation'));
 
         }
 
-        $this->responseSuccess('操作成功');
+        $this->responseSuccess(trans('api.operate_successfully'));
 
     }
 
@@ -362,10 +362,10 @@ class EnergyController extends Controller
             'num' => 'required|integer|min:0',
             'paypass' => 'required',
         ], [
-            'num.required' => '数量不能为空',
-            'num.integer' => '数量必须是整数',
-            'num.min' => '数量不能小于1',
-            'paypass.required' => '交易密码不能为空',
+            'num.required' => trans('api.quantity_cannot_empty'),
+            'num.integer' => trans('api.quantity_must_integer'),
+            'num.min' => trans('api.quantity_cannot_less_than_0'),
+            'paypass.required' => trans('api.trade_password_cannot_empty'),
         ]);
 
         // 验证二级密码
@@ -374,7 +374,7 @@ class EnergyController extends Controller
         // 获取用户能量资产信息
         $uw = UserWallet::where('uid', Service::auth()->getUser()->id)->first();
         if(!$uw || $uw->energy_frozen_num < $request->get('num')){
-            $this->responseError('余额不足');
+            $this->responseError(trans('api.insufficient_user_balance'));
         }
 
         $data = [
@@ -443,7 +443,7 @@ class EnergyController extends Controller
             }
 
             if($totalNum > 0){
-                new \Exception('数据异常');
+                new \Exception(trans('api.parameter_is_wrong'));
             }
 
             \DB::commit();
@@ -454,11 +454,11 @@ class EnergyController extends Controller
 
             \Log::info('能量资产划转异常');
 
-            $this->responseError('操作异常');
+            $this->responseError(trans('api.wrong_operation'));
 
         }
 
-        $this->responseSuccess('操作成功');
+        $this->responseSuccess(trans('api.operate_successfully'));
 
     }
 
@@ -470,16 +470,16 @@ class EnergyController extends Controller
             'num' => 'required|integer|min:0',
             'coin_id' => 'required',
         ], [
-            'num.required' => '数量不能为空',
-            'num.integer' => '数量必须是整数',
-            'num.min' => '数量不能小于0',
-            'coin_id.required' => '币种信息不能为空',
+            'num.required' => trans('api.quantity_cannot_empty'),
+            'num.integer' => trans('api.quantity_must_integer'),
+            'num.min' => trans('api.quantity_cannot_less_than_0'),
+            'coin_id.required' => trans('api.currency_information_cannot_empty'),
         ]);
 
         // 获取币种信息
         $coin = Coin::find($request->get('coin_id'));
         if(!$coin){
-            $this->responseError('币种信息有误');
+            $this->responseError(trans('api.currency_information_incorrect'));
         }
 
         $totalNum = $request->get('num');

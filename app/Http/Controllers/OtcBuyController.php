@@ -37,7 +37,7 @@ class OtcBuyController extends Controller
         $lcMaxTime = config('trade.lc_max_time', '23:59:59');
         // 增加时间限制
         if(!Carbon::now()->between(Carbon::create(now()->toDateString(). ' ' . $lcMinTime),Carbon::create(now()->toDateString(). ' ' . $lcMaxTime))){
-            $this->responseError('该时间段不能交易');
+            $this->responseError(trans('api.cannot_tradeduring_this_period'));
         }
 
         Service::auth()->isAuthOrFail();
@@ -45,7 +45,7 @@ class OtcBuyController extends Controller
 
         // 判断是否是商家
         if($user->is_business != 1){
-            $this->responseError('发布需要商家认证');
+            $this->responseError(trans('api.publishing_requires_merchant_certification'));
         }
 
         $this->validate($request->all(), [
@@ -58,7 +58,7 @@ class OtcBuyController extends Controller
             'pay_alipay' => 'boolean|required',
             'pay_bank'   => 'boolean|required',
             'remark'     => 'string|max:100',
-        ], [], [
+        ],[
 
         ]);
 
@@ -79,15 +79,15 @@ class OtcBuyController extends Controller
         $uid = Service::auth()->getUser()->id;
         DB::transaction(function () use ($id, $uid, $request, &$order) {
             $buy = OtcPublishBuy::whereId($id)->lockForUpdate()->first();
-            if ($buy->uid == $uid) return $this->responseError('otcBuy.update.do_self');
+            if ($buy->uid == $uid) return $this->responseError('api.do_self');
             $amount = Service::auth()->account($buy->coin_id, Account::TYPE_LC)->amount;
             $max    = min($amount, $buy->amount_lost, $buy->amount_max);
 
             $this->validate($request->all(), [
                 'amount' => 'required|numeric|min:1|max:' . $max,
             ], [
-                'amount.min' => trans('otcBuy.update.amount.min') . 1,
-                'amount.max' => trans('otcBuy.update.amount.max') . $max,
+                'amount.min' => trans('api.min') . 1,
+                'amount.max' => trans('api.max') . $max,
             ]);
 
             $amount              = StringLib::sprintN($request->get('amount'));
@@ -162,12 +162,12 @@ class OtcBuyController extends Controller
 
         DB::transaction(function () use ($publish) {
             $order = $publish->order()->where('status', OtcOrder::STATUS_INIT)->lockForUpdate()->get();
-            if (!$order->isEmpty()) $this->responseError('otcBuy.del.not_all_success');
+            if (!$order->isEmpty()) $this->responseError('api.not_all_success');
             $publish->is_over = OtcPublishBuy::IS_OVER_CANCEL;
             $publish->save();
         });
 
-        return $this->responseSuccess('otcBuy.del.success');
+        return $this->responseSuccess('apis.success');
 
     }
 }

@@ -27,8 +27,8 @@ class NewUserController extends Controller
             'pass' => 'required',
             'paypass' => 'required',
         ], [
-            'pass.required' => '登录密码不能为空',
-            'paypass.required' => '交易密码不能为空',
+            'pass.required' => trans('api.login_password_cannot_empty'),
+            'paypass.required' => trans('api.trade_password_cannot_empty'),
         ]);
 
         if ($validator->fails()) {
@@ -36,14 +36,14 @@ class NewUserController extends Controller
         }
 
         if(Service::auth()->getUser()->password != StringLib::password($request->get('pass'))){
-            return $this->responseError('登录密码有误');
+            return $this->responseError(trans('api.incorrect_login_password'));
         }
 
         if(Service::auth()->getUser()->transaction_password != StringLib::password($request->get('paypass'))){
-            return $this->responseError('交易密码有误');
+            return $this->responseError(trans('api.incorrect_transaction_password'));
         }
 
-        return $this->responseSuccess('验证成功');
+        return $this->responseSuccess(trans('api.successful_authentication'));
 
     }
 
@@ -57,8 +57,8 @@ class NewUserController extends Controller
             'mobile' => 'required',
             'captcha' => 'required',
         ], [
-            'mobile.required' => '手机号不能为空',
-            'captcha.required' => '验证码不能为空',
+            'mobile.required' => trans('api.phone_number_cannot_empty'),
+            'captcha.required' => trans('api.captcha_cannot_empty'),
         ]);
 
         if ($validator->fails()) {
@@ -70,7 +70,7 @@ class NewUserController extends Controller
 
         User::where('id', Service::auth()->getUser()->id)->update(['mobile' => $request->get('mobile')]);
 
-        return $this->responseSuccess('操作成功');
+        return $this->responseSuccess(trans('api.operate_successfully'));
 
     }
 

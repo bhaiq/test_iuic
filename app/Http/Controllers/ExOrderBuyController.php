@@ -64,7 +64,7 @@ class ExOrderBuyController extends Controller
         $ccMaxTime = config('trade.cc_max_time', '23:59:59');
         // 增加时间限制
         if(!Carbon::now()->between(Carbon::create(now()->toDateString(). ' ' . $ccMinTime),Carbon::create(now()->toDateString(). ' ' . $ccMaxTime))){
-            $this->responseError('该时间段不能交易');
+            $this->responseError(trans('api.cannot_tradeduring_this_period'));
         }
 
         $price = $request->input('price', 1000000000);
@@ -76,7 +76,14 @@ class ExOrderBuyController extends Controller
         $this->validate($request->all(), [
             'price'  => 'required|numeric|min:0.01',
             'amount' => 'required|numeric|min:1|max:' . bcdiv($amount, $price, 4),
-
+            ],[
+            'price.required' => trans('api.price_cannot_empty'),
+            'price.numeric' => trans('api.price_must_figure'),
+            'price.min' => trans('api.minimum_price'),
+            'amount.required' => trans('api.amount_required'),
+            'amount.numeric' => trans('api.quantity_must_integer'),
+            'amount.min' => trans('api.quantity_cannot_less_than_1'),
+            'amount.max' => trans('api.maximum_quantity').bcdiv($amount, $price, 4),
         ]);
 		
         // 获取昨日收盘价格
@@ -86,7 +93,7 @@ class ExOrderBuyController extends Controller
         $todayTradeMax = bcmul(bcadd(1, config('trade.today_trade_max_bl'), 4), $lastPrice, 4);
         $todayTradeMin = bcmul(bcsub(1, config('trade.today_trade_min_bl'), 4), $lastPrice, 4);
         if($request->get('price') > $todayTradeMax || $request->get('price') < $todayTradeMin){
-            $this->responseError('价格超出当日限制');
+            $this->responseError(trans('api.price_exceeds_daily_limit'));
         }
 
         // 获取实时行情行情
@@ -96,7 +103,7 @@ class ExOrderBuyController extends Controller
         $cur_trade_max_bl = config('trade.cur_trade_max_bl');
         $cur_trade_min_bl = config('trade.cur_trade_min_bl');
         if(bcmul(bcadd($cur_trade_max_bl, 1, 8), $realPrice['price'], 8) < $request->get('price') || bcmul(bcsub(1, $cur_trade_min_bl, 8), $realPrice['price'], 8) > $request->get('price')){
-            $this->responseError('单价超过限制');
+            $this->responseError(trans('api.price_exceeds_limit'));
         }
 
         ExOrder::createLock(Service::auth()->getUser()->id);

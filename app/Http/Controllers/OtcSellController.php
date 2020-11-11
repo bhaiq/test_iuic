@@ -36,7 +36,7 @@ class OtcSellController extends Controller
         $lcMaxTime = config('trade.lc_max_time', '23:59:59');
         // 增加时间限制
         if(!Carbon::now()->between(Carbon::create(now()->toDateString(). ' ' . $lcMinTime),Carbon::create(now()->toDateString(). ' ' . $lcMaxTime))){
-            $this->responseError('该时间段不能交易');
+            $this->responseError(trans('api.cannot_tradeduring_this_period'));
         }
 
         Service::auth()->isLoginOrFail();
@@ -45,7 +45,7 @@ class OtcSellController extends Controller
 
         // 判断是否是商家
         if($user->is_business != 1){
-            $this->responseError('发布需要商家认证');
+            $this->responseError(trans('api.publishing_requires_merchant_certification'));
         }
 
         $validator = Validator::make($request->all(), [
@@ -59,13 +59,13 @@ class OtcSellController extends Controller
             'pay_bank'   => 'boolean|required',
             'remark'     => 'string|max:100',
         ], [
-            'amount.numeric' => '需求数量格式不正确',
-            'amount.required' => '需求数量不能为空',
-            'amount.min' => '需求数量不能小于1',
-            'amount.max' => '需求数量不能大于余额',
-            'amount_max.gt' => '最大数量要大于最小数量',
-            'amount_max.lte' => '最大数量不能大于需求数量',
-            'amount_max.max' => '最大数量不能超过余额',
+            'amount.numeric' => trans('api.requirement_quantity_format_incorrect'),
+            'amount.required' => trans('api.quantity_cannot_empty'),
+            'amount.min' => trans('api.quantity_cannot_less_than_1'),
+            'amount.max' => trans('api.quantity_demanded_must_not_greater_than_balance'),
+            'amount_max.gt' => trans('api.maximum_quantity_greater_than_minimum_quantity'),
+            'amount_max.lte' => trans('api.maximum_quantity_shall_not_greater_than_quantity_required'),
+            'amount_max.max' => trans('api.maximum_quantity_must_exceed_balance'),
         ]);
 
 
@@ -76,7 +76,7 @@ class OtcSellController extends Controller
 
         $data = $request->only('pay_wechat', 'pay_alipay', 'pay_bank');
         if (!array_sum($data)) {
-            return $this->responseError('支付方式必选');
+            return $this->responseError(trans('api.payment_method_optional'));
         }
 
         Service::auth()->isAuthOrFail();
@@ -107,8 +107,8 @@ class OtcSellController extends Controller
             $this->validate($request->all(), [
                 'amount' => 'required|numeric|min:' . $min . '|max:' . $max,
             ], [
-                'amount.min' => trans('otcSell.update.amount.min') . $min,
-                'amount.max' => trans('otcSell.update.amount.max') . $max,
+                'amount.min' => trans('api.otcsell_min') . $min,
+                'amount.max' => trans('otcSell.otcsell_max') . $max,
             ]);
 
             $amount = StringLib::sprintN($request->get('amount'));
@@ -177,12 +177,12 @@ class OtcSellController extends Controller
 
         $publish = OtcPublishSell::findOrFail($id);
 
-        if ($publish->is_over != OtcPublishSell::IS_OVER_NOT) $this->responseError('system.illegal');
-        if ($publish->uid != Service::auth()->getUser()->id) $this->responseError('system.illegal');
+        if ($publish->is_over != OtcPublishSell::IS_OVER_NOT) $this->responseError(trans('api.otc_illeagl'));
+        if ($publish->uid != Service::auth()->getUser()->id) $this->responseError(trans('api.otc_illeagl'));
 
         DB::transaction(function () use ($publish) {
             $order = $publish->order()->where('status', OtcOrder::STATUS_INIT)->lockForUpdate()->get();
-            if (!$order->isEmpty()) $this->responseError('otcSell.del.not_all_success');
+            if (!$order->isEmpty()) $this->responseError(trans('api.otc_sell_not_all_success'));
             if ($publish->amount_lost) {
                 Service::auth()->account($publish->coin_id, Account::TYPE_LC)->increment('amount', $publish->amount_lost);
                 Service::auth()->account($publish->coin_id, Account::TYPE_LC)->decrement('amount_freeze', $publish->amount_lost);
@@ -192,7 +192,7 @@ class OtcSellController extends Controller
             $publish->save();
         });
 
-        return $this->responseSuccess('otcSell.del.success');
+        return $this->responseSuccess(trans('api.otcsell_success'));
 
     }
 }

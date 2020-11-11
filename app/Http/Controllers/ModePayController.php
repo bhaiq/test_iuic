@@ -31,11 +31,11 @@ class ModePayController extends Controller
             'bank.name'    => 'string|max:30|required_if:type,' . ModePay::TYPE_BANK,
             'bank.address' => 'string|max:100'
         ], [
-            'type.not_in' => trans('payment.type.exist'),
+            'type.not_in' => trans('api.exist'),
         ], [
-            'qr_code'      => trans('payment.create.qr_code'),
-            'bank.name'    => trans('payment.create.bank.name'),
-            'bank.address' => trans('payment.create.bank.address')
+            'qr_code'      => trans('api.qr_code'),
+            'bank.name'    => trans('api.name'),
+            'bank.address' => trans('api.address')
         ]);
 
         $data = array_filter($request->only('number', 'type', 'name', 'bank'));
@@ -63,7 +63,7 @@ class ModePayController extends Controller
     {
         Service::auth()->isLoginOrFail();
         $pay = ModePay::findOrFail($id);
-        if ($pay->uid != Service::auth()->getUser()->id) return $this->responseError('system.illegal');
+        if ($pay->uid != Service::auth()->getUser()->id) return $this->responseError('api.illegal');
         $pay->delete();
 
         return $this->responseSuccess();

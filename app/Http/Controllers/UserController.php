@@ -24,7 +24,7 @@ class UserController extends Controller
 
         $user = User::with('user_info')->where('id', Service::auth()->getUser()->id)->first();
         if(!$user){
-            $this->responseError('数据有误');
+            $this->responseError(trans('api.parameter_is_wrong'));
         }
 
         $data = $user->toArray();
@@ -52,15 +52,18 @@ class UserController extends Controller
         $this->validate($request->all(), [
             'username' => 'string|required',
             'password' => 'string|required|between:6,18'
+            ],[
+             'username.required' => trans('api.name_cannot_be_empty'),
+             'password.required' => trans('api.login_password_cannot_empty'),
         ]);
 
         $user = User::where('new_account', $request->input('username'))->first();
-        if (!$user) return $this->responseError('user.auth.not_find');
+        if (!$user) return $this->responseError(trans('api.not_find_user'));
         if ($user->password == StringLib::password($request->input('password'))) {
           
             // 再验证用户的状态
             if($user->status != 1){
-                $this->responseError('用户被禁用');
+                $this->responseError(trans('api.user_disabled'));
             }
           
             $data          = $user->toArray();
@@ -68,7 +71,7 @@ class UserController extends Controller
             return response()->json($data);
         }
 
-        $this->responseError('user.password.password_error');
+        $this->responseError(trans('api.incorrect_login_password'));
     }
 
     public function logout()
@@ -96,12 +99,12 @@ class UserController extends Controller
         $this->validate($request->all(), $rules);
 
         if(!preg_match('/^[a-zA-Z0-9]+$/', $request->get('new_account'))){
-            return $this->responseError('账号只能是字母或者数字');
+            return $this->responseError(trans('api.accounts_can_etters_numbers'));
         }
 
         // 验证用户账户是否存在
         if(User::where('new_account', $request->get('new_account'))->exists()){
-            return $this->responseError('账号已经存在');
+            return $this->responseError(trans('api.account_already_exists'));
         }
 
         // 获取注册时手机开关
@@ -110,13 +113,13 @@ class UserController extends Controller
             // 验证手机是否已经注册
             $mobileBool = User::where('mobile', $request->get('username'))->exists();
             if($mobileBool){
-                return $this->responseError('该手机号已被注册');
+                return $this->responseError(trans('api.phone_number_has_registered'));
             }
         }else{
             // 验证手机是否超过10个
             $mobileCount = User::where('mobile', $request->get('username'))->count();
             if($mobileCount > 10){
-                return $this->responseError('该手机号可注册的账号已超限');
+                return $this->responseError(trans('api.accounts_can_registered_exceeded_limit'));
             }
         }
 
@@ -124,7 +127,7 @@ class UserController extends Controller
         $pid_path = '';
         if ($request->has('invite_code')) {
             $p_user = User::whereInviteCode(strtoupper($request->input('invite_code')))->first();
-            if (!$p_user) return $this->responseError('user.auth.invite_code_not_exist');
+            if (!$p_user) return $this->responseError(trans('api.invitation_code_does_not_exist'));
             $pid = $p_user->id;
             $pid_path = $p_user->pid_path . $pid .',';
         }
@@ -138,7 +141,7 @@ class UserController extends Controller
             Service::email()->verifyCode($request->input('username'), $request->input('code'));
         }
 
-        $data['int_code'] = $request->get('int_code');//区号
+        $data['int_code'] = $request->get('int_code',86);//区号
         $data['new_account'] = $request->get('new_account');
         $data['nickname'] = $request->get('new_account');
         $data['password'] = $request->input('password');
@@ -189,7 +192,7 @@ class UserController extends Controller
                 // 验证手机是否超过10个
                 $mobileCount = User::where('mobile', $request->get('username'))->count();
                 if($mobileCount > 10){
-                    return $this->responseError('该手机号可注册的账号已超限');
+                    return $this->responseError(trans('api.accounts_can_registered_exceeded_limit'));
                 }
 
                 $username = $request->get('username');
@@ -201,7 +204,7 @@ class UserController extends Controller
                     'type'     => 'required|integer',
                 ]);
                 $user = User::whereEmail($request->input('username'))->orWhere('mobile', $request->input('username'))->first();
-                if (!$user) return $this->responseError('user.auth.not_find');
+                if (!$user) return $this->responseError(trans('api.not_find_user'));
                 $username = $request->get('username');
                 break;
             //修改支付密码
@@ -223,7 +226,7 @@ class UserController extends Controller
         //判断是否是email
         if (strpos($username, '@') !== false) {
             (new EmailService())->sendByType($username, $request->get('type'));
-            return $this->responseSuccess('communication.email.send_success');
+            return $this->responseSuccess('api.send_success_email');
         } else {
             $qint_code = $request->get('int_code','86');
             if($request->get('type') == 3){
@@ -233,7 +236,7 @@ class UserController extends Controller
             Service::mobile()->send($qint_code.$username, $qint_code);
             
             
-            return $this->responseSuccess('communication.mobile.send_success');
+            return $this->responseSuccess(trans('api.send_success_phone'));
         }
     }
     
@@ -250,11 +253,11 @@ class UserController extends Controller
         $password = $request->input('password');
 //        $user     = User::whereEmail($username)->orWhere('mobile', $username)->first();
         $user = User::where('new_account', $request->get('new_account'))->first();
-        if (!$user) return $this->responseError('user.auth.not_find');
+        if (!$user) return $this->responseError(trans('api.not_find_user'));
 
         // 验证用户账号和手机是否匹配
         if($user->mobile != $request->username){
-            return $this->responseError('账号和手机不匹配');
+            return $this->responseError(trans('api.account_and_phone_dont_match'));
         }
 
         //判断是否是email
@@ -268,7 +271,7 @@ class UserController extends Controller
         $user->save();
 
 
-        return $this->responseSuccess('user.password.set_success');
+        return $this->responseSuccess(trans('api.operate_successfully'));
     }
 
     public function setPassword(Request $request)
@@ -281,12 +284,12 @@ class UserController extends Controller
         ]);
         $password = $request->input('password');
         $user     = Service::auth()->getUser();
-        if ($user->password != StringLib::password($request->input('old_password'))) return $this->responseError('user.password.old_password_error');
+        if ($user->password != StringLib::password($request->input('old_password'))) return $this->responseError(trans('api.old_password_error'));
 
         $user->password = StringLib::password($password);
         $user->save();
 
-        return $this->responseSuccess('user.password.change_success');
+        return $this->responseSuccess(trans('api.operate_successfully'));
     }
     
     //修改二级密码提交按钮
@@ -311,14 +314,14 @@ class UserController extends Controller
         $user->transaction_password = StringLib::password($password);
         $user->save();
 
-        return $this->responseSuccess('user.password.change_success');
+        return $this->responseSuccess(trans('api.operate_successfully'));
     }
 
     public function find($username)
     {
         $user = User::whereEmail($username)->orWhere('mobile', $username)->select(['id', 'nickname', 'email', 'mobile', 'avatar'])->first();
 
-        if (!$user) $this->responseError('user.auth.not_find');
+        if (!$user) $this->responseError(trans('api.not_find_user'));
 
         $data           = $user->toArray();
         $data['wallet'] = Wallet::whereUid($user->id)->get()->toArray();
@@ -336,7 +339,7 @@ class UserController extends Controller
             'img_back'  => 'required|image',
         ]);
 
-        Service::auth()->getUser()->is_auth && $this->responseError('user.auth.is_auth_has_done');
+        Service::auth()->getUser()->is_auth && $this->responseError(trans('api.is_auth_has_done'));
 
         $path = $request->file('img_front')->store('us');
         Storage::setVisibility($path, 'public');
@@ -408,7 +411,7 @@ class UserController extends Controller
             \DB::rollBack();
         }
 
-        return $this->responseSuccess('user.auth.is_auth_apply_for_success');
+        return $this->responseSuccess(trans('api.is_auth_apply_for_success'));
     }
 
 }

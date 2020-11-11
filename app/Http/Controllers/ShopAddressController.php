@@ -64,16 +64,16 @@ class ShopAddressController extends Controller
             'address_id' => 'required',
             'address_info' => 'required',
         ], [
-            'name.required' => '名称不能为空',
-            'mobile.required' => '手机不能为空',
-            'address_id.required' => '地址信息不能为空',
-            'address_info.required' => '地址详细不能为空',
+            'name.required' => trans('api.name_cannot_be_empty'),
+            'mobile.required' => trans('api.phone_cannot_empty'),
+            'address_id.required' => trans('api.address_cannot_empty'),
+            'address_info.required' => trans('api.address_details_cannot_empty'),
         ]);
 
         // 获取城市信息
         $mc = MxCity::where(['id' => $request->get('address_id'), 'level_type' => 3])->first();
         if(!$mc){
-            $this->responseError('区域地址信息有误');
+            $this->responseError(trans('api.incorrect_area_address_information'));
         }
 
         $saData = [
@@ -105,11 +105,11 @@ class ShopAddressController extends Controller
 
             \Log::info('收货地址新增异常');
 
-            $this->responseError('新增异常');
+            $this->responseError(trans('api.wrong_operation'));
 
         }
 
-        return $this->responseSuccess('操作成功');
+        return $this->responseSuccess(trans('api.operate_successfully'));
 
     }
 
@@ -124,21 +124,21 @@ class ShopAddressController extends Controller
             'address_id' => 'required',
             'address_info' => 'required',
         ], [
-            'name.required' => '名称不能为空',
-            'mobile.required' => '手机不能为空',
-            'address_id.required' => '地址信息不能为空',
-            'address_info.required' => '地址详细不能为空',
+            'name.required' => trans('api.name_cannot_be_empty'),
+            'mobile.required' => trans('api.phone_cannot_empty'),
+            'address_id.required' => trans('api.address_cannot_empty'),
+            'address_info.required' => trans('api.address_details_cannot_empty'),
         ]);
 
         // 验证数据是否正确
         if(!MallAddress::where(['uid' => Service::auth()->getUser()->id, 'id' => $id])->exists()){
-            $this->responseError('数据有误');
+            $this->responseError(trans('api.parameter_is_wrong'));
         }
 
         // 获取城市信息
         $mc = MxCity::where(['id' => $request->get('address_id'), 'level_type' => 3])->first();
         if(!$mc){
-            $this->responseError('区域地址信息有误');
+            $this->responseError(trans('api.incorrect_area_address_information'));
         }
 
         $saData = [
@@ -168,11 +168,11 @@ class ShopAddressController extends Controller
 
             \Log::info('收货地址修改异常');
 
-            $this->responseError('操作异常');
+            $this->responseError(trans('api.wrong_operation'));
 
         }
 
-        $this->responseSuccess('操作成功');
+        $this->responseSuccess(trans('api.operate_successfull'));
 
     }
 
@@ -184,7 +184,7 @@ class ShopAddressController extends Controller
 
         // 验证数据是否正确
         if(!MallAddress::where(['uid' => Service::auth()->getUser()->id, 'id' => $id])->exists()){
-            $this->responseError('数据有误');
+            $this->responseError(trans('api.wrong_operation'));
         }
 
         \DB::beginTransaction();
@@ -200,11 +200,11 @@ class ShopAddressController extends Controller
 
             \Log::info('收货地址删除异常');
 
-            $this->responseError('操作异常');
+            $this->responseError(trans('api.wrong_operation'));
 
         }
 
-        $this->responseSuccess('操作成功');
+        $this->responseSuccess(trans('api.operate_successfully'));
 
     }
 

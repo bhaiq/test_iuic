@@ -53,10 +53,10 @@ class ShopController extends Controller
         // 判断用户是否实名验证
         $user = Service::auth()->getUser();
         if(!$user){
-            $this->responseError('数据有误');
+            $this->responseError(trans('api.parameter_is_wrong'));
         }
         if($user->is_auth != 1){
-            $this->responseError('未实名认证');
+            $this->responseError(trans('api.dont_authenticated'));
         }
 
         // 验证二级密码
@@ -65,13 +65,13 @@ class ShopController extends Controller
         // 验证商品信息
         $good = ShopGoods::where('id', $request->get('goods_id'))->first();
         if(!$good){
-            $this->responseError('商品信息有误');
+            $this->responseError(trans('api.incorrect_commodity_information'));
         }
 
         // 验证地址信息
         $address = MallAddress::where(['id' => $request->get('address_id'), 'uid' => $user->id])->first();
         if(!$address){
-            $this->responseError('地址信息有误');
+            $this->responseError(trans('api.address_is_incorrect'));
         }
 
         // 获取那个USDT的币种ID
@@ -80,7 +80,7 @@ class ShopController extends Controller
 
         // 判断用户余额是否充足
         if($coinAccount->amount < $good->goods_price){
-            $this->responseError('用户余额不足');
+            $this->responseError(trans('api.insufficient_user_balance'));
         }
 
         $newAddress = '';
@@ -242,7 +242,7 @@ class ShopController extends Controller
 
             \Log::info('商城订单购买出现异常');
 
-            $this->responseError('购买异常');
+            $this->responseError(trans('api.wrong_operation'));
 
         }
 
@@ -250,7 +250,7 @@ class ShopController extends Controller
         // 队列递归更新用户管理权限
         dispatch(new UpdateAdminBonus($user->id, $good->bonus_coefficient));
 
-        $this->responseSuccess('操作成功');
+        $this->responseSuccess(trans('api.operate_successfully'));
 
     }
 
@@ -278,7 +278,7 @@ class ShopController extends Controller
             ->where('uid', Service::auth()->getUser()->id)
             ->first();
         if(!$res){
-            $this->responseError('数据有误');
+            $this->responseError(trans('api.parameter_is_wrong'));
         }
 
         return $this->response($res->toArray());

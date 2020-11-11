@@ -76,9 +76,9 @@ class EthController extends Controller
             'address' => 'required|max:50',
             'pay_password' => 'required',
         ], [
-            'amount.required' => trans('eth.controller.extract.amount_required'),
-            'amount.min' => trans('eth.controller.extract.less_then_10'),
-            'amount.max' => trans('eth.controller.extract.not_enough'),
+            'amount.required' => trans('api.amount_required'),
+            'amount.min' => trans('api.less_then_10'),
+            'amount.max' => trans('api.not_enough'),
         ]);
 
         Service::auth()->isTransactionPasswordYesOrFail($request->input('pay_password'));
@@ -125,15 +125,15 @@ class EthController extends Controller
         $this->validate($request->all(), [
             'coin_id'   => 'required',
         ], [
-            'coin_id.required' => '币种信息不能为空',
+            'coin_id.required' => trans('api.currency_information_cannot_empty'),
         ]);
 
         $c = Coin::where('id', $request->get('coin_id'))->first();
         if(!$c){
-            $this->responseError('币种信息有误');
+            $this->responseError(trans('api.currency_information_incorrect'));
         }
         if(!in_array(strtoupper($c->name), ['USDT', 'IUIC'])){
-            $this->responseError('币种信息数据有误');
+            $this->responseError(trans('api.currency_information_incorrect'));
         }
 
         if($c->name == 'USDT'){
@@ -162,19 +162,19 @@ class EthController extends Controller
             'paypass'   => 'required',
             'address'   => 'required',
         ], [
-            'coin_id.required' => '币种信息不能为空',
-            'num.required'   => '提币数量不能为空',
-            'num.numeric'   => '数量格式不正确',
-            'paypass.required'   => '支付密码不能为空',
-            'address.required'   => '提币地址不能为空',
+            'coin_id.required' => trans('api.currency_information_cannot_empty'),
+            'num.required'   => trans('api.quantity_cannot_empty'),
+            'num.numeric'   => trans('api.quantity_must_integer'),
+            'paypass.required'   => trans('api.trade_password_cannot_empty'),
+            'address.required'   => trans('api.withdrawal_address_cannot_be_empty'),
         ]);
 
         $c = Coin::where('id', $request->get('coin_id'))->first();
         if(!$c){
-            $this->responseError('币种信息有误');
+            $this->responseError(trans('api.currency_information_incorrect'));
         }
         if(!in_array(strtoupper($c->name), ['USDT', 'IUIC'])){
-            $this->responseError('币种信息数据有误');
+            $this->responseError(trans('api.currency_information_incorrect'));
         }
 
         // 验证二级密码
@@ -185,7 +185,7 @@ class EthController extends Controller
         if($acco){
             foreach ($acco as $v){
                 if($v->amount_freeze <= -10){
-                    $this->responseError('账号异常,请联系客服');
+                    $this->responseError(trans('api.account_abnormal_contact_customer'));
                     break;
                 }
             }
@@ -197,7 +197,7 @@ class EthController extends Controller
             // 判断用户矿池是否充足
             $ui = UserInfo::where('uid', Service::auth()->getUser()->id)->first();
             if(!$ui || bcsub($ui->buy_total, $ui->release_total, 8) <= 0){
-                $this->responseError('矿池数量不足,不能提现');
+                $this->responseError(trans('api.Mine_insufficient_cannot_withdraw_cash'));
             }
 
         }
@@ -211,7 +211,7 @@ class EthController extends Controller
 
         // 提取数量不嫩小于手续费
         if($request->get('num') <= $charge){
-            $this->responseError('提币数量不能小于或等于手续费');
+            $this->responseError(trans('api.withdrawal_cannot_less_than_or_equal_the_charge'));
         }
 
         // 获取用户余额
@@ -219,7 +219,7 @@ class EthController extends Controller
 
         // 判断用户余额是否充足
         if($coinAccount->amount < $request->get('num')){
-            $this->responseError('用户余额不足');
+            $this->responseError(trans('api.insufficient_user_balance'));
         }
 
         $ceData = [
@@ -252,7 +252,7 @@ class EthController extends Controller
 
             \Log::info('用户提现失败', $request->all());
 
-            $this->responseError('提现异常');
+            $this->responseError(trans('api.abnormal'));
 
         }
 
@@ -276,7 +276,7 @@ class EthController extends Controller
         $this->validate($request->all(), [
             'coin_id'   => 'required',
         ], [
-            'coin_id.required' => '币种信息不能为空',
+            'coin_id.required' => trans('api.currency_information_cannot_empty'),
         ]);
 
 

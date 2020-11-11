@@ -40,45 +40,45 @@ class MallGoodsController extends Controller
             'category_id' => 'required',
             'store_id' => 'required',
         ], [
-            'goods_img.required' => '商品图片不能为空',
-            'goods_info.required' => '商品说明不能为空',
-            'goods_info.max' => '商品说明不能超过200个字符',
-            'goods_name.required' => '商品名称不能为空',
-            'goods_price.required' => '商品价格不能为空',
-            'goods_price.numeric' => '商品价格必须是数字',
-            'goods_price.regex' => '商品价格只能保留两位小数',
-            'goods_cost.required' => '商品成本不能为空',
-            'goods_cost.numeric' => '商品成本必须是数字',
-            'goods_cost.regex' => '商品成本只能保留两位小数',
-            'category_id.required' => '商品类别不能为空',
-            'store_id.required' => '店铺信息不能为空',
+            'goods_img.required' => trans('api.product_picture_cannot_empty'),
+            'goods_info.required' => trans('api.description_cannot_empty'),
+            'goods_info.max' => trans('api.product_description_not_exceed_200_characters'),
+            'goods_name.required' => trans('api.name_cannot_be_empty'),
+            'goods_price.required' => trans('api.price_cannot_empty'),
+            'goods_price.numeric' => trans('api.price_must_figure'),
+            'goods_price.regex' => trans('api.only_two_decimal_places_can_reserved'),
+            'goods_cost.required' => trans('api.cost_of_goods_cannot_be_empty'),
+            'goods_cost.numeric' => trans('api.cost_of_goods_must_figure'),
+            'goods_cost.regex' => trans('api.only_two_decimal_places_can_reserved_goods'),
+            'category_id.required' => trans('api.category_cannot_empty'),
+            'store_id.required' => trans('api.store_information_cannot_empty'),
         ]);
 
         // 验证图片数量是否超标
         if (is_array($request->get('goods_img'))) {
             if (count($request->get('goods_img')) > 4) {
-                $this->responseError('图片数量不能超过4张');
+                $this->responseError(trans('api.no_more_than_4_pictures'));
             }
             $imgArr = $request->get('goods_img');
         } else {
             $imgArr = explode(',', $request->get('goods_img'));
             if (count($imgArr) > 4) {
-                $this->responseError('图片数量不能超过4张');
+                $this->responseError(trans('api.no_more_than_4_pictures'));
             }
         }
 
         if($request->get('goods_cost') > $request->get('goods_price')){
-            $this->responseError('成本价不能大于售价');
+            $this->responseError(trans('api.cost_price_not_greater_than_selling_price'));
         }
 
         // 验证商品类别是否有问题
         if (!MallCategory::where('id', $request->get('category_id'))->exists()) {
-            $this->responseError('商品类别有误');
+            $this->responseError(trans('api.misclassification_of_goods'));
         }
 
         // 验证店铺信息是否正确
         if (!MallStore::where('id', $request->get('store_id'))->exists()) {
-            $this->responseError('店铺信息有误');
+            $this->responseError(trans('api.store_information_wrong'));
         }
 
         // 计算返利
@@ -111,11 +111,11 @@ class MallGoodsController extends Controller
 
             \Log::info('发布商品异常');
 
-            $this->responseError('操作异常');
+            $this->responseError(trans('api.wrong_operation'));
 
         }
 
-        $this->responseSuccess('操作成功');
+        $this->responseSuccess(trans('api.operate_successfully'));
 
     }
 
@@ -140,7 +140,7 @@ class MallGoodsController extends Controller
         $this->validate($request->all(), [
             'num' => 'required',
         ], [
-            'num.required' => '数量不能为空',
+            'num.required' => trans('api.quantity_cannot_empty'),
         ]);
 
         $num = MallGood::getRebate($request->get('num'));
@@ -158,9 +158,9 @@ class MallGoodsController extends Controller
             'store_id' => 'required',
             'status' => 'required|in:1,2,3'
         ], [
-            'store_id.required' => '店铺信息不能为空',
-            'status.required' => '状态不能为空',
-            'status.in' => '状态信息不正确',
+            'store_id.required' => trans('api.store_information_cannot_empty'),
+            'status.required' => trans('api.state_cannot_empty'),
+            'status.in' => trans('api.status_information_incorrect'),
         ]);
 
         $status = 1;
@@ -211,34 +211,34 @@ class MallGoodsController extends Controller
             'goods_name' => 'required',
             'category_id' => 'required',
         ], [
-            'goods_id.required' => '商品信息不能为空',
-            'goods_img.required' => '商品图片不能为空',
-            'goods_info.required' => '商品说明不能为空',
-            'goods_name.required' => '商品名称不能为空',
-            'category_id.required' => '商品类别不能为空',
+            'goods_id.required' => trans('api.information_cannot_empty'),
+            'goods_img.required' => trans('api.product_picture_cannot_empty'),
+            'goods_info.required' => trans('api.description_cannot_empty'),
+            'goods_name.required' => trans('api.name_cannot_be_empty'),
+            'category_id.required' => trans('api.category_cannot_empty'),
         ]);
 
         // 验证商品是否有问题
         if (!MallGood::where('id', $request->get('goods_id'))->exists()) {
-            $this->responseError('商品信息有误');
+            $this->responseError(trans('api.incorrect_commodity_information'));
         }
 
         // 验证图片数量是否超标
         if (is_array($request->get('goods_img'))) {
             if(count($request->get('goods_img')) > 4){
-                $this->responseError('图片数量不能超过4张');
+                $this->responseError(trans('api.no_more_than_4_pictures'));
             }
             $imgArr = $request->get('goods_img');
         } else {
             $imgArr = explode(',', $request->get('goods_img'));
             if (count($imgArr) > 4) {
-                $this->responseError('图片数量不能超过4张');
+                $this->responseError(trans('api.no_more_than_4_pictures'));
             }
         }
 
         // 验证商品类别是否有问题
         if (!MallCategory::where('id', $request->get('category_id'))->exists()) {
-            $this->responseError('商品类别有误');
+            $this->responseError(trans('api.misclassification_of_goods'));
         }
 
         // 计算返利
@@ -266,11 +266,11 @@ class MallGoodsController extends Controller
 
             \Log::info('编辑商品异常');
 
-            $this->responseError('操作异常');
+            $this->responseError(trans('api.wrong_operation'));
 
         }
 
-        $this->responseSuccess('操作成功');
+        $this->responseSuccess(trans('api.operate_successfully'));
 
     }
 
@@ -284,15 +284,15 @@ class MallGoodsController extends Controller
             'goods_id' => 'required',
             'type' => 'required|in:1,2,3',
         ], [
-            'goods_id.required' => '商品信息不能为空',
-            'type.required' => '类型不能为空',
-            'type.in' => '类型不正确',
+            'goods_id.required' => trans('api.information_cannot_empty'),
+            'type.required' => trans('api.category_cannot_empty'),
+            'type.in' => trans('api.incorrect_type'),
         ]);
 
         // 获取商品信息是否正确
         $goods = MallGood::where('status', '!=', 9)->find($request->get('goods_id'));
         if (!$goods || !MallStore::where(['uid' => Service::auth()->getUser()->id, 'id' => $goods->store_id])->exists()) {
-            $this->responseError('数据有误');
+            $this->responseError(trans('api.parameter_is_wrong'));
         }
 
         $status = $goods->status;
@@ -304,7 +304,7 @@ class MallGoodsController extends Controller
         } else if ($request->get('type') == 3) {
             $status = 9;
         } else {
-            $this->responseError('数据有误');
+            $this->responseError(trans('api.parameter_is_wrong'));
         }
 
         // 更新订单状态
@@ -322,11 +322,11 @@ class MallGoodsController extends Controller
 
             \Log::info('操作商品异常');
 
-            $this->responseError('操作异常');
+            $this->responseError(trans('api.wrong_operation'));
 
         }
 
-        $this->responseSuccess('操作成功');
+        $this->responseSuccess(trans('api.operate_successfully'));
 
     }
 
@@ -339,12 +339,12 @@ class MallGoodsController extends Controller
         $this->validate($request->all(), [
             'goods_id' => 'required',
         ], [
-            'goods_id.required' => '商品信息不能为空',
+            'goods_id.required' => trans('api.information_cannot_empty'),
         ]);
 
         $goods = MallGood::with('store')->where(['status' => 1, 'is_affirm' => 1])->find($request->get('goods_id'));
         if (!$goods) {
-            $this->responseError('商品已下架或删除');
+            $this->responseError(trans('api.item_has_removed_from_shelves_deleted'));
         }
 
         $data = $goods->toArray();
@@ -364,13 +364,13 @@ class MallGoodsController extends Controller
         $this->validate($request->all(), [
             'goods_id' => 'required',
         ], [
-            'goods_id.required' => '商品信息不能为空',
+            'goods_id.required' => trans('api.information_cannot_empty'),
         ]);
 
         // 获取商品信息
         $goods = MallGood::with('store')->where('status', 1)->find($request->get('goods_id'));
         if (!$goods) {
-            $this->responseError('数据有误');
+            $this->responseError(trans('api.parameter_is_wrong'));
         }
 
         $res = [
@@ -459,29 +459,29 @@ class MallGoodsController extends Controller
             'paypass' => 'required',
             'coin_id' => 'required',
         ], [
-            'goods_id.required' => '商品信息不能为空',
-            'address_id.required' => '地址信息不能为空',
-            'num.required' => '数量不能为空',
-            'num.integer' => '数量必须是整数',
-            'coin_id.required' => '币种信息不能不为空',
+            'goods_id.required' => trans('api.information_cannot_empty'),
+            'address_id.required' => trans('api.address_details_cannot_empty'),
+            'num.required' => trans('api.goods_cannot_empty'),
+            'num.integer' => trans('api.quantity_must_integer'),
+            'coin_id.required' => trans('api.currency_information_cannot_empty'),
         ]);
 
         // 验证商品信息是否正确
         $goods = MallGood::where('status', 1)->find($request->get('goods_id'));
         if (!$goods) {
-            $this->responseError('商品信息有误');
+            $this->responseError(trans('api.incorrect_commodity_information'));
         }
 
         // 验证地址信息是否有误
         $address = MallAddress::where('uid', Service::auth()->getUser()->id)->find($request->get('address_id'));
         if (!$address) {
-            $this->responseError('地址信息有误');
+            $this->responseError(trans('api.address_is_incorrect'));
         }
 
         // 验证币种信息是否整
         $coin = Coin::find($request->get('coin_id'));
         if(!$coin){
-            $this->responseError('地址信息有误');
+            $this->responseError(trans('api.address_is_incorrect'));
         }
 
         // 验证二级密码
@@ -504,7 +504,7 @@ class MallGoodsController extends Controller
 
         // 判断用户余额是否充足
         if ($coinAccount->amount < $totalPrice) {
-            $this->responseError('用户余额不足');
+            $this->responseError(trans('api.insufficient_user_balance'));
         }
 
         $moData = [
@@ -550,11 +550,11 @@ class MallGoodsController extends Controller
 
             \Log::info('多店铺商城订单生成异常');
 
-            $this->responseError('操作异常');
+            $this->responseError(trans('api.wrong_operation'));
 
         }
 
-        $this->responseSuccess('操作成功');
+        $this->responseSuccess(trans('api.operate_successfully'));
 
     }
 

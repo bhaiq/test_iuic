@@ -27,7 +27,7 @@ class MallStoreController extends Controller
 
         $ms = MallStore::where(['uid' => Service::auth()->getUser()->id, 'status' => 1])->first();
         if(!$ms){
-            $this->responseError('数据有误');
+            $this->responseError(trans('api.parameter_is_wrong'));
         }
 
         $newAddress = '';
@@ -69,22 +69,22 @@ class MallStoreController extends Controller
             'address_info' => 'required',
             'license_img' => 'required'
         ], [
-            'name.required' => '名称不能为空',
-            'mobile.required' => '手机不能为空',
-            'address_id.required' => '地址信息不能为空',
-            'address_info.required' => '地址详细不能为空',
-            'license_img.required' =>'营业执照照片不能为空',
+            'name.required' => trans('api.name_cannot_be_empty'),
+            'mobile.required' => trans('api.phone_cannot_empty'),
+            'address_id.required' => trans('api.address_cannot_empty'),
+            'address_info.required' => trans('api.address_details_cannot_empty'),
+            'license_img.required' => trans('api.business_license_photo_not_empty'),
         ]);
 
         // 判断用户是否已经申请
         if(MallStore::where('uid', Service::auth()->getUser()->id)->where('status', '!=', 9)->exists()){
-            $this->responseError('用户已申请或者已经是商家了');
+            $this->responseError(trans('api.user_applied_or_already_merchant'));
         }
 
         // 获取城市信息
         $mc = MxCity::where(['id' => $request->get('address_id'), 'level_type' => 3])->first();
         if(!$mc){
-            $this->responseError('店铺地址信息有误');
+            $this->responseError(trans('api.address_is_incorrect'));
         }
 
         $msData = [
@@ -116,11 +116,11 @@ class MallStoreController extends Controller
 
             \Log::info('店铺申请异常');
 
-            $this->responseError('操作异常');
+            $this->responseError(trans('api.wrong_operation'));
 
         }
 
-        $this->responseSuccess('操作成功');
+        $this->responseSuccess(trans('api.operate_successfully'));
 
 
     }
@@ -134,7 +134,7 @@ class MallStoreController extends Controller
         $this->validate($request->all(), [
             'store_id'   => 'required',
         ], [
-            'store_id.required' => '店铺信息不能为空',
+            'store_id.required' => trans('api.store_information_cannot_empty'),
         ]);
 
         $res = MallOrder::with(['goods', 'user'])
@@ -170,13 +170,13 @@ class MallStoreController extends Controller
         $this->validate($request->all(), [
             'store_id'   => 'required',
         ], [
-            'store_id.required' => '店铺信息不能为空',
+            'store_id.required' => trans('api.store_information_cannot_empty'),
         ]);
 
         // 验证店铺信息是否正确
         $ms = MallStore::where('status', 1)->find($request->get('store_id'));
         if(!$ms){
-            $this->responseError('店铺信息有误');
+            $this->responseError(trans('api.store_information_cannot_empty'));
         }
 
         if($request->has('pic') && !empty($request->get('pic'))){
@@ -193,7 +193,7 @@ class MallStoreController extends Controller
 
         $ms->save();
 
-        $this->responseSuccess('操作成功');
+        $this->responseSuccess(trans('api.operate_successfully'));
 
     }
 
@@ -207,14 +207,14 @@ class MallStoreController extends Controller
             'store_id'   => 'required',
             'type' => 'required|in:1,2,3',
         ], [
-            'store_id.required' => '店铺信息不能为空',
-            'type.required' => '类型不能为空',
-            'type.in' => '类型不正确',
+            'store_id.required' => trans('api.store_information_cannot_empty'),
+            'type.required' => trans('api.category_cannot_empty'),
+            'type.in' => trans('api.incorrect_type'),
         ]);
 
         $store = MallStore::find($request->get('store_id'));
         if(!$store){
-            $this->responseError('数据有误');
+            $this->responseError(trans('api.parameter_is_wrong'));
         }
 
         $result['store'] = [
