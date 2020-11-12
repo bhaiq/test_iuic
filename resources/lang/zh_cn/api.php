@@ -167,6 +167,14 @@ return [
     'old_password_error' => '原密码错误！',
     'is_auth_has_done'   => '已实名验证！',
     'is_auth_apply_for_success'   => '申请成功！',
+    'energy'   => '能量',
+    'lock_up_energy'   => '锁仓能量',
+    'consumption_points'   => '消费积分',
+    'not_have'   => '无',
+    'first_gear'   => '一档',
+    'second_gear'   => '二档',
+    'third_gear'   => '三档',
+    'fourth_gear'   => '四档',
 
 
 

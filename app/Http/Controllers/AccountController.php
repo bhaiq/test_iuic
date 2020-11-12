@@ -43,7 +43,7 @@ class AccountController extends Controller
                 'cny' => 0,
                 'coin' => [
                     'id' => 1001,
-                    'name' => '能量'
+                    'name' => trans('api.energy')
                 ],
                 'is_open' => 1,
 
@@ -60,7 +60,7 @@ class AccountController extends Controller
                 'cny' => 0,
                 'coin' => [
                     'id' => 1003,
-                    'name' => '锁仓能量'
+                    'name' => trans('api.lock_up_energy')
                 ],
                 'is_open' => 1,
 
@@ -77,7 +77,7 @@ class AccountController extends Controller
                 'cny' => 0,
                 'coin' => [
                     'id' => 1001,
-                    'name' => '消费积分'
+                    'name' => trans('api.consumption_points')
                 ],
                 'is_open' => 1,
 

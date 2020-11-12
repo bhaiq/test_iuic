@@ -30,7 +30,7 @@ class UserController extends Controller
         $data = $user->toArray();
 
         $data['level'] = 0;
-        $data['level_name'] = '无';
+        $data['level_name'] = trans('api.not_have');
         $data['is_node'] = 0;
 
         if(isset($data['user_info'])){

@@ -82,7 +82,7 @@ class RecommendController extends Controller
                 'avatar' => $user->avatar,
                 'nickname' => $user->nickname,
                 'level' => 0,
-                'level_name' => '无',
+                'level_name' => trans('api.not_have'),
                 'is_auth' => $user->is_auth,
                 'branch_count' => $this->getBranchCount($uid),
                 'recommend_count' => $this->getRecommendCount($uid),

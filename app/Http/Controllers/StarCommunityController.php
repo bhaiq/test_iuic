@@ -62,15 +62,15 @@ class StarCommunityController extends Controller
       	$lv4=config('senior_admin.community_lv4');
       	
       	if($total>=$lv4){
-        	$dangwei="四档";
+        	$dangwei= trans('api.fourth_gear');
         }elseif($total>=$lv3){
-        	$dangwei="三档";
+        	$dangwei= trans('api.third_gear');
         }elseif($total>=$lv2){
-        	$dangwei="二档";
+        	$dangwei= trans('api.second_gear');
         }elseif($total>=$lv1){
-        	$dangwei="一档";
+        	$dangwei= trans('api.first_gear');
         }else{
-        	$dangwei="无";
+        	$dangwei= trans('api.not_have');
         }
       	
       	//当日新增

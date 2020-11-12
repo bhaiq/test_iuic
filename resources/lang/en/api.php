@@ -167,6 +167,14 @@ return [
     'old_password_error' => 'Original password error！',
     'is_auth_has_done'   => 'Verified by real name！',
     'is_auth_apply_for_success'   => 'application approved',
+    'energy'   => 'energy',
+    'lock_up_energy'   => 'Lock up energy',
+    'consumption_points' => 'consumption points',
+    'not_have'   => 'not have',
+    'first_gear'   => 'first gear',
+    'second_gear'   => 'second gear',
+    'third_gear'   => 'third gear',
+    'fourth_gear'   => 'fourth gear',
 
 
 
