@@ -12,6 +12,7 @@ use App\Models\Account;
 use App\Models\AccountLog;
 use App\Models\Coin;
 use App\Models\CommunityDividend;
+use App\Models\User;
 use App\Models\UserPartner;
 use App\Services\Service;
 use Illuminate\Http\Request;
@@ -105,7 +106,7 @@ class PartnerController extends Controller
                     $data['total']=$total;
                     $data['created_at']=date('Y-m-d H:i:s',time());
                     $data['updated_at']=date('Y-m-d H:i:s',time());
-                    DB::table('community_dividends')->insert($data);
+                    \DB::table('community_dividends')->insert($data);
                 }
             }
 
