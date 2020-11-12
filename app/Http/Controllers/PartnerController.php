@@ -92,8 +92,8 @@ class PartnerController extends Controller
 
             //给上级加业绩
             $pid_path=trim(User::where('id',$user->id)->value('pid_path'), ',');
-            $pid_arr=explode(',',$pid_path);
-
+            $pid_arrs = explode(',',$pid_path);
+            $pid_arr = array_diff($pid_arrs, ["0"]);
 
             foreach($pid_arr as $v){
                 $ucomm=CommunityDividend::where('uid',$v)->first();
