@@ -221,12 +221,16 @@ class ShopController extends Controller
 			foreach($pids as $v){
 				$ucomm=CommunityDividend::where('uid',$v)->first();
 				if($ucomm){
-					CommunityDividend::where('uid',$v)->update(['this_month'=>$ucomm->this_month + $good->goods_price
-                        ,'total'=>$ucomm->total + $good->goods_price,'true_num'=>$ucomm->true_num + $good->goods_price]);
+					CommunityDividend::where('uid',$v)->update(['this_month'=>$ucomm->this_month + $good->bonus_coefficient
+                        ,'total'=>$ucomm->total + $good->bonus_coefficient,
+                        'true_num'=>$ucomm->true_num + $good->bonus_coefficient,
+                        'true_total'=>$ucomm->true_total + $good->bonus_coefficient,
+                        ]);
 				}else{
 					$data['uid']=$v;
-					$data['this_month']=$good->goods_price;
-					$data['total']=$good->goods_price;
+					$data['this_month']=$good->bonus_coefficient;
+					$data['total']=$good->bonus_coefficient;
+					$data['true_total']=$good->bonus_coefficient;
 					$data['created_at']=date('Y-m-d H:i:s',time());
 					$data['updated_at']=date('Y-m-d H:i:s',time());
 					DB::table('community_dividends')->insert($data);
