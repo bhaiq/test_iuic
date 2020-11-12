@@ -103,6 +103,7 @@ class PartnerController extends Controller
                 }else{
                     $data['uid']=$v;
                     $data['this_month']=$total;
+                    $data['true_num']=$total;
                     $data['total']=$total;
                     $data['created_at']=date('Y-m-d H:i:s',time());
                     $data['updated_at']=date('Y-m-d H:i:s',time());
