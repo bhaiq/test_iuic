@@ -99,12 +99,15 @@ class PartnerController extends Controller
                 $ucomm=CommunityDividend::where('uid',$v)->first();
                 if($ucomm){
                     CommunityDividend::where('uid',$v)->update(['this_month'=>$ucomm->this_month + $total,
-                        'total'=>$ucomm->total + $total,'true_num'=>$ucomm->true_num + $total]);
+                        'total'=>$ucomm->total + $total,'true_num'=>$ucomm->true_num + $total,
+                        'true_total'=>$ucomm->true_total + $total
+                        ]);
                 }else{
                     $data['uid']=$v;
                     $data['this_month']=$total;
                     $data['true_num']=$total;
                     $data['total']=$total;
+                    $data['true_total']=$total;
                     $data['created_at']=date('Y-m-d H:i:s',time());
                     $data['updated_at']=date('Y-m-d H:i:s',time());
                     \DB::table('community_dividends')->insert($data);
