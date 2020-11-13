@@ -118,7 +118,8 @@ class User extends Model
 
     public function getInviteUrlAttribute()
     {
-        return url('/register');
+//        return url('/register');
+        return 'http://apinew.too86.com/register';
     }
 
     //    public function setPassword($password)
