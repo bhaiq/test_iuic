@@ -7,6 +7,7 @@ use App\Models\CommunityDividend;
 use App\Models\User;
 use App\Models\Account;
 use App\Models\AccountLog;
+use Illuminate\Support\Facades\Log;
 
 class CommDividMonth extends Command {
 
@@ -62,18 +63,21 @@ class CommDividMonth extends Command {
                     
                     //判断该比例是否返过
                     if(in_array($bl,$data_yfbl)){
+                        Log::info("该比例是返过");
                          continue;
                     }
 					//如果已经返过0.2则不返0.1
 					if(count($data_yfbl)>0){
 						if(max($data_yfbl)>$bl){
+                            Log::info("已经返过0.2则不返0.1");
 							continue;
 						}
 					}
 					
 					$total_yj=CommunityDividend::where('uid',$teams[$i])->value('last_month');
 				
-					if($total_yj<=0){                 
+					if($total_yj<=0){
+                        Log::info("total_yj小于0");
 						 continue;
 					}	
                     
