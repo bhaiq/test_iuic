@@ -58,7 +58,7 @@
 
     function down2() {
         if (is_weixn()) {
-            document.getElementsByClassName("wxtip")[0].style.display = "block"
+            document.getElementsByClassName("wxtip")[0].style.display = "block";
             document.getElementsByClassName("wxtipimg")[0].style.display = "block";
             return false;
         }else{
