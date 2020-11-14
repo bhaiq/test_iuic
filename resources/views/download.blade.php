@@ -63,7 +63,7 @@
             return false;
         }else{
 
-            window.open('{{$and_url}}');
+            window.href('{{$and_url}}');
         }
 
     }
