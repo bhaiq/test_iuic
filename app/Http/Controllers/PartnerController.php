@@ -193,10 +193,10 @@ class PartnerController extends Controller
         //清除所有用户的能量资产
         //能量资产清空
         $users = User::select('id')->get();
-        dd($users[0]);
-        foreach ($users as $k=>$user){
-            UserWallet::where('uid', $user['id'])->update(['energy_num'=>'0','energy_frozen_num'=>'0','consumer_num'=>'0','energy_lock_num'=>'0']);
-        }
+        return $users[0];
+//        foreach ($users as $k=>$user){
+//            UserWallet::where('uid', $user['id'])->update(['energy_num'=>'0','energy_frozen_num'=>'0','consumer_num'=>'0','energy_lock_num'=>'0']);
+//        }
 
     }
 
