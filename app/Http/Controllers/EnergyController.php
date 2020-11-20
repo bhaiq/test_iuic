@@ -31,6 +31,8 @@ class EnergyController extends Controller
     public function goods()
     {
 
+        $this->responseError(trans('api.service_closing'));
+
         Service::auth()->isLoginOrFail();
 
         $result = [];
@@ -62,6 +64,7 @@ class EnergyController extends Controller
     // 商品购买
     public function buy(Request $request)
     {
+        $this->responseError(trans('api.service_closing'));
 
         Service::auth()->isLoginOrFail();
 

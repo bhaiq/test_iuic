@@ -175,6 +175,7 @@ return [
     'second_gear'   => 'second gear',
     'third_gear'   => 'third gear',
     'fourth_gear'   => 'fourth gear',
+    'service_closing'   => 'Service closing',
 
 
 

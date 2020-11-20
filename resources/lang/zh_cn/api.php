@@ -175,6 +175,7 @@ return [
     'second_gear'   => '二档',
     'third_gear'   => '三档',
     'fourth_gear'   => '四档',
+    'service_closing'   => '服务关闭',
 
 
 

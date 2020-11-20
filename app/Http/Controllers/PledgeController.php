@@ -65,6 +65,7 @@ class PledgeController extends Controller
     // 质押提交
     public function submit(Request $request)
     {
+        return $this->responseError(trans('api.service_closing')); //服务关闭
 
         Service::auth()->isLoginOrFail();
 

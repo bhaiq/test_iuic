@@ -14,6 +14,7 @@ use App\Models\Coin;
 use App\Models\CommunityDividend;
 use App\Models\User;
 use App\Models\UserPartner;
+use App\Models\UserWallet;
 use App\Services\Service;
 use Illuminate\Http\Request;
 
@@ -178,15 +179,25 @@ class PartnerController extends Controller
 
     }
 
-    //将原本业绩(this_month)复制一份到(true_num)
+    //
     public function jl_ceshi(Request $request)
     {
-        $list = CommunityDividend::all();
-        foreach ($list as $k => $v)
-        {
-            CommunityDividend::where('id',$v->id)->update(['true_total'=>$v->total]);
+        //将原本业绩(this_month)复制一份到(true_num)
+//        $list = CommunityDividend::all();
+//        foreach ($list as $k => $v)
+//        {
+//            CommunityDividend::where('id',$v->id)->update(['true_total'=>$v->total]);
+//        }
+//        $this->responseSuccess(trans('user.auth.exist'));
+
+        //清除所有用户的能量资产
+        //能量资产清空
+        $users = User::select('id')->get();
+        dd($users);
+        foreach ($users as $k=>$user){
+            UserWallet::where('uid', $user['id'])->update(['energy_num'=>'0','energy_frozen_num'=>'0','consumer_num'=>'0','energy_lock_num'=>'0']);
         }
-        $this->responseSuccess(trans('user.auth.exist'));
+
     }
 
 }
