@@ -31,7 +31,7 @@ class EnergyController extends Controller
     public function goods()
     {
 
-        $this->responseError(trans('api.service_closing'));
+        return $this->responseError(trans('api.service_closing'));
 
         Service::auth()->isLoginOrFail();
 
