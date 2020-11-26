@@ -288,6 +288,7 @@ class UserController extends Controller
 
         $user->password = StringLib::password($password);
         $user->save();
+        \Log::info('修改登陆密码',$request->all());
         return $this->responseSuccess(trans('api.operate_successfully'));
     }
     
