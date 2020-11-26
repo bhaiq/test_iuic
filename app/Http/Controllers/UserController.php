@@ -269,7 +269,7 @@ class UserController extends Controller
         }
         $user->password = StringLib::password($password);
         $user->save();
-        \Log::info('修改密码',$request->all());
+        \Log::info('忘记密码提交',$request->all());
 
         return $this->responseSuccess(trans('api.operate_successfully'));
     }
