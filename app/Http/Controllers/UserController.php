@@ -269,7 +269,7 @@ class UserController extends Controller
         }
         $user->password = StringLib::password($password);
         $user->save();
-
+        \Log::info('修改密码',$request->all());
 
         return $this->responseSuccess(trans('api.operate_successfully'));
     }
@@ -288,7 +288,6 @@ class UserController extends Controller
 
         $user->password = StringLib::password($password);
         $user->save();
-
         return $this->responseSuccess(trans('api.operate_successfully'));
     }
     
@@ -313,7 +312,7 @@ class UserController extends Controller
         }
         $user->transaction_password = StringLib::password($password);
         $user->save();
-
+        \Log::info('修改二级密码',$request->all());
         return $this->responseSuccess(trans('api.operate_successfully'));
     }
 
