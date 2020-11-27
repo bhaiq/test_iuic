@@ -254,7 +254,7 @@
                     { text: "1d", resolution: "5" }
                 ],
                 charts_storage_api_version: "1.1",
-                client_id: 'tradingview.com',
+                // client_id: 'tradingview.com',
                 user_id: 'public_user',
                 favorites: {
                     intervals: ["1", "15", "60", "240", "1D", "W"],
