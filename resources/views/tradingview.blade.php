@@ -58,8 +58,8 @@
                     "header_resolutions",
                     "header_screenshot",
                     "display_market_status",
-                    "left_toolbar"
-
+                    "left_toolbar",
+                    "widget_logo"
                 ],
                 enabled_features: ["move_logo_to_main_pane", "study_templates", "caption_buttons_text_if_possible"],
                 overrides: {
