@@ -11,6 +11,7 @@ use App\Console\Commands\MinusDay;
 use App\Console\Commands\NewKuangchiRelease;
 use App\Console\Commands\ReleaseEnergy;
 use App\Console\Commands\RobotTrade;
+use App\Console\Commands\SumServiceCharge;
 use App\Console\Commands\UpdateLevel;
 use App\Console\Commands\UpdateWallet;
 use App\Console\Commands\UserStat;
@@ -41,6 +42,7 @@ class Kernel extends ConsoleKernel
         RobotTrade::class,
         JlKjRelease::class,
         MinusDay::class,
+        SumServiceCharge::class,
     ];
 
     /**
@@ -66,7 +68,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('kuangjiRelease')->dailyAt('00:01');
 //        $schedule->command('releaseEnergy')->dailyAt('04:11'); //能量释放 周一早上打开
         $schedule->command('newKuangchiRelease')->dailyAt('05:11');
-        $schedule->command('SumServiceCharge')->dailyAt('18:10'); //计算手续费给指定用户加上iuic(法币)
+        $schedule->command('SumServiceCharge')->dailyAt('18:13'); //计算手续费给指定用户加上iuic(法币)
 //        $schedule->command('newKuangchiRelease')->dailyAt('16:10');
 
         $schedule->command('robotTrade')->everyFiveMinutes();
