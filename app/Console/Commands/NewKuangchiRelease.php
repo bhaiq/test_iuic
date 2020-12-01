@@ -84,8 +84,8 @@ class NewKuangchiRelease extends Command
 
             $nkrl = NewKuangchiReleaseLog::create($data);
 
-            // 释放矿池数增加
-            UserInfo::where('uid', $v->uid)->increment('release_total', $oneNum);
+            // 释放矿池数增加(应:iuic矿池 -100,可用iuic +80)
+            UserInfo::where('uid', $v->uid)->increment('release_total', bcsub($v->buy_total, $v->release_total, 8));
 
             // 获取那个USDT的币种ID
             $coin = Coin::getCoinByName('IUIC');
