@@ -19,7 +19,7 @@ class StatController extends Controller
     {
         //IUIC总量
         $data['data']['all_iuic'] = $this->ce("0");
-        //IUIC剩余总量(2.1亿 - IUIC剩余矿池 - 流通IUIC)
+        //IUIC剩余总量(2.1亿 - IUIC剩余矿池 - 流通IUIC - 回购总数)
         $data['data']['sy_iuic'] = $this->ce("1");
         //流通IUIC数量
         $data['data']['lt_iuic'] = $this->ce("2");
