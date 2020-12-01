@@ -6,6 +6,7 @@ use App\Models\Account;
 use App\Models\AccountLog;
 use App\Models\KuangchiServiceCharge;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class SumServiceCharge extends Command
 {
@@ -41,6 +42,7 @@ class SumServiceCharge extends Command
     public function handle()
     {
         //计算手续费总数,给指定用户加上iuic(法币)
+        Log::info("计算手续费总数");
         $all_num = KuangchiServiceCharge::where('id','>',0)->whereBetween('created_at',[date("Y-m-d 00:00:00",time()),date("Y-m-d 23:59:59",time())])->sum('all_num');
 
         // 用户余额增加(917客户指定的账号id)
