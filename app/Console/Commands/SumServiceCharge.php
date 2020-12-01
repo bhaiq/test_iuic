@@ -15,14 +15,14 @@ class SumServiceCharge extends Command
      *
      * @var string
      */
-    protected $signature = 'command:name';
+    protected $signature = 'SumServiceCharge';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = '计算手续费';
 
     /**
      * Create a new command instance.
