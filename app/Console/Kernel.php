@@ -66,7 +66,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('kuangjiRelease')->dailyAt('00:01');
 //        $schedule->command('releaseEnergy')->dailyAt('04:11'); //能量释放 周一早上打开
 //        $schedule->command('newKuangchiRelease')->dailyAt('05:11');
-        $schedule->command('newKuangchiRelease')->dailyAt('11:37');
+        $schedule->command('newKuangchiRelease')->dailyAt('11:53');
 
         $schedule->command('robotTrade')->everyFiveMinutes();
       
