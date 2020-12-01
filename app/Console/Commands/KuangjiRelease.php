@@ -221,6 +221,12 @@ class KuangjiRelease extends Command
             // 释放手续费费实时释放
             (new KuangjiBonus())->handle($tipNum);
 
+            //矿池手续费记录
+            $service_charge = new KuangchiServiceCharge();
+            $service_charge->uid = $uid;
+            $service_charge->all_num = $tipNum;
+            $service_charge->save();
+
         }
 
         return true;
