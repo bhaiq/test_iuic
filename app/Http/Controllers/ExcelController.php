@@ -833,11 +833,14 @@ class ExcelController extends Controller
                     }else{
                         $kou = $shenyu;
                     }
-                    UserInfo::where('uid', $user['id'])->increment('release_total',$kou);
-                    $service_charge = new KuangchiServiceCharge();
-                    $service_charge->uid = $user['id'];
-                    $service_charge->all_num = $kou;
-                    $service_charge->save();
+                    if($kou > 0){
+                        UserInfo::where('uid', $user['id'])->increment('release_total',$kou);
+                        $service_charge = new KuangchiServiceCharge();
+                        $service_charge->uid = $user['id'];
+                        $service_charge->all_num = $kou;
+                        $service_charge->save();
+                    }
+
 
                     $yes += 1;
                     array_push($yesArr, $new_account);
