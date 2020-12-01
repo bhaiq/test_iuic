@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\KuangchiServiceCharge;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
@@ -789,6 +790,80 @@ class ExcelController extends Controller
 //        \Log::info('用户清资产结束', $returnArr);
 //        return returnJson('1','处理成功',$returnArr);
 //    }
+
+
+    public function kuang_service_charge(Request $request)
+    {
+        \Log::info('用户处理资产开始');
+
+        $data = Excel::toArray(new UsersImport,storage_path('/exports/service.xls'));
+        $count = count($data);
+        if($count < 1){
+            return returnJson('0','未检测到有效数据');
+        }
+        // return returnJson(0, '终止');
+        \DB::beginTransaction();
+        try {
+            $yes = 0;//处理数量
+            $yesArr = [];
+            $wu = 0;//未处理数量
+            $wuArr = [];
+            foreach($data as $key=>$value){
+                foreach ($value as $k => $v) {
+                    # code...
+
+//                     dump((string)$v[0]);
+//                     dump((string)$v[1]);
+                    $new_account = $v[0];
+                    $user = User::with('user_info')->where('new_account', $new_account)->first();
+                    if(!$user){
+                        // 无账号
+                        $wu += 1;
+                        array_push($wuArr, $new_account);
+                        continue;
+                    }
+//
+//                  // 扣除IUIC矿池(如果剩余的不够扣,就把剩余的扣完,并加记录)
+                    $userinfo = UserInfo::where('uid',$user['id'])->first();
+                    $user_buy_total = $userinfo->buy_tatal;
+                    $user_release_tatal = $userinfo->release_total;
+                    $shenyu = bcsub($user_buy_total,$user_release_tatal,8);
+                    if($shenyu >= $v[1]){
+                        $kou = $v[1];
+                    }else{
+                        $kou = $shenyu;
+                    }
+                    UserInfo::where('uid', $user['id'])->increment('release_total',$kou);
+                    $service_charge = new KuangchiServiceCharge();
+                    $service_charge->uid = $user['id'];
+                    $service_charge->all_num = $kou;
+                    $service_charge->save();
+
+                    $yes += 1;
+                    array_push($yesArr, $new_account);
+                }
+            }
+
+            \DB::commit();
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            return returnJson(0, '操作异常'.$e);
+        }
+
+        $returnArr = [
+            'yes' => [
+                'count' => $yes,
+                'yesArr' => $yesArr
+            ],
+            'wu' => [
+                'count' => $wu,
+                'wuArr' => $wuArr
+            ]
+        ];
+
+        \Log::info('用户清资产结束', $returnArr);
+        return returnJson('1','处理成功',$returnArr);
+    }
   	
   
 }

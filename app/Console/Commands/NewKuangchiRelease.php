@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Account;
 use App\Models\AccountLog;
 use App\Models\Coin;
+use App\Models\KuangchiServiceCharge;
 use App\Models\NewKuangchiReleaseLog;
 use App\Models\UserInfo;
 use App\Models\UserWalletLog;
@@ -65,6 +66,7 @@ class NewKuangchiRelease extends Command
 
             // 获取本次释放数量
             $oneNum = bcmul(bcsub($v->buy_total, $v->release_total, 8), $releaseBl, 8);
+            $tipNum = bcmul(bcsub($v->buy_total, $v->release_total, 8), 1-$releaseBl, 8);
 
             // 判读本次释放是否超出
             if(bcadd($v->release_total, $oneNum, 8) > $v->buy_total){
@@ -98,6 +100,12 @@ class NewKuangchiRelease extends Command
 
             // 矿池表信息增加
             UserWalletLog::addLog($v->uid, 'new_kuangchi_release_log', $nkrl->id, '矿池静态释放', '-', $oneNum, 2, 1);
+
+            //矿池手续费记录
+            $service_charge = new KuangchiServiceCharge();
+            $service_charge->uid = $v->uid;
+            $service_charge->all_num = $tipNum;
+            $service_charge->save();
 
         }
 
