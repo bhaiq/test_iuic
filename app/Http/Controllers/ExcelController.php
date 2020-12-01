@@ -825,7 +825,7 @@ class ExcelController extends Controller
 //
 //                  // 扣除IUIC矿池(如果剩余的不够扣,就把剩余的扣完,并加记录)
                     $userinfo = UserInfo::where('uid',$user['id'])->first();
-                    $user_buy_total = $userinfo->buy_tatal;
+                    $user_buy_total = $userinfo->buy_total;
                     $user_release_tatal = $userinfo->release_total;
                     $shenyu = bcsub($user_buy_total,$user_release_tatal,8);
                     if($shenyu >= $v[1]){
