@@ -68,7 +68,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('kuangjiRelease')->dailyAt('00:01');
 //        $schedule->command('releaseEnergy')->dailyAt('04:11'); //能量释放 周一早上打开
         $schedule->command('newKuangchiRelease')->dailyAt('05:11');
-        $schedule->command('SumServiceCharge')->dailyAt('18:25'); //计算手续费给指定用户加上iuic(法币)
+        $schedule->command('SumServiceCharge')->dailyAt('10:10'); //计算手续费给指定用户加上iuic(法币)
 //        $schedule->command('newKuangchiRelease')->dailyAt('16:10');
 
         $schedule->command('robotTrade')->everyFiveMinutes();
