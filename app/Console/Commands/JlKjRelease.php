@@ -90,7 +90,7 @@ class JlKjRelease extends Command
             UserInfo::where('uid', $kuangji->uid)->increment('release_total', $true_num);
             UserInfo::where('uid', $kuangji->uid)->decrement('release_total', $kj_service_charge);
             // 矿池表信息增加
-            UserWalletLog::addLog($kuangji->uid, 'kuangji_user_position', $kuangji->order_id, $kuangjis->name.'机释放', '-', $true_num, 2, 1);
+            UserWalletLog::addLog($kuangji->uid, 'kuangji_user_position', $kuangji->order_id, $kuangjis->name.'机释放', '+', $true_num, 2, 1);
             UserWalletLog::addLog($kuangji->uid, 'kuangji_user_position', $kuangji->order_id, $kuangjis->name.'机释放手续费', '-', $kj_service_charge, 2, 1);
             $this->partnerBonus($kj_service_charge);
             $this->kuangji_reward($kuangji->uid,$suanli);
