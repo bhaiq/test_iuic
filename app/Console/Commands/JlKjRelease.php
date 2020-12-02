@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Account;
 use App\Models\AccountLog;
 use App\Models\Coin;
+use App\Models\KuangchiServiceCharge;
 use App\Models\Kuangji;
 use App\Models\KuangjiUserPosition;
 use App\Models\User;
@@ -93,6 +94,12 @@ class JlKjRelease extends Command
             UserWalletLog::addLog($kuangji->uid, 'kuangji_user_position', $kuangji->order_id, $kuangjis->name.'机释放手续费', '-', $kj_service_charge, 2, 1);
             $this->partnerBonus($kj_service_charge);
             $this->kuangji_reward($kuangji->uid,$suanli);
+
+            //矿池手续费记录
+            $service_charge = new KuangchiServiceCharge();
+            $service_charge->uid = $kuangji->uid;
+            $service_charge->all_num = $kj_service_charge;
+            $service_charge->save();
         }
 
 
