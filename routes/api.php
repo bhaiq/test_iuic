@@ -21,6 +21,7 @@ Route::group(['middleware' => ['auth.api','switchlang']], function () {
     Route::post('ceshi', 'KuangJiController@order_day'); //处理矿机天数
     Route::post('jl_ceshi', 'PartnerController@jl_ceshi');
     Route::post('kuang_service_charge', 'ExcelController@kuang_service_charge');
+    Route::post('reback', 'ExcelController@reback'); //用户恢复关系
 
     Route::get('ex/history/{team_id}', 'ExOrderController@_list')->where('team_id', '[0-9]+');
     Route::get('ex/history_price/{team_id}', 'ExOrderController@price')->where('team_id', '[0-9]+');
