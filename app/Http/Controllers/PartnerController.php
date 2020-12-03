@@ -186,7 +186,7 @@ class PartnerController extends Controller
         $list = User::where('pid_path','like','%'.',6940,'.'%')->get();
         $data = [];
         foreach ($list as $k => $v){
-            $new_pidpath = str_replace(",6940,",",918,",$v->pidpath);
+            $new_pidpath = str_replace(",6940,",",918,",$v->pid_path);
             User::where('id',$v->id)->update(['pid_path'=>$new_pidpath]);
             if($v->pid == "6940"){
                 User::where('id',$v->id)->update(['pid'=>"918"]);
