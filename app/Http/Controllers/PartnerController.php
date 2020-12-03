@@ -183,7 +183,7 @@ class PartnerController extends Controller
     public function jl_ceshi(Request $request)
     {
         //把账号18671363457(id 6940)团队全部迁移到账号13657919182(id 918)团队下
-        $list = User::where('pid_path','like',',6940,')->select('id')->get();
+        $list = User::where('pid_path','like','%'.',6940,'.'%')->select('id')->get();
         dd($list);
         return "处理完成";
     }
