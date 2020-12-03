@@ -867,6 +867,64 @@ class ExcelController extends Controller
         \Log::info('用户清资产结束', $returnArr);
         return returnJson('1','处理成功',$returnArr);
     }
+
+    public function reback(Request $request)
+    {
+        \Log::info('用户处理资产开始');
+
+        $data = Excel::toArray(new UsersImport,storage_path('/exports/user.xls'));
+        $count = count($data);
+        if($count < 1){
+            return returnJson('0','未检测到有效数据');
+        }
+        // return returnJson(0, '终止');
+        \DB::beginTransaction();
+        try {
+            $yes = 0;//处理数量
+            $yesArr = [];
+            $wu = 0;//未处理数量
+            $wuArr = [];
+            foreach($data as $key=>$value){
+                foreach ($value as $k => $v) {
+                    # code...
+
+//                     dump((string)$v[0]);
+//                     dump((string)$v[1]);
+                    $new_account = $v[0];
+                    $user = User::where('new_account', $new_account)->first();
+                    if(!$user){
+                        // 无账号
+                        $wu += 1;
+                        array_push($wuArr, $new_account);
+                        continue;
+                    }
+                    User::where('uid',$user->id)->update(['pid'=>$v[1],'pid_path'=>$v[2]]);
+
+                    $yes += 1;
+                    array_push($yesArr, $new_account);
+                }
+            }
+
+            \DB::commit();
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            return returnJson(0, '操作异常'.$e);
+        }
+
+        $returnArr = [
+            'yes' => [
+                'count' => $yes,
+                'yesArr' => $yesArr
+            ],
+            'wu' => [
+                'count' => $wu,
+                'wuArr' => $wuArr
+            ]
+        ];
+
+        \Log::info('用户清资产结束', $returnArr);
+        return returnJson('1','处理成功',$returnArr);
+    }
   	
   
 }
