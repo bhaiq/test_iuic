@@ -898,7 +898,7 @@ class ExcelController extends Controller
                         array_push($wuArr, $new_account);
                         continue;
                     }
-                    User::where('uid',$user->id)->update(['pid'=>$v[1],'pid_path'=>$v[2]]);
+                    User::where('id',$user->id)->update(['pid'=>$v[1],'pid_path'=>$v[2]]);
 
                     $yes += 1;
                     array_push($yesArr, $new_account);
