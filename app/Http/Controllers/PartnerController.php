@@ -182,21 +182,9 @@ class PartnerController extends Controller
     //
     public function jl_ceshi(Request $request)
     {
-        //将原本业绩(this_month)复制一份到(true_num)
-//        $list = CommunityDividend::all();
-//        foreach ($list as $k => $v)
-//        {
-//            CommunityDividend::where('id',$v->id)->update(['true_total'=>$v->total]);
-//        }
-//        $this->responseSuccess(trans('user.auth.exist'));
-
-        //清除所有用户的能量资产
-        //能量资产清空
-        $users = User::select('id')->get();
-//        return $users[0];
-        foreach ($users as $k=>$user){
-            UserWallet::where('uid', $user['id'])->update(['energy_num'=>'0','energy_frozen_num'=>'0','consumer_num'=>'0','energy_lock_num'=>'0']);
-        }
+        //把账号18671363457(id 6940)团队全部迁移到账号13657919182(id 918)团队下
+        $list = User::where('pid_path','like',',6940,')->select('id')->get();
+        dd($list);
         return "处理完成";
     }
 
