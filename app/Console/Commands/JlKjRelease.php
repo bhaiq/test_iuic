@@ -93,7 +93,7 @@ class JlKjRelease extends Command
             UserWalletLog::addLog($kuangji->uid, 'kuangji_user_position', $kuangji->order_id, $kuangjis->name.'机释放', '+', $true_num, 2, 1);
             UserWalletLog::addLog($kuangji->uid, 'kuangji_user_position', $kuangji->order_id, $kuangjis->name.'机释放手续费', '-', $kj_service_charge, 2, 1);
             $this->partnerBonus($kj_service_charge);
-            $this->kuangji_reward($kuangji->uid,$suanli);
+//            $this->kuangji_reward($kuangji->uid,$suanli);
 
             //矿池手续费记录
             $service_charge = new KuangchiServiceCharge();
@@ -158,6 +158,7 @@ class JlKjRelease extends Command
     //质机奖,开发矿机产出的币给予奖励，上级可获得下级产出币的3%的奖励,上级也必须有矿机
     public function kuangji_reward($uid,$reward_num)
     {
+        return "2021年1月3日终止";
 
         $pid = User::where('id',$uid)->value('pid');
         $has = KuangjiUserPosition::where('uid',$pid)->where('kuangji_id','>',0)->where('order_id','>',0)->first();

@@ -19,6 +19,7 @@ use App\Models\KuangjiPosition;
 use App\Models\KuangjiUserPosition;
 use App\Models\UserInfo;
 use App\Models\UserWalletLog;
+use App\Services\JlkReleaseService;
 use App\Services\Service;
 use Illuminate\Http\Request;
 
@@ -851,12 +852,14 @@ class KuangJiController extends Controller
     //处理矿机订单,总天数
     public function order_day(Request $request)
     {
-        $orders = KuangjiOrder::where('status',1)->get();
-        foreach ($orders as $k => $v)
-        {
-            $day = Kuangji::where('id',$v->kuangji_id)->value('valid_day');
-            KuangjiOrder::where('id',$v->id)->update(['total_day'=>$day]);
-        }
+//        $orders = KuangjiOrder::where('status',1)->get();
+//        foreach ($orders as $k => $v)
+//        {
+//            $day = Kuangji::where('id',$v->kuangji_id)->value('valid_day');
+//            KuangjiOrder::where('id',$v->id)->update(['total_day'=>$day]);
+//        }
+        $new = new JlkReleaseService();
+        $new->kuang_release('7394',12000);
     }
 
 }

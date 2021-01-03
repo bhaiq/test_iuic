@@ -12,4 +12,8 @@
   'kuangji_cash_switch' => '0',
   'kuangji_linghuo_redeem_switch' => '0',
   'kuangji_zhiji_rate' => '0.03',
+    'zhitui_kuangji_release_rate' => '0.05',
+    'one_star_kuangji_release_rate' => '0.02',
+    'two_star_kuangji_release_rate' => '0.03',
+    'three_star_kuangji_release_rate' => '0.05',
 );
