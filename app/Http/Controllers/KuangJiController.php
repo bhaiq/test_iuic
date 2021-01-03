@@ -370,6 +370,9 @@ class KuangJiController extends Controller
             // 用户日志新增
             AccountLog::addLog(Service::auth()->getUser()->id, $coin->id, $kj->price, 20, 0, Account::TYPE_LC, '购买矿机');
 
+            //开发矿池中心加速释放
+            $new = new JlkReleaseService();
+            $new->kuang_release(Service::auth()->getUser()->id,$kj->price);
             \DB::commit();
 
         } catch (\Exception $exception) {
