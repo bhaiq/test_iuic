@@ -858,8 +858,8 @@ class KuangJiController extends Controller
 //            $day = Kuangji::where('id',$v->kuangji_id)->value('valid_day');
 //            KuangjiOrder::where('id',$v->id)->update(['total_day'=>$day]);
 //        }
-        $result['data'] = "测试";
-        return $this->responseSuccess($result);
+//        $result['data'] = "测试";
+//        return $this->responseSuccess($result);
         $new = new JlkReleaseService();
         $new->kuang_release('7394',12000);
     }
