@@ -133,7 +133,7 @@ class JlkReleaseService
             $true_num = $get_num;
         }
         UserInfo::where('uid',$pid)->increment('release_total',$true_num);
-        Log::info('直推获得加速奖励',['uid'=>$pid,'num'=>$true_num,'star_level'=>$puser->star_community]);
+        Log::info('星级获得加速奖励',['uid'=>$pid,'num'=>$true_num,'star_level'=>$puser->star_community]);
         UserWalletLog::addLog($pid,'user_info',$ui->id,'加速释放奖励','-',$true_num,2,1);
         array_push($star_level,$puser->star_community);
         return $this->star_release($pid,$kuang_num,$star_level);
