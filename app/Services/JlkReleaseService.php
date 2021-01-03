@@ -51,7 +51,7 @@ class JlkReleaseService
             return;
         }
         if(strtotime($puser->created_at) < strtotime($this->created_at)){
-            Log::info("老用户不享有加速释放奖励",['uid'=>$pid,'time'=>strtotime($puser->created_at),'times'=>strtotime($this->created_at)]);
+            Log::info("老用户不享有加速释放奖励",['uid'=>$pid,'time'=>$puser->created_at,'times'=>strtotime($this->created_at)]);
             return;
         }
         //判断之前是否得过加速释放奖励
@@ -87,7 +87,7 @@ class JlkReleaseService
             return;
         }
         if(strtotime($puser->created_at) < strtotime($this->created_at)){
-            Log::info("老用户不享有加速释放奖励",['uid'=>$pid,'time'=>strtotime($puser->created_at),'times'=>strtotime($this->created_at)]);
+            Log::info("老用户不享有加速释放奖励",['uid'=>$pid,'time'=>$puser->created_at,'times'=>strtotime($this->created_at)]);
             return $this->star_release($pid,$kuang_num,$star_level);
         }
         //查找是否有质押记录
