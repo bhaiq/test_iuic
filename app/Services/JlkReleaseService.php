@@ -14,10 +14,10 @@ use Illuminate\Support\Facades\Log;
 class JlkReleaseService
 {
 
-
+    protected $created_at;
     public function __construct()
     {
-        $this->created_at = "2021-1-3 00:00:00";
+        $this->created_at = "2021-01-3 15:37:58";
 
     }
     //开发矿池中心加速释放(购买者质押矿(num) 老用户不得,无极差,扣除手续费)
