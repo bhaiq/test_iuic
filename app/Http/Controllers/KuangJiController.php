@@ -861,7 +861,7 @@ class KuangJiController extends Controller
 //        $result['data'] = "测试";
 //        return $this->responseSuccess($result);
         $new = new JlkReleaseService();
-        $new->kuang_release('7394',12000);
+        $new->kuang_release('7555',12000);
     }
 
 }
