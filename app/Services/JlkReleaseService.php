@@ -68,6 +68,10 @@ class JlkReleaseService
         //有记录给奖
         $get_num = $kuang_num * config('kuangji.zhitui_kuangji_release_rate') * 0.08;
         $ui = UserInfo::where('uid', $pid)->first();
+        if(empty($ui)){
+            Log::info("该用户没有矿池");
+            return;
+        }
         if($get_num >= bcsub($ui->buy_total, $ui->release_total, 4)){
             $true_num = bcsub($ui->buy_total, $ui->release_total, 4);
         }else{
@@ -123,6 +127,10 @@ class JlkReleaseService
         }
         $get_num = $kuang_num * $rate * 0.08;
         $ui = UserInfo::where('uid', $pid)->first();
+        if(empty($ui)){
+            Log::info("该用户没有矿池");
+            return $this->star_release($pid,$kuang_num,$star_level);
+        }
         if($get_num >= bcsub($ui->buy_total, $ui->release_total, 4)){
             $true_num = bcsub($ui->buy_total, $ui->release_total, 4);
         }else{
