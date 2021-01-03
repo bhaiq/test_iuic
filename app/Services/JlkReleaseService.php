@@ -35,7 +35,7 @@ class JlkReleaseService
     public function kuang_release($uid,$kuang_num)
     {
         //改用户第一次质押返奖,之后重复质押就不再返奖
-        $kuangji_list = KuangjiOrder::where('uid',$uid)->where('created_at',$this->created_at)->count();
+        $kuangji_list = KuangjiOrder::where('uid',$uid)->where('created_at','>',$this->created_at)->count();
         if($kuangji_list >= 2){
             Log::info("已质押过一次,重复质押上级不得奖");
             return;
