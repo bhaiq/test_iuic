@@ -50,13 +50,13 @@ class JlkReleaseService
             return;
         }
         if($puser->created_at < $this->created_at){
-            Log::info("老用户不享有加速释放奖励");
+            Log::info("老用户不享有加速释放奖励",['uid'=>$pid]);
             return;
         }
         //查找是否有质押记录
         $log = KuangjiOrder::where('uid',$pid)->first();
         if(empty($log)){
-            Log::info("该用户没有质押记录不得加速释放奖励");
+            Log::info("该用户没有质押记录不得加速释放奖励",['uid'=>$pid]);
             return;
         }
         //有记录给奖
@@ -80,13 +80,13 @@ class JlkReleaseService
             return;
         }
         if($puser->created_at < $this->created_at){
-            Log::info("老用户不享有加速释放奖励");
+            Log::info("老用户不享有加速释放奖励",['uid'=>$pid]);
             return $this->star_release($pid,$kuang_num,$star_level);
         }
         //查找是否有质押记录
         $log = KuangjiOrder::where('uid',$pid)->first();
         if(empty($log)){
-            Log::info("该用户没有质押记录不得加速释放奖励");
+            Log::info("该用户没有质押记录不得加速释放奖励",['uid'=>$pid]);
             return $this->star_release($pid,$kuang_num,$star_level);
         }
         if(count($star_level) >= 3){
