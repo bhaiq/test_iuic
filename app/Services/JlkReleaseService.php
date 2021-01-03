@@ -34,7 +34,7 @@ class JlkReleaseService
 
     public function kuang_release($uid,$kuang_num)
     {
-        //直推获得加速奖励,
+        //直推获得加速奖励
         $this->zhi_release($uid,$kuang_num);
         //1星2星3星加速奖励
         $star_level = [];
