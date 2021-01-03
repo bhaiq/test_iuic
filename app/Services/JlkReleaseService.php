@@ -9,6 +9,7 @@ namespace App\Services;
 use App\Models\KuangjiOrder;
 use App\Models\User;
 use App\Models\UserInfo;
+use App\Models\UserWalletLog;
 use Illuminate\Support\Facades\Log;
 
 class JlkReleaseService
@@ -20,7 +21,7 @@ class JlkReleaseService
         $this->created_at = "2021-01-3 15:37:58";
 
     }
-    //开发矿池中心加速释放(购买者质押矿(num) 老用户不得,无极差,扣除手续费)
+    //开发矿池中心加速释放(购买者质押矿(num) 老用户不得,无极差,扣除手续费,只得一次,之后不再得)
     // 新质押分享者得(num*5%)
     // 新一星加速(num*2%)
     // 新二星加速(num*3%)
@@ -53,6 +54,11 @@ class JlkReleaseService
             Log::info("老用户不享有加速释放奖励",['uid'=>$pid]);
             return;
         }
+        //判断之前是否得过加速释放奖励
+        if(UserWalletLog::where('uid',$pid)->where('exp','加速释放奖励')->first()){
+            Log::info("已享有加速释放奖励,不再享有",['uid'=>$pid]);
+            return;
+        }
         //查找是否有质押记录
         $log = KuangjiOrder::where('uid',$pid)->first();
         if(empty($log)){
@@ -68,6 +74,7 @@ class JlkReleaseService
             $true_num = $get_num;
         }
         UserInfo::where('uid',$pid)->increment('release_total',$true_num);
+        UserWalletLog::addLog($pid,'user_info',$ui->id,'加速释放奖励','-',$true_num,2,1);
         Log::info('直推获得加速奖励',['uid'=>$pid,'num'=>$true_num]);
     }
 
@@ -87,6 +94,11 @@ class JlkReleaseService
         $log = KuangjiOrder::where('uid',$pid)->first();
         if(empty($log)){
             Log::info("该用户没有质押记录不得加速释放奖励",['uid'=>$pid,'created'=>$this->created_at]);
+            return $this->star_release($pid,$kuang_num,$star_level);
+        }
+        //判断之前是否得过加速释放奖励
+        if(UserWalletLog::where('uid',$pid)->where('exp','加速释放奖励')->first()){
+            Log::info("已享有加速释放奖励,不再享有",['uid'=>$pid]);
             return $this->star_release($pid,$kuang_num,$star_level);
         }
         if(count($star_level) >= 3){
@@ -118,6 +130,7 @@ class JlkReleaseService
         }
         UserInfo::where('uid',$pid)->increment('release_total',$true_num);
         Log::info('直推获得加速奖励',['uid'=>$pid,'num'=>$true_num,'star_level'=>$puser->star_community]);
+        UserWalletLog::addLog($pid,'user_info',$ui->id,'加速释放奖励','-',$true_num,2,1);
         array_push($star_level,$puser->star_community);
         return $this->star_release($pid,$kuang_num,$star_level);
     }
