@@ -13,7 +13,6 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::post('release_ceshi', 'KuangJiController@order_days'); //处理矿机天数
 Route::group(['middleware' => ['auth.api','switchlang']], function () {
     
     //jl释放已取消的订单 1
@@ -23,7 +22,6 @@ Route::group(['middleware' => ['auth.api','switchlang']], function () {
     Route::post('jl_ceshi', 'PartnerController@jl_ceshi');
     Route::post('kuang_service_charge', 'ExcelController@kuang_service_charge');
     Route::post('reback', 'ExcelController@reback'); //用户恢复关系
-
 
     Route::get('ex/history/{team_id}', 'ExOrderController@_list')->where('team_id', '[0-9]+');
     Route::get('ex/history_price/{team_id}', 'ExOrderController@price')->where('team_id', '[0-9]+');
