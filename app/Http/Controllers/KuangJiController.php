@@ -850,7 +850,7 @@ class KuangJiController extends Controller
 
 
     //处理矿机订单,总天数
-    public function order_day(Request $request)
+    public function order_days(Request $request)
     {
 //        $orders = KuangjiOrder::where('status',1)->get();
 //        foreach ($orders as $k => $v)
