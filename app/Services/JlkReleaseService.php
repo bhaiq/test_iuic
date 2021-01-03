@@ -50,7 +50,7 @@ class JlkReleaseService
             Log::info("上级不存在终止");
             return;
         }
-        if(strtotime($puser->created_at) < strtotime($this->created_at)){
+        if($puser->created_at < strtotime($this->created_at)){
             Log::info("老用户不享有加速释放奖励",['uid'=>$pid,'time'=>$puser->created_at,'times'=>strtotime($this->created_at)]);
             return;
         }
@@ -86,7 +86,7 @@ class JlkReleaseService
             Log::info("上级不存在终止");
             return;
         }
-        if(strtotime($puser->created_at) < strtotime($this->created_at)){
+        if($puser->created_at < strtotime($this->created_at)){
             Log::info("老用户不享有加速释放奖励",['uid'=>$pid,'time'=>$puser->created_at,'times'=>strtotime($this->created_at)]);
             return $this->star_release($pid,$kuang_num,$star_level);
         }
