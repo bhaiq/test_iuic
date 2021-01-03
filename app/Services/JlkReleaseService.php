@@ -18,7 +18,7 @@ class JlkReleaseService
     protected $created_at;
     public function __construct()
     {
-        $this->created_at = "2021-01-3 15:37:58";
+        $this->created_at = "2021-01-03 15:37:58";
 
     }
     //开发矿池中心加速释放(购买者质押矿(num) 老用户不得,无极差,扣除手续费,只得一次,之后不再得)
