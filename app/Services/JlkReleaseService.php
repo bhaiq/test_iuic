@@ -34,6 +34,12 @@ class JlkReleaseService
 
     public function kuang_release($uid,$kuang_num)
     {
+        //改用户第一次质押返奖,之后重复质押就不再返奖
+        $kuangji_list = KuangjiOrder::where('uid',$uid)->where('created_at',$this->created_at)->count();
+        if($kuangji_list >= 2){
+            Log::info("已质押过一次,重复质押上级不得奖");
+            return;
+        }
         //直推获得加速奖励,
         $this->zhi_release($uid,$kuang_num);
         //1星2星3星加速奖励
@@ -52,11 +58,6 @@ class JlkReleaseService
         }
         if($puser->created_at < strtotime($this->created_at)){
             Log::info("老用户不享有加速释放奖励",['uid'=>$pid,'time'=>$puser->created_at,'times'=>strtotime($this->created_at)]);
-            return;
-        }
-        //判断之前是否得过加速释放奖励
-        if(UserWalletLog::where('uid',$pid)->where('exp','加速释放奖励')->first()){
-            Log::info("已享有加速释放奖励,不再享有",['uid'=>$pid]);
             return;
         }
         //查找是否有质押记录
@@ -98,11 +99,6 @@ class JlkReleaseService
         $log = KuangjiOrder::where('uid',$pid)->first();
         if(empty($log)){
             Log::info("该用户没有质押记录不得加速释放奖励",['uid'=>$pid,'created'=>$this->created_at]);
-            return $this->star_release($pid,$kuang_num,$star_level);
-        }
-        //判断之前是否得过加速释放奖励
-        if(UserWalletLog::where('uid',$pid)->where('exp','加速释放奖励')->first()){
-            Log::info("已享有加速释放奖励,不再享有",['uid'=>$pid]);
             return $this->star_release($pid,$kuang_num,$star_level);
         }
         if(count($star_level) >= 3){
