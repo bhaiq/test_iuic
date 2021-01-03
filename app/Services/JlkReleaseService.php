@@ -14,6 +14,12 @@ use Illuminate\Support\Facades\Log;
 class JlkReleaseService
 {
 
+
+    public function __construct()
+    {
+        $this->created_at = "2021-1-3 00:00:00";
+
+    }
     //开发矿池中心加速释放(购买者质押矿(num) 老用户不得,无极差,扣除手续费)
     // 新质押分享者得(num*5%)
     // 新一星加速(num*2%)
@@ -43,7 +49,7 @@ class JlkReleaseService
             Log::info("上级不存在终止");
             return;
         }
-        if($puser->created_at < getenv('CREATED_AT')){
+        if($puser->created_at < $this->created_at){
             Log::info("老用户不享有加速释放奖励");
             return;
         }
@@ -73,7 +79,7 @@ class JlkReleaseService
             Log::info("上级不存在终止");
             return;
         }
-        if($puser->created_at < getenv('CREATED_AT')){
+        if($puser->created_at < $this->created_at){
             Log::info("老用户不享有加速释放奖励");
             return $this->star_release($pid,$kuang_num,$star_level);
         }
