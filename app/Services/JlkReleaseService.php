@@ -86,7 +86,7 @@ class JlkReleaseService
         //查找是否有质押记录
         $log = KuangjiOrder::where('uid',$pid)->first();
         if(empty($log)){
-            Log::info("该用户没有质押记录不得加速释放奖励",['uid'=>$pid]);
+            Log::info("该用户没有质押记录不得加速释放奖励",['uid'=>$pid,'created'=>$this->created_at]);
             return $this->star_release($pid,$kuang_num,$star_level);
         }
         if(count($star_level) >= 3){
