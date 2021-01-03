@@ -66,7 +66,7 @@ class JlkReleaseService
             return;
         }
         //有记录给奖
-        $get_num = $kuang_num * config('kuangji.zhitui_kuangji_release_rate') * 0.08;
+        $get_num = $kuang_num * config('kuangji.zhitui_kuangji_release_rate') * 0.8;
         $ui = UserInfo::where('uid', $pid)->first();
         if(empty($ui)){
             Log::info("该用户没有矿池");
@@ -125,7 +125,7 @@ class JlkReleaseService
         }else{
             $rate = config('kuangji.three_star_kuangji_release_rate');
         }
-        $get_num = $kuang_num * $rate * 0.08;
+        $get_num = $kuang_num * $rate * 0.8;
         $ui = UserInfo::where('uid', $pid)->first();
         if(empty($ui)){
             Log::info("该用户没有矿池");
