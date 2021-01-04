@@ -42,7 +42,7 @@ class JlkReleaseService
             $kuangji_order_first = KuangjiOrder::where('uid',$uid)->orderby('created_at','asc')->first();
             Log::info("时间".$kuangji_order_first->created_at,['strtotime'=>strtotime($kuangji_order_first->created_at) + 24*3600,'time'=>time()]);
             dd(1);
-            if(strtotime($kuangji_order_first->created_at) + 24*3600 > time()){
+            if(strtotime($kuangji_order_first->created_at) + 24*3600 < time()){
                 Log::info("老用户重复质押不给上级加速");
                 return;
             }
