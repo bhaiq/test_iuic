@@ -40,8 +40,6 @@ class JlkReleaseService
             //当前据第一次质押时间大于24小时,终止加速
             //判断有过几次加速,大于三次就终止
             $kuangji_order_first = KuangjiOrder::where('uid',$uid)->orderby('created_at','asc')->first();
-            Log::info("时间".$kuangji_order_first->created_at,['strtotime'=>strtotime($kuangji_order_first->created_at) + 24*3600,'time'=>time()]);
-            dd(1);
             if(strtotime($kuangji_order_first->created_at) + 24*3600 < time()){
                 Log::info("老用户重复质押不给上级加速");
                 return;
