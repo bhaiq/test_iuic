@@ -74,7 +74,7 @@ class JlkReleaseService
             return;
         }
         //有记录给奖
-        $get_num = $kuang_num * config('kuangji.zhitui_kuangji_release_rate') * 0.8;
+        $get_num = $kuang_num * config('kuangji.zhitui_kuangji_release_rate');
         $ui = UserInfo::where('uid', $pid)->first();
         if(empty($ui)){
             Log::info("该用户没有矿池");
@@ -89,14 +89,14 @@ class JlkReleaseService
         UserWalletLog::addLog($pid,'user_info',$ui->id,'加速奖','-',$true_num,2,1);
         Log::info('直推获得加速奖励',['uid'=>$pid,'num'=>$true_num]);
         // 用户余额增加
-        Account::addAmount($pid, 2, $true_num);
+        Account::addAmount($pid, 2, $true_num*0.8);
 
         // 用户余额日志增加
-        AccountLog::addLog($pid, 2, $true_num, 30, 1, Account::TYPE_LC,'加速奖');
+        AccountLog::addLog($pid, 2, $true_num*0.8, 30, 1, Account::TYPE_LC,'加速奖');
 
         //给公司号把手续费加上
-        Account::addAmount('917', 2, $kuang_num * config('kuangji.zhitui_kuangji_release_rate') * 0.2);
-        AccountLog::addLog($pid, 2, $kuang_num * config('kuangji.zhitui_kuangji_release_rate') * 0.2, 30, 1, Account::TYPE_LC,'加速奖手续费');
+        Account::addAmount('917', 2, $true_num*0.2);
+        AccountLog::addLog($pid, 2, $true_num*0.2, 30, 1, Account::TYPE_LC,'加速奖手续费');
     }
 
     public function star_release($uid,$kuang_num,$star_level)
@@ -133,7 +133,7 @@ class JlkReleaseService
         }else{
             $rate = config('kuangji.three_star_kuangji_release_rate');
         }
-        $get_num = $kuang_num * $rate * 0.8;
+        $get_num = $kuang_num * $rate;
         $ui = UserInfo::where('uid', $pid)->first();
         if(empty($ui)){
             Log::info("该用户没有矿池");
@@ -148,13 +148,13 @@ class JlkReleaseService
         Log::info('星级获得加速奖励',['uid'=>$pid,'num'=>$true_num,'star_level'=>$puser->star_community]);
         UserWalletLog::addLog($pid,'user_info',$ui->id,'加速奖','-',$true_num,2,1);
         // 用户余额增加
-        Account::addAmount($pid, 2, $true_num);
+        Account::addAmount($pid, 2, $true_num*0.8);
 
         // 用户余额日志增加
-        AccountLog::addLog($pid, 2, $true_num, 30, 1, Account::TYPE_LC,'加速奖');
+        AccountLog::addLog($pid, 2, $true_num*0.8, 30, 1, Account::TYPE_LC,'加速奖');
         //给公司号把手续费加上
-        Account::addAmount('917', 2, $kuang_num * $rate * 0.2);
-        AccountLog::addLog($pid, 2, $kuang_num * $rate * 0.2, 30, 1, Account::TYPE_LC,'加速奖手续费');
+        Account::addAmount('917', 2, $true_num*0.2);
+        AccountLog::addLog($pid, 2, $true_num*0.2, 30, 1, Account::TYPE_LC,'加速奖手续费');
         array_push($star_level,$puser->star_community);
         return $this->star_release($pid,$kuang_num,$star_level);
     }
