@@ -33,7 +33,7 @@ class CommDividMonth extends Command {
               	$total_yj_one=CommunityDividend::where('uid',$list[$j]['uid'])->value('last_month');
                     
               	if($total_yj_one<=0){
-                    \Log::info('业绩小于0跳过');
+                    \Log::info('业绩小于0跳过,uid'.$list[$j]['uid']);
                 	continue;
               	}	
                     

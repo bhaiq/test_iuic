@@ -66,6 +66,7 @@ class AccountLog extends Model
   	const SCENE_INDE_MANA = 27;
   	const SCENE_ALL_FIRST = 28;
   	const SCENE_COMM_SANXIA = 29;
+  	const SCENE_SPEED_RELEASE = 30;
 
     const SCENE_IN = [
         self::SCENE_RECHARGE, self::SCENE_EX_IN, self::SCENE_EX_BACK, self::SCENE_LEGAL_IN, self::SCENE_EX_DEL,
@@ -126,6 +127,8 @@ class AccountLog extends Model
                 return '全网首次能量报单合伙人奖';
             case self::SCENE_COMM_SANXIA:
                 return '社群分享奖-伞下';
+            case self::SCENE_SPEED_RELEASE:
+                return '加速奖';
         }
     }
 
