@@ -6,6 +6,8 @@ namespace App\Services;
 
 
 
+use App\Models\Account;
+use App\Models\AccountLog;
 use App\Models\KuangjiOrder;
 use App\Models\User;
 use App\Models\UserInfo;
@@ -84,8 +86,13 @@ class JlkReleaseService
             $true_num = $get_num;
         }
         UserInfo::where('uid',$pid)->increment('release_total',$true_num);
-        UserWalletLog::addLog($pid,'user_info',$ui->id,'加速释放奖励','-',$true_num,2,1);
+        UserWalletLog::addLog($pid,'user_info',$ui->id,'加速奖','-',$true_num,2,1);
         Log::info('直推获得加速奖励',['uid'=>$pid,'num'=>$true_num]);
+        // 用户余额增加
+        Account::addAmount($pid, 2, $true_num);
+
+        // 用户余额日志增加
+        AccountLog::addLog($pid, 2, $true_num, 21, 1, Account::TYPE_LC,'加速奖');
     }
 
     public function star_release($uid,$kuang_num,$star_level)
@@ -135,7 +142,12 @@ class JlkReleaseService
         }
         UserInfo::where('uid',$pid)->increment('release_total',$true_num);
         Log::info('星级获得加速奖励',['uid'=>$pid,'num'=>$true_num,'star_level'=>$puser->star_community]);
-        UserWalletLog::addLog($pid,'user_info',$ui->id,'加速释放奖励','-',$true_num,2,1);
+        UserWalletLog::addLog($pid,'user_info',$ui->id,'加速奖','-',$true_num,2,1);
+        // 用户余额增加
+        Account::addAmount($pid, 2, $true_num);
+
+        // 用户余额日志增加
+        AccountLog::addLog($pid, 2, $true_num, 20, 1, Account::TYPE_LC,'加速奖');
         array_push($star_level,$puser->star_community);
         return $this->star_release($pid,$kuang_num,$star_level);
     }
