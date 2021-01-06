@@ -3,7 +3,7 @@
   'kuangji_release_bl' => '0.2',
   'kuangji_redeem_30_bl' => '0.3',
   'kuangji_redeem_60_bl' => '0.5',
-  'kuangji_redeem_90_bl' => 0.3,
+  'kuangji_redeem_90_bl' => '0.3',
   'kuangji_redeem_switch' => '0',
   'kuangji_flexible_price' => '500000',
   'kuangji_flexible_suanli_bl' => '0.001',
