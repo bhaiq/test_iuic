@@ -76,7 +76,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('todayReleaseClear')->dailyAt('05:11');
       
       	$schedule->command('CommDivid')->monthlyOn(1,'01:01');
-      	$schedule->command('CommDividMonth')->monthlyOn(5,'02:35');
+//      	$schedule->command('CommDividMonth')->monthlyOn(5,'02:35'); //月度分红 关闭2021/1/8
 //      	$schedule->command('CommDividMonth')->monthlyOn(6,'10:29');
 //      	$schedule->command('CommDividMonth')->dailyAt('15:08');
 
