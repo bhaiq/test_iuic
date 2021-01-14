@@ -328,14 +328,14 @@ class AccountController extends Controller
     public function trans(Request $request)
     {
         $time = time();
-        if(!empty(Session::get('users'))){
-            if($time >= Session::get('users')+5){
+        $check_time = Session::get('users');
+        if(!empty($check_time)){
+            if($time >= $check_time+5){
                 return $this->responseError('频繁请求');
             }
         }
-        \Log::info('上次'.Session::get('users'));
-        Session::put('users',time(),10);
-        Session::save();
+        \Log::info('上次'.$check_time);
+        Session::set('users',time());
         \Log::info('当前'.Session::get('users'));
         dd(Session::get('users'));
 
