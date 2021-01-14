@@ -328,11 +328,11 @@ class AccountController extends Controller
     public function trans(Request $request)
     {
         session_start();
-        $check_time = $_SESSION['time'];
-        \Log::info('上次'.$_SESSION['time']);
-        if(!empty($check_time)){
+//        $check_time = $_SESSION['time'];
+//        \Log::info('上次'.$_SESSION['time']);
+        if(!isset($_SESSION['time'])){
             $now_time = time();
-            if(($now_time-$check_time)<=10){
+            if(($now_time-$_SESSION['time'])<=10){
                 // respon(0,'操作频繁，稍后再试','Frequent operation and try again later');
                 return $this->responseError("数据错误");
             }
