@@ -11,6 +11,7 @@ use App\Services\Service;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Session;
 
 class AccountController extends Controller
 {
@@ -326,17 +327,17 @@ class AccountController extends Controller
 
     public function trans(Request $request)
     {
-        dump(session('users'));
+        dump(Session::get('users'));
         $time = time();
-        if(!empty(session('users'))){
-            if($time >= session('users')+5){
+        if(!empty(Session::get('users'))){
+            if($time >= Session::get('users')+5){
                 return $this->responseError('频繁请求');
             }
         }
-        \Log::info('上次'.session('users'));
-        session(['users' => $time]);
-        \Log::info('当前'.session('users'));
-        dd(session('users'));
+        \Log::info('上次'.Session::get('users'));
+        Session::put('users',time());
+        \Log::info('当前'.Session::get('users'));
+        dd(Session::get('users'));
 
 
 
