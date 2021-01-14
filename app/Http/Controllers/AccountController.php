@@ -333,7 +333,9 @@ class AccountController extends Controller
                 return $this->responseError('频繁请求');
             }
         }
+        \Log::info('上次'.session('users'));
         session(['users' => $time]);
+        \Log::info('当前'.session('users'));
         dd(session('users'));
 
 
