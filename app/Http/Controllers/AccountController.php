@@ -327,17 +327,17 @@ class AccountController extends Controller
 
     public function trans(Request $request)
     {
-        $time = time();
-        $check_time = Session::get('users');
+        $check_time = Session::get('times');
+
         if(!empty($check_time)){
-            if($time >= $check_time+5){
-                return $this->responseError('频繁请求');
+            $now_time = time();
+            if(($now_time-$check_time)<=1){
+                // respon(0,'操作频繁，稍后再试','Frequent operation and try again later');
+                return $this->responseError("数据错误");
             }
         }
-        \Log::info('上次'.$check_time);
-        $check_time = Session::put('users',time());
-        \Log::info('当前'.$check_time);
-        dd($check_time);
+        Session::put('times',time());
+//        dd($check_time);
 
 
 

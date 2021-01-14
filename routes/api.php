@@ -46,7 +46,7 @@ Route::group(['middleware' => ['auth.api','switchlang']], function () {
 
     Route::get('/account_secret', 'AccountController@_listSecret');
     Route::get('/account', 'AccountController@_list');
-    Route::put('/account', 'AccountController@trans')->middleware('throttle:1');
+    Route::put('/account', 'AccountController@trans');
     Route::get('/accountLog/{coin_id}', 'AccountController@log')->where('coin_id', '[0-9]+');
 
     Route::get('/coin', 'CoinController@_list');
