@@ -338,7 +338,7 @@ class AccountController extends Controller
             }
         }
         $_SESSION['time']= time();;
-        \Log::info('上次'.$_SESSION['time']);
+        \Log::info('本次'.$_SESSION['time']);
 //        dd($check_time);
 
 
