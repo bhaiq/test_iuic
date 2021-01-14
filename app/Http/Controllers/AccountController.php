@@ -337,6 +337,7 @@ class AccountController extends Controller
             }
         }
         Session::put('times',time());
+        Session::save();
         \Log::info('上次'.Session::get('times'));
 //        dd($check_time);
 
