@@ -331,9 +331,9 @@ class AccountController extends Controller
         \Log::info('上次'.$check_time);
         if(!empty($check_time)){
             $now_time = time();
-            if(($now_time-$check_time)<=10){
+            if(($now_time-$check_time)<=5){
                 // respon(0,'操作频繁，稍后再试','Frequent operation and try again later');
-                return $this->responseError("数据错误");
+                return $this->responseError("请求频繁");
             }
         }
         Session::put('times',time());
