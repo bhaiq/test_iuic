@@ -333,6 +333,7 @@ class AccountController extends Controller
             }
         }
         session(['users' => $time]);
+        dd(session('users'));
 
 
 
