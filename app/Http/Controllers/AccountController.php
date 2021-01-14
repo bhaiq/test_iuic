@@ -327,8 +327,9 @@ class AccountController extends Controller
 
     public function trans(Request $request)
     {
-        $check_time = Session::get('times');
-        \Log::info('上次'.$check_time);
+        session_start();
+        $check_time = $_SESSION['time'];
+        \Log::info('上次'.$_SESSION['time']);
         if(!empty($check_time)){
             $now_time = time();
             if(($now_time-$check_time)<=10){
@@ -336,9 +337,8 @@ class AccountController extends Controller
                 return $this->responseError("数据错误");
             }
         }
-        Session::put('times',time());
-        Session::save();
-        \Log::info('上次'.Session::get('times'));
+        $_SESSION['time']= time();;
+        \Log::info('上次'.$_SESSION['time']);
 //        dd($check_time);
 
 
