@@ -326,6 +326,16 @@ class AccountController extends Controller
 
     public function trans(Request $request)
     {
+        $time = time();
+        if($request->session()->has('users')){
+            if($time-5 <= session('users')){
+                $this->responseError(trans('频繁请求'));
+            }
+        }
+        session(['users' => $time]);
+
+
+
         Service::auth()->isLoginOrFail();
 
         $this->validate($request->all(), [
