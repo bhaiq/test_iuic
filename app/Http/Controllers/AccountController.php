@@ -328,7 +328,7 @@ class AccountController extends Controller
     public function trans(Request $request)
     {
         $check_time = Session::get('times');
-
+        \Log::info('上次'.$check_time);
         if(!empty($check_time)){
             $now_time = time();
             if(($now_time-$check_time)<=10){
@@ -337,6 +337,7 @@ class AccountController extends Controller
             }
         }
         Session::put('times',time());
+        \Log::info('上次'.Session::get('times'));
 //        dd($check_time);
 
 
