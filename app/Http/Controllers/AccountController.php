@@ -326,6 +326,7 @@ class AccountController extends Controller
 
     public function trans(Request $request)
     {
+        dump(session('users'));
         $time = time();
         if(!empty(session('users'))){
             if($time >= session('users')+5){
