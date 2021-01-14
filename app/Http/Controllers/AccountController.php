@@ -344,8 +344,10 @@ class AccountController extends Controller
                     ->where('scene',4)
                     ->where('type',1)
                     ->where('coin_type',1)
-                    ->value('created_at');
-        if(time()-strtotime($last_log) <= 5){
+                    ->orderBy('id','desc')
+                    ->first();
+//                    ->value('created_at');
+        if(time()-strtotime($last_log->created_at) <= 5){
             return $this->responseError("请求频繁");
         }
 
