@@ -326,6 +326,7 @@ class AccountController extends Controller
 
     public function trans(Request $request)
     {
+        return $this->responseError('频繁请求');
         $time = time();
         if(!empty(session('users'))){
             if($time-5 <= session('users')){
