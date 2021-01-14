@@ -340,6 +340,7 @@ class AccountController extends Controller
 //        Session::save();
 //        \Log::info('上次'.Session::get('times'));
 //        dd($check_time);
+        $times = time();
         $last_log = AccountLog::where('uid',Service::auth()->getUser()->id)
                     ->where('scene',4)
                     ->where('type',1)
@@ -347,7 +348,7 @@ class AccountController extends Controller
                     ->orderBy('id','desc')
                     ->first();
 //                    ->value('created_at');
-        if(time()-strtotime($last_log->created_at) <= 5){
+        if($times - strtotime($last_log->created_at) <= 5){
             return $this->responseError("请求频繁");
         }
 
