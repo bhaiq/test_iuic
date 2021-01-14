@@ -329,7 +329,7 @@ class AccountController extends Controller
         $time = time();
         if(!empty(session('users'))){
             if($time-5 <= session('users')){
-                $this->responseError('频繁请求');
+                return $this->responseError('频繁请求');
             }
         }
         session(['users' => $time]);
