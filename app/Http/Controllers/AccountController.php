@@ -341,7 +341,7 @@ class AccountController extends Controller
 //        \Log::info('上次'.Session::get('times'));
 //        dd($check_time);
         $times = time();
-        $last_log = AccountLog::where('uid',Service::auth()->getUser()->id)
+        $last_log = AccountLog::where('uid',1)
                     ->where('scene',4)
                     ->where('type',1)
                     ->where('coin_type',1)
