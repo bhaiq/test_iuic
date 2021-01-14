@@ -327,7 +327,6 @@ class AccountController extends Controller
 
     public function trans(Request $request)
     {
-        dump(Session::get('users'));
         $time = time();
         if(!empty(Session::get('users'))){
             if($time >= Session::get('users')+5){
@@ -335,7 +334,7 @@ class AccountController extends Controller
             }
         }
         \Log::info('上次'.Session::get('users'));
-        Session::put('users',time());
+        Session::put('users',time(),10);
         \Log::info('当前'.Session::get('users'));
         dd(Session::get('users'));
 
