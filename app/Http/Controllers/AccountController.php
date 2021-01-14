@@ -331,7 +331,7 @@ class AccountController extends Controller
 
         if(!empty($check_time)){
             $now_time = time();
-            if(($now_time-$check_time)<=1){
+            if(($now_time-$check_time)<=10){
                 // respon(0,'操作频繁，稍后再试','Frequent operation and try again later');
                 return $this->responseError("数据错误");
             }
