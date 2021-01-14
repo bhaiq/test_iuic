@@ -335,6 +335,7 @@ class AccountController extends Controller
         }
         \Log::info('上次'.Session::get('users'));
         Session::put('users',time(),10);
+        Session::save();
         \Log::info('当前'.Session::get('users'));
         dd(Session::get('users'));
 
