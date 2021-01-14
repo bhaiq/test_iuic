@@ -348,7 +348,7 @@ class AccountController extends Controller
                     ->orderBy('id','desc')
                     ->first();
 //                    ->value('created_at');
-        dd(strtotime($last_log->created_at));
+        dd(strtotime($last_log));
         if($times - strtotime($last_log->created_at) <= 5){
             return $this->responseError("请求频繁");
         }
