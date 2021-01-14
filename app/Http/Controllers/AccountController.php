@@ -340,7 +340,14 @@ class AccountController extends Controller
         Session::save();
         \Log::info('上次'.Session::get('times'));
 //        dd($check_time);
-
+        $last_log = AccountLog::where('uid',Service::auth()->getUser()->id)
+                    ->where('scence',4)
+                    ->where('type',1)
+                    ->where('coin_type',1)
+                    ->value('created_at');
+        if(time()-strtotime($last_log) <= 5){
+            return $this->responseError("请求频繁");
+        }
 
 
         Service::auth()->isLoginOrFail();
