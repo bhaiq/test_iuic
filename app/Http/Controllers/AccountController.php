@@ -351,7 +351,7 @@ class AccountController extends Controller
         \Log::info('数据库时间'.$last_log['created_at'],['当前time'=>$times,'相减'=>$times - $last_log['created_at']]);
 //        dd(strtotime($last_log['created_at']));
 
-        if($times - strtotime($last_log['created_at']) <= 5){
+        if($times - $last_log['created_at'] <= 5){
             return $this->responseError("请求频繁");
         }
 
