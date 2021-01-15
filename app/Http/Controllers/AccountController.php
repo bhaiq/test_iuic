@@ -348,7 +348,7 @@ class AccountController extends Controller
                     ->orderBy('id','desc')
                     ->first();
 //                    ->value('created_at');
-        \Log::info('数据库时间'.strtotime($last_log['created_at']),['当前time'=>$times,'相减'=>$times - strtotime($last_log['created_at'])]);
+        \Log::info('数据库时间'.$last_log['created_at'],['当前time'=>$times,'相减'=>$times - strtotime($last_log['created_at'])]);
         dd(strtotime($last_log['created_at']));
 
         if($times - strtotime($last_log['created_at']) <= 5){
