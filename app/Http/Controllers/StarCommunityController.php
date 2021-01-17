@@ -221,6 +221,7 @@ class StarCommunityController extends Controller
         $this->responseSuccess(trans('api.operate_successfully'));
 
     }
-  
+
+
     
 }
