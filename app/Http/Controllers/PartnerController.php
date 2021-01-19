@@ -200,7 +200,7 @@ class PartnerController extends Controller
     public function jl_ceshi(Request $request)
     {
         $new = new SpeedBonus();
-        $new->speed_bonus(100);
+        $new->performance_bonus(100);
         return "处理完成";
     }
 

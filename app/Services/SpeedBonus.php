@@ -43,7 +43,7 @@ class SpeedBonus
                     //给公司号把手续费加上
                     Account::addAmount('917', 2, $true_num*0.2);
                     AccountLog::addLog('917', 2, $true_num*0.2, 31, 1, Account::TYPE_LC,'团队长加速分红奖手续费');
-                    Log::info("公司号把手续费加上",['uid'=>$v->uid,'get_num'=>$true_num*0.8]);
+                    Log::info("公司号把手续费加上",['uid'=>917,'get_num'=>$true_num*0.2]);
                 }
             }
         }
