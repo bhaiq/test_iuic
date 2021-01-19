@@ -23,10 +23,10 @@ class SpeedBonus
                 $people = SpBs::where('num','>','0')->get();
                 foreach ($people as $k => $v){
                     $get_num = $v->num * $a_part; //单份*每人份
-                    $ui = UserInfo::where('uid', $v->id)->first();
+                    $ui = UserInfo::where('uid', $v->uid)->first();
                     if(empty($ui)){
                         Log::info("该用户没有矿池");
-                        return;
+                        continue;
                     }
                     if($get_num >= bcsub($ui->buy_total, $ui->release_total, 4)){
                         $true_num = bcsub($ui->buy_total, $ui->release_total, 4);
@@ -35,15 +35,15 @@ class SpeedBonus
                     }
 
                     // 用户余额增加
-                    Account::addAmount($v->id, 2, $true_num*0.8);
+                    Account::addAmount($v->uid, 2, $true_num*0.8);
 
                     // 用户余额日志增加
-                    AccountLog::addLog($v->id, 2, $true_num*0.8, 31, 1, Account::TYPE_LC,'团队长加速分红奖');
-                    Log::info("用户加余额",['uid'=>$v->id,'get_num'=>$true_num*0.8]);
+                    AccountLog::addLog($v->uid, 2, $true_num*0.8, 31, 1, Account::TYPE_LC,'团队长加速分红奖');
+                    Log::info("用户加余额",['uid'=>$v->uid,'get_num'=>$true_num*0.8]);
                     //给公司号把手续费加上
                     Account::addAmount('917', 2, $true_num*0.2);
                     AccountLog::addLog('917', 2, $true_num*0.2, 31, 1, Account::TYPE_LC,'团队长加速分红奖手续费');
-                    Log::info("公司号把手续费加上",['uid'=>$v->id,'get_num'=>$true_num*0.8]);
+                    Log::info("公司号把手续费加上",['uid'=>$v->uid,'get_num'=>$true_num*0.8]);
                 }
             }
         }
@@ -64,10 +64,10 @@ class SpeedBonus
                 {
                     $get_num = $v->num * $a_part; //单份*每人份
                     // 用户余额增加
-                    Account::addAmount($v->id, 1, $get_num);
+                    Account::addAmount($v->uid, 1, $get_num);
 
                     // 用户余额日志增加
-                    AccountLog::addLog($v->id, 1, $get_num, 32, 1, Account::TYPE_LC,'团队长业绩分红奖');
+                    AccountLog::addLog($v->uid, 1, $get_num, 32, 1, Account::TYPE_LC,'团队长业绩分红奖');
                     Log::info("用户加余额",['uid'=>$v->id,'get_num'=>$get_num]);
                 }
             }
