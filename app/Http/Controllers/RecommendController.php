@@ -92,9 +92,9 @@ class RecommendController extends Controller
                 'energy_total_count' => $this->getEnergyTotalCount($uid),
                 'energy_recommend_count' => $this->getgetEnergyRecommendCount($uid),
                 'energy_today_count' => $this->getEnergyTodayCount($uid),
-                'first_star_community' => $this->getStarCount($uid,1), //一星会员
-                'second_star_community' => $this->getStarCount($uid,2), //二星会员
-                'third_star_community' => $this->getStarCount($uid,3), //三星会员
+                'first_star_community' => (string)$this->getStarCount($uid,1), //一星会员
+                'second_star_community' => (string)$this->getStarCount($uid,2), //二星会员
+                'third_star_community' => (string)$this->getStarCount($uid,3), //三星会员
             ];
          }
 
@@ -113,9 +113,9 @@ class RecommendController extends Controller
              'energy_total_count' => $this->getEnergyTotalCount($uid),
              'energy_recommend_count' => $this->getgetEnergyRecommendCount($uid),
              'energy_today_count' => $this->getEnergyTodayCount($uid),
-             'first_star_community' => $this->getStarCount($uid,1), //一星会员
-             'second_star_community' => $this->getStarCount($uid,2), //二星会员
-             'third_star_community' => $this->getStarCount($uid,3), //三星会员
+             'first_star_community' => (string)$this->getStarCount($uid,1), //一星会员
+             'second_star_community' => (string)$this->getStarCount($uid,2), //二星会员
+             'third_star_community' => (string)$this->getStarCount($uid,3), //三星会员
          ];
 
     }
