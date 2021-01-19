@@ -21,6 +21,7 @@ use App\Models\UserInfo;
 use App\Models\UserWalletLog;
 use App\Services\JlkReleaseService;
 use App\Services\Service;
+use App\Services\SpeedBonus;
 use Illuminate\Http\Request;
 
 class KuangJiController extends Controller
@@ -373,6 +374,10 @@ class KuangJiController extends Controller
             //开发矿池中心加速释放
             $new = new JlkReleaseService();
             $new->kuang_release(Service::auth()->getUser()->id,$kj->price);
+
+            //团队长加速分红奖
+            $news = new SpeedBonus();
+            $news->speed_bonus($kj->price);
             \DB::commit();
 
         } catch (\Exception $exception) {

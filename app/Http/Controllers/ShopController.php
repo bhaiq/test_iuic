@@ -23,6 +23,7 @@ use App\Models\StarCommunity;
 use App\Models\UserWalletLog;
 use App\Models\CommunityDividend;
 use App\Services\Service;
+use App\Services\SpeedBonus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -132,6 +133,9 @@ class ShopController extends Controller
           
           	//IUIC社群奖(修改为奖励系数反比)
           	$this->star_community($user->id,$good->bonus_coefficient);
+          	//团队长业绩分红奖
+            $new = new SpeedBonus();
+            $new->performance_bonus($good->goods_price);
 
             // 释放订单表增加
             $reoData = [
