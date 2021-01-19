@@ -96,7 +96,7 @@ class JlkReleaseService
 
         //给公司号把手续费加上
         Account::addAmount('917', 2, $true_num*0.2);
-        AccountLog::addLog($pid, 2, $true_num*0.2, 30, 1, Account::TYPE_LC,'加速奖手续费');
+        AccountLog::addLog('917', 2, $true_num*0.2, 30, 1, Account::TYPE_LC,'加速奖手续费');
     }
 
     public function star_release($uid,$kuang_num,$star_level)
@@ -154,7 +154,7 @@ class JlkReleaseService
         AccountLog::addLog($pid, 2, $true_num*0.8, 30, 1, Account::TYPE_LC,'加速奖');
         //给公司号把手续费加上
         Account::addAmount('917', 2, $true_num*0.2);
-        AccountLog::addLog($pid, 2, $true_num*0.2, 30, 1, Account::TYPE_LC,'加速奖手续费');
+        AccountLog::addLog('917', 2, $true_num*0.2, 30, 1, Account::TYPE_LC,'加速奖手续费');
         array_push($star_level,$puser->star_community);
         return $this->star_release($pid,$kuang_num,$star_level);
     }

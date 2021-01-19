@@ -16,6 +16,7 @@ use App\Models\User;
 use App\Models\UserPartner;
 use App\Models\UserWallet;
 use App\Services\Service;
+use App\Services\SpeedBonus;
 use Illuminate\Http\Request;
 
 class PartnerController extends Controller
@@ -198,18 +199,8 @@ class PartnerController extends Controller
     //
     public function jl_ceshi(Request $request)
     {
-        return "停止使用";
-        //把账号18671363457(id 6940)团队(包括他自己)全部迁移到账号13657919182(id 918)团队下
-        $list = User::where('pid_path','like','%'.',6940,'.'%')->get();
-        $data = [];
-        foreach ($list as $k => $v){
-            $new_pidpath = str_replace(",6940,",",918,6940",$v->pid_path);
-            User::where('id',$v->id)->update(['pid_path'=>$new_pidpath]);
-//            if($v->pid == "6940"){
-//                User::where('id',$v->id)->update(['pid'=>"918"]);
-//            }
-        }
-//        dd($data);
+        $new = new SpeedBonus();
+        $new->speed_bonus(100);
         return "处理完成";
     }
 

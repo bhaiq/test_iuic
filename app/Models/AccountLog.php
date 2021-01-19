@@ -67,6 +67,8 @@ class AccountLog extends Model
   	const SCENE_ALL_FIRST = 28;
   	const SCENE_COMM_SANXIA = 29;
   	const SCENE_SPEED_RELEASE = 30;
+  	const SCENE_SPEED_BONUS = 31;
+  	const SCENCE_PERFORMANCE_BONUS = 32;
 
     const SCENE_IN = [
         self::SCENE_RECHARGE, self::SCENE_EX_IN, self::SCENE_EX_BACK, self::SCENE_LEGAL_IN, self::SCENE_EX_DEL,
@@ -129,6 +131,10 @@ class AccountLog extends Model
                 return '社群分享奖-伞下';
             case self::SCENE_SPEED_RELEASE:
                 return '加速奖';
+            case self::SCENE_SPEED_BONUS:
+                return '团队长加速分红奖';
+            case self:: SCENCE_PERFORMANCE_BONUS:
+                return '团队长业绩分红奖';
         }
     }
 
