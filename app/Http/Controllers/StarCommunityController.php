@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ShopOrder;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Services\Service;
 use App\Models\StarCommunity;
@@ -75,10 +76,12 @@ class StarCommunityController extends Controller
         }
       	
       	//当日新增
-      	$sons=User::where('pid_path','like','%'.Service::auth()->getUser()->id.'%')->pluck('id')->toArray();
-      	$today=StarOrder::whereBetween('created_at',[date('Y-m-d 00:00:00',time()),date('Y-m-d 23:59:59',time())])->whereIn('uid',$sons)->get();
+        $start_time = Carbon::now()->startOfDay();
+        $end_time = Carbon::now()->endOfDay();
+      	$sons=User::where('pid_path','like','%'.','.Service::auth()->getUser()->id.','.'%')->pluck('id')->toArray();
+      	$today=StarOrder::whereBetween('created_at',[$start_time,$end_time])->whereIn('uid',$sons)->get();
       	//下级购买商品所给业绩
-      	$todays = ShopOrder::whereBetween('created_at',[date('Y-m-d 00:00:00',time()),date('Y-m-d 23:59:59',time())])->whereIn('uid',$sons)->get();
+      	$todays = ShopOrder::whereBetween('created_at',[$start_time,$end_time])->whereIn('uid',$sons)->get();
       	$today_total=0;
       	foreach($today as $v){
         	$today_total+=$v->shop_price;
