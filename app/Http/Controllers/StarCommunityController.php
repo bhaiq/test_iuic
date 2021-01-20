@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ShopOrder;
 use Illuminate\Http\Request;
 use App\Services\Service;
 use App\Models\StarCommunity;
@@ -76,9 +77,14 @@ class StarCommunityController extends Controller
       	//当日新增
       	$sons=User::where('pid_path','like','%'.Service::auth()->getUser()->id.'%')->pluck('id')->toArray();
       	$today=StarOrder::whereDate('created_at',date('Y-m-d',time()))->whereIn('uid',$sons)->get();
+      	//下级购买商品所给业绩
+      	$todays = ShopOrder::whereDate('created_at',date('Y-m-d',time()))->whereIn('uid',$sons)->get();
       	$today_total=0;
       	foreach($today as $v){
         	$today_total+=$v->shop_price;
+        }
+      	foreach ($todays as $v){
+            $today_total+=$v->good_price;
         }
       
         return $this->response(['data' => $data,'star'=>$bid,'total'=>$total,'this_month'=>$this_month,'today_total'=>$today_total,'dangwei'=>$dangwei]);
