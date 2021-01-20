@@ -87,7 +87,7 @@ class StarCommunityController extends Controller
         	$today_total+=$v->shop_price;
         }
       	foreach ($todays as $v){
-            $today_total+=$v->good_price;
+            $today_total+=$v->goods_price;
         }
       
         return $this->response(['data' => $data,'star'=>$bid,'total'=>$total,'this_month'=>$this_month,'today_total'=>$today_total,'dangwei'=>$dangwei]);
