@@ -76,9 +76,9 @@ class StarCommunityController extends Controller
       	
       	//当日新增
       	$sons=User::where('pid_path','like','%'.Service::auth()->getUser()->id.'%')->pluck('id')->toArray();
-      	$today=StarOrder::whereDate('created_at',date('Y-m-d',time()))->whereIn('uid',$sons)->get();
+      	$today=StarOrder::whereBetween('created_at',[date('Y-m-d 00:00:00',time()),date('Y-m-d 23:59:59',time())])->whereIn('uid',$sons)->get();
       	//下级购买商品所给业绩
-      	$todays = ShopOrder::whereDate('created_at',date('Y-m-d',time()))->whereIn('uid',$sons)->get();
+      	$todays = ShopOrder::whereBetween('created_at',[date('Y-m-d 00:00:00',time()),date('Y-m-d 23:59:59',time())])->whereIn('uid',$sons)->get();
       	$today_total=0;
       	foreach($today as $v){
         	$today_total+=$v->shop_price;
