@@ -243,15 +243,15 @@ class ShopController extends Controller
 
 			//加完业绩升星级(一星业绩达到1万usdt就升级；二星业绩达到10万usdt就自动升级)
             foreach ($pids as $v){
-                $user = User::where('id',$v)->first();
+                $user_jl = User::where('id',$v)->first();
                 $ucomm_jl =  CommunityDividend::where('uid',$v)->first();
                 if($ucomm_jl->total > 100000){
                     //升2星
-                    if($user->star_community < 2){
+                    if($user_jl->star_community < 2){
                         User::where('id',$v)->update(['star_community'=>2]);
                     }
                 }else if($ucomm_jl->total > 10000){
-                    if($user->star_community < 1){
+                    if($user_jl->star_community < 1){
                         User::where('id',$v)->update(['star_community'=>1]);
                     }
                 }
