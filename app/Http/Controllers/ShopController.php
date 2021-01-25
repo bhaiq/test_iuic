@@ -400,7 +400,8 @@ class ShopController extends Controller
   
   	//IUIC社群奖(极差制) 一条线上一共拿(0.25)从直推的第一个人开始往上
     public function star_community($uid,$bd_price){
-      \Log::info('IUIC社群奖开始');
+//      \Log::info('IUIC社群奖开始');
+      \Log::info('IUIC运营中心奖开始');
         $pid_path = User::where('id',$uid)->value('pid_path');
             //去尾部的逗号
             $pid_path1 = rtrim($pid_path, ",");
@@ -442,7 +443,8 @@ class ShopController extends Controller
                 if($all_star_bl - $this->star_bl($v) > 0){
                     Account::where(['uid' => $v, 'coin_id' => 1, 'type' => Account::TYPE_LC])->increment('amount',$bd_price*$this->star_bl($v));
                     // 用户余额日志增加
-                    AccountLog::addLog($v, 1, $bd_price*$this->star_bl($v), 103, 1, Account::TYPE_LC, 'IUIC社群奖');
+//                    AccountLog::addLog($v, 1, $bd_price*$this->star_bl($v), 103, 1, Account::TYPE_LC, 'IUIC社群奖');
+                    AccountLog::addLog($v, 1, $bd_price*$this->star_bl($v), 103, 1, Account::TYPE_LC, 'IUIC运营中心奖');
                     array_push($data_fbl,$this->star_bl($v));
                   $yf_bl = bcadd($yf_bl,$this->star_bl($v),4);
                   \Log::info('反比',['uid'=>'$v','yf_bl'=>$this->star_bl($v)]);
@@ -455,7 +457,8 @@ class ShopController extends Controller
                     if($star == 2){
                        Account::where(['uid' => $v, 'coin_id' => 1, 'type' => Account::TYPE_LC])->increment('amount',$bd_price*(bcsub($this->star_bl($v),$yf_bl,4)));
                        // 用户余额日志增加
-                       AccountLog::addLog($v, 1, $bd_price*(bcsub($this->star_bl($v),$yf_bl,4)), 103, 1, Account::TYPE_LC, 'IUIC社群奖');
+//                       AccountLog::addLog($v, 1, $bd_price*(bcsub($this->star_bl($v),$yf_bl,4)), 103, 1, Account::TYPE_LC, 'IUIC社群奖');
+                       AccountLog::addLog($v, 1, $bd_price*(bcsub($this->star_bl($v),$yf_bl,4)), 103, 1, Account::TYPE_LC, 'IUIC运营中心奖');
                       array_push($data_fbl,$this->star_bl($v));
                       $yf_bl = bcadd($yf_bl,bcsub($this->star_bl($v),$yf_bl,4),4);
                       \Log::info('反比',['uid'=>$v,'yf_bl'=>$yf_bl]);
@@ -464,9 +467,11 @@ class ShopController extends Controller
                     if($star == 3){
                         Account::where(['uid' => $v, 'coin_id' => 1, 'type' => Account::TYPE_LC])->increment('amount',$bd_price*(bcsub($this->star_bl($v),$yf_bl,4)));
                         // 用户余额日志增加
-                        AccountLog::addLog($v, 1, $bd_price*(bcsub($this->star_bl($v),$yf_bl,4)), 103, 1, Account::TYPE_LC, 'IUIC社群奖');
+//                        AccountLog::addLog($v, 1, $bd_price*(bcsub($this->star_bl($v),$yf_bl,4)), 103, 1, Account::TYPE_LC, 'IUIC社群奖');
+                        AccountLog::addLog($v, 1, $bd_price*(bcsub($this->star_bl($v),$yf_bl,4)), 103, 1, Account::TYPE_LC, 'IUIC运营中心奖');
                         array_push($data_fbl,$this->star_bl($v));
-                         \Log::info('IUIC社群奖结束');                       
+//                         \Log::info('IUIC社群奖结束');
+                         \Log::info('IUIC运营中心奖结束');
                           }
 
                         }

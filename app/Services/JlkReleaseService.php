@@ -118,7 +118,8 @@ class JlkReleaseService
             return;
         }
         if($puser->star_community < 1) {
-            Log::info("该用户星级社群等级过低",['uid'=>$pid,'star_level'=>$puser->star_community]);
+//            Log::info("该用户星级社群等级过低",['uid'=>$pid,'star_level'=>$puser->star_community]);
+            Log::info("该用户运营中心等级过低",['uid'=>$pid,'star_level'=>$puser->star_community]);
             return $this->star_release($pid,$kuang_num,$star_level);
         }
         if(in_array($puser->star_community,$star_level)){

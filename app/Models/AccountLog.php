@@ -128,7 +128,8 @@ class AccountLog extends Model
             case self::SCENE_ALL_FIRST:
                 return '全网首次能量报单合伙人奖';
             case self::SCENE_COMM_SANXIA:
-                return '社群分享奖-伞下';
+//                return '社群分享奖-伞下';
+                return '运营中心分享奖-伞下';
             case self::SCENE_SPEED_RELEASE:
                 return '加速奖';
             case self::SCENE_SPEED_BONUS:

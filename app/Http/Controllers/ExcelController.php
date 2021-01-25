@@ -628,7 +628,8 @@ class ExcelController extends Controller
 	public function pyHighComm()
 	{
 		
-      	\Log::info('将高级管理将的用户平移到社群奖 开始');
+//      	\Log::info('将高级管理将的用户平移到社群奖 开始');
+      	\Log::info('将高级管理将的用户平移到运营中心奖 开始');
       	$list=SeniorAdmin::where('status',1)->get();
       	//dd($list);
       
@@ -640,7 +641,8 @@ class ExcelController extends Controller
       		User::where('id',$v->uid)->update(['star_community'=>$v->type]);
           	SeniorAdmin::where('id',$v->id)->update(['type'=>0]);
           	
-          	$nn.='将用户id为'.$v->uid.'高级管理奖的用户平移为社群奖';
+//          	$nn.='将用户id为'.$v->uid.'高级管理奖的用户平移为社群奖';
+          	$nn.='将用户id为'.$v->uid.'高级管理奖的用户平移为运营中心奖';
       	}
 
         \DB::commit();
@@ -650,7 +652,8 @@ class ExcelController extends Controller
         return returnJson(0, '操作异常');
       }
       
-      \Log::info('将高级管理将的用户平移到社群奖 结束');
+//      \Log::info('将高级管理将的用户平移到社群奖 结束');
+      \Log::info('将高级管理将的用户平移到运营中心奖 结束');
       return returnJson('1','处理成功');
       		
 	}

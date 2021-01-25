@@ -182,15 +182,19 @@ class StarCommunityController extends Controller
 			//用户升星级
           	User::where('id',Service::auth()->getUser()->id)->update(['star_community' => $good->id]);
           	//给上级返利(社群分享奖)
-            \Log::info('社群分享奖开启');
+//            \Log::info('社群分享奖开启');
+            \Log::info('运营中心分享奖开启');
             $pid = User::where('id',Service::auth()->getUser()->id)->value('pid');
           	
             Account::addAmount($pid, 1, $price_spread*config('energy.share_star_reward',0));
-            AccountLog::addLog($pid, 1, $price_spread*config('energy.share_star_reward',0), 101, 1, Account::TYPE_LC, '社群分享奖');
-            \Log::info('社群分享奖结束');
+//            AccountLog::addLog($pid, 1, $price_spread*config('energy.share_star_reward',0), 101, 1, Account::TYPE_LC, '社群分享奖');
+            AccountLog::addLog($pid, 1, $price_spread*config('energy.share_star_reward',0), 101, 1, Account::TYPE_LC, '运营中心分享奖');
+//            \Log::info('社群分享奖结束');
+            \Log::info('运营中心分享奖结束');
+
           
-          
-          	\Log::info('社群分享奖-伞下  开始');
+//          	\Log::info('社群分享奖-伞下  开始');
+          	\Log::info('运营中心分享奖-伞下  开始');
           		$pid_path=trim(User::where('id',Service::auth()->getUser()->id)->value('pid_path'),',');
           		
           		$pids=explode(',',$pid_path);
@@ -212,8 +216,9 @@ class StarCommunityController extends Controller
 					//$nn.=$v->id.",".$price_spread.",".$community_sanxia_bl.",".$reward_num;
                 }
           		//dd($nn);
-          	\Log::info('社群分享奖-伞下  结束');
-          
+//          	\Log::info('社群分享奖-伞下  结束');
+          	\Log::info('运营中心分享奖-伞下  结束');
+
           
           
           
@@ -223,7 +228,8 @@ class StarCommunityController extends Controller
 
             \DB::rollBack();
 
-            \Log::info('购买星级社群异常');
+//            \Log::info('购买星级社群异常');
+            \Log::info('购买运营中心异常');
 
             $this->responseError(trans('api.wrong_operation'));
 

@@ -297,7 +297,7 @@ Route::group(['middleware' => ['auth.api','switchlang']], function () {
         Route::get('index', 'SeniorAdminController@index'); // 获取管理奖成功页面数据
     });
   
-  	//星级社群
+  	//(星级社群)运营中心
     Route::group(['prefix' => 'star'], function(){
         Route::get('index', 'StarCommunityController@index'); // 星级社群列表
         Route::post('price_spread', 'StarCommunityController@price_spread'); // 反差价

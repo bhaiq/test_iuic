@@ -106,8 +106,9 @@ class CommDividMonth extends Command {
                     $m=Account::addAmount($teams[$i],1,$my_jl);
 					\Log::info("为".$teams[$i]."用户添加了".$my_jl);
                  	// 用户余额日志增加
-                  	AccountLog::addLog($teams[$i], 1, $my_jl, 103, 1, Account::TYPE_LC, 'IUIC社群月度分红奖');
-					
+//                  	AccountLog::addLog($teams[$i], 1, $my_jl, 103, 1, Account::TYPE_LC, 'IUIC社群月度分红奖');
+                  	AccountLog::addLog($teams[$i], 1, $my_jl, 103, 1, Account::TYPE_LC, 'IUIC运营中心月度分红奖');
+
                     $n=CommunityDividend::where('uid',$teams[$i])->update(['last_month'=>0]);
                   	array_push($data_yfbl,$bl);
                   	$yf_bl = bcadd($yf_bl,$my_bl,4);
