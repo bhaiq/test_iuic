@@ -177,7 +177,8 @@ class StarCommunityController extends Controller
             // 币种资产减少
             Account::reduceAmount(Service::auth()->getUser()->id, $coin->id, $price_spread);
             // 用户余额资产记录增加
-            AccountLog::addLog(Service::auth()->getUser()->id, $coin->id, $price_spread, 102, 1, Account::TYPE_LC, '购买星级社群');
+//            AccountLog::addLog(Service::auth()->getUser()->id, $coin->id, $price_spread, 102, 1, Account::TYPE_LC, '购买星级社群');
+            AccountLog::addLog(Service::auth()->getUser()->id, $coin->id, $price_spread, 102, 1, Account::TYPE_LC, '购买运营中心');
 			//用户升星级
           	User::where('id',Service::auth()->getUser()->id)->update(['star_community' => $good->id]);
           	//给上级返利(社群分享奖)
@@ -206,7 +207,8 @@ class StarCommunityController extends Controller
                   	//为给个合伙人账户加usdt
         			$m=Account::addAmount($v->id,1,$reward_num);
         			// 用户余额日志表更新
-        			$n=AccountLog::addLog($v->id,1,$reward_num, 29, 1, Account::TYPE_LC, '社群分享奖-伞下');
+//        			$n=AccountLog::addLog($v->id,1,$reward_num, 29, 1, Account::TYPE_LC, '社群分享奖-伞下');
+        			$n=AccountLog::addLog($v->id,1,$reward_num, 29, 1, Account::TYPE_LC, '运营分享奖-伞下');
 					//$nn.=$v->id.",".$price_spread.",".$community_sanxia_bl.",".$reward_num;
                 }
           		//dd($nn);
