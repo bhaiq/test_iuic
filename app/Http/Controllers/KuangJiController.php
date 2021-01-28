@@ -376,8 +376,12 @@ class KuangJiController extends Controller
             $new->kuang_release(Service::auth()->getUser()->id,$kj->price);
 
             //团队长加速分红奖
-            $news = new SpeedBonus();
-            $news->speed_bonus($kj->price);
+            //判断是否购买过矿机
+            $has = KuangjiOrder::where('uid',Service::auth()->getUser()->id)->first();
+            if(empty($has)){
+                $news = new SpeedBonus();
+                $news->speed_bonus($kj->price);
+            }
             \DB::commit();
 
         } catch (\Exception $exception) {
