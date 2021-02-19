@@ -108,7 +108,7 @@ class OtcSellController extends Controller
                 'amount' => 'required|numeric|min:' . $min . '|max:' . $max,
             ], [
                 'amount.min' => trans('api.otcsell_min') . $min,
-                'amount.max' => trans('otcSell.otcsell_max') . $max,
+                'amount.max' => trans('api.otcsell_max') . $max,
             ]);
 
             $amount = StringLib::sprintN($request->get('amount'));
