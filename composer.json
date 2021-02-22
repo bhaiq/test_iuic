@@ -17,7 +17,7 @@
         "jacobcyl/ali-oss-storage": "^2.1",
         "jpush/jpush": "^3.6",
         "lancewan/laravel5-cloud": "^1.1",
-        "laravel/framework": "5.8.*",
+        "laravel/framework": "6.20.*",
         "laravel/tinker": "^1.0",
         "league/flysystem-aws-s3-v3": "~1.0",
         "maatwebsite/excel": "^3.1",
