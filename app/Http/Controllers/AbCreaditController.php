@@ -72,11 +72,11 @@ class AbCreaditController extends Controller
             UserInfo::where('uid', $uid)->increment('buy_total', $freeze_iuic);
             //生成订单
             $order = New EcologyCreaditOrder();
-            $data['uid'] = $uid;
-            $data['creadit_amount'] = $user_iuic_balance;
-            $data['already_amount'] = 0;
-            $data['iuic_amount'] = $freeze_creadit;
-            $order->save($data);
+            $order->uid = $uid;
+            $order->creadit_amount = $user_iuic_balance;
+            $order->already_amount = 0;
+            $order->iuic_amount = $freeze_creadit;
+            $order->save();
             \DB::commit();
         }catch (\Exception $e){
             \DB::rollBack();
