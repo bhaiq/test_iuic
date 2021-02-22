@@ -51,8 +51,8 @@ class AbCreaditController extends Controller
 //                Log::info('数据'.$datas['cny']);
 //            }
 //        }
-        dump($now_price);
-        return json_decode($now_price);
+//        dump($now_price);
+        return $now_price;
         //计算赠送冻结的iuic
         $freeze_iuic = $price/$now_price['cny'];
         //计算赠送的冻结积分和所花费的法币可用iuic
