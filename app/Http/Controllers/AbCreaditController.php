@@ -41,14 +41,14 @@ class AbCreaditController extends Controller
         session(['time'=>$time]);
         //获取购买价格金额
         $price = $request->get('num');
-        if ($price%10 !=0){
+        if ($price%10000 !=0){
             return $this->responseError('数据错误');
         }
         $uid = Service::auth()->getUser()->id;
 //        //获取iuic当前价格
         $now_price = json_decode(json_encode(ExOrder::market(0, 60)),true);
 //        return $now_price[0]['cny'];
-        //计算赠送冻结的iuic
+        //计算扣除法币的iuic
         $freeze_iuic = $price/$now_price[0]['cny'];
         //计算赠送的冻结积分
         $freeze_creadit = $price * EcologyConfigPub::where('id',1)->value('point_multiple');
@@ -57,7 +57,7 @@ class AbCreaditController extends Controller
                             ->where('coin_id',2)
                             ->where('type',1)
                             ->value('amount');
-        if($user_iuic_balance < $freeze_creadit){
+        if($user_iuic_balance < $freeze_iuic){
             return $this->responseError('余额不足');
         }
         //扣可用法币iuic,加积分,加iuic矿池,生成订单
