@@ -47,7 +47,7 @@ class AbCreaditController extends Controller
         $datas = [];
         foreach ($now_price as $k => $v){
             $datas['cny'] = $v;
-            Log::info("数据1",['data'=>$v]);
+            Log::info("数据1",['data'=>$v->cny]);
         }
 
         dd($now_price[0]->cny);
