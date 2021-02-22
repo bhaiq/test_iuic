@@ -43,7 +43,7 @@ class AbCreaditController extends Controller
         $price = $request->get('num');
         $uid = Service::auth()->getUser()->id;
 //        //获取iuic当前价格
-        $now_price = $this->response(ExOrder::market(0, 60));
+        $now_price = json_decode($this->response(ExOrder::market(0, 60)),true);
         $datas = [];
 //        foreach ($now_price as $k => $v){
 //            foreach ($v as $key => $value){
