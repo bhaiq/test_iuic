@@ -45,14 +45,14 @@ class AbCreaditController extends Controller
 //        //获取iuic当前价格
         $now_price = json_decode(json_encode($this->response(ExOrder::market(0, 60)),true));
         $datas = [];
-        foreach ($now_price as $k => $v){
-            foreach ($v as $key => $value){
-                $datas['cny'] = $value->cny;
-                Log::info('数据'.$datas['cny']);
-            }
-        }
+//        foreach ($now_price as $k => $v){
+//            foreach ($v as $key => $value){
+//                $datas['cny'] = $value->cny;
+//                Log::info('数据'.$datas['cny']);
+//            }
+//        }
 
-        dd($now_price[0]->cny);
+        dd($now_price[0]['cny']);
         //计算赠送冻结的iuic
         $freeze_iuic = $price/$now_price['cny'];
         //计算赠送的冻结积分和所花费的法币可用iuic
