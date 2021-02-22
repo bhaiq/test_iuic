@@ -46,8 +46,10 @@ class AbCreaditController extends Controller
         $now_price = json_decode(json_encode($this->response(ExOrder::market(0, 60)),true));
         $datas = [];
         foreach ($now_price as $k => $v){
-            $datas['cny'] = $v;
-            Log::info("数据1",['data'=>$v[0]]);
+            foreach ($v as $key => $value){
+                $datas['cny'] = $v->cny;
+                Log::info('数据'.$datas['cny']);
+            }
         }
 
         dd($now_price[0]->cny);
