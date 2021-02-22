@@ -80,7 +80,8 @@ class AbCreaditController extends Controller
             \DB::commit();
         }catch (\Exception $e){
             \DB::rollBack();
-            return $this->responseError("数据错误");
+            Log::info($e->getMessage());
+            return $this->responseError($e->getMessage());
         }
         return $this->response("操作成功");
     }
