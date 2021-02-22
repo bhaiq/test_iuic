@@ -26,12 +26,13 @@ class EcologyCreaditLog extends Model
      * remark 备注
      */
     public function addlog($uid,$amount,$type,$scence,$remark){
-        $data['uid'] = $uid;
-        $data['amount'] = $amount;
-        $data['scence'] = $scence;
-        $data['type'] = $type;
-        $data['remark'] = $remark;
         $log = New EcologyCreaditLog();
-        $log->save($data);
+        $log->uid = $uid;
+        $log->amount = $amount;
+        $log->scence = $scence;
+        $log->type = $type;
+        $log->remark = $remark;
+
+        $log->save();
     }
 }
