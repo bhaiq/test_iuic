@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Account;
 use App\Models\AccountLog;
 use App\Models\Coin;
+use App\Models\EcologyCreadit;
 use App\Models\EnergyLog;
 use App\Models\UserWallet;
 use App\Services\Service;
@@ -133,6 +134,62 @@ class AccountController extends Controller
             return $this->response($result);
 
         }
+
+        //积分
+        if($type == 3){
+
+            $result['account'][] = [
+                'coin_id' => 1004,
+                'type' => 0,
+                'amount' => 0,
+                'amount_freeze' => 0,
+                'total' => 0,
+                'amount_cny' => 0,
+                'amount_freeze_cny' => 0,
+                'cny' => 0,
+                'coin' => [
+                    'id' => 1004,
+                    'name' => trans('api.creadit')
+                ],
+                'is_open' => 1,
+
+            ];
+
+            // 积分账户
+            $uw = EcologyCreadit::where('uid', Service::auth()->getUser()->id)->first();
+//            if(!$uw){
+//                $uwData = [
+//                    'uid' => Service::auth()->getUser()->id,
+//                    'created_at' => now()->toDateTimeString(),
+//                ];
+//                $uw = UserWallet::create($uwData);
+//            }
+
+            $result['account'][0]['amount'] = bcmul($uw->amount, 1, 4);
+            $result['account'][0]['amount_freeze'] = bcmul($uw->amount_freeze, 1, 4);
+            $result['account'][0]['total'] = bcmul($uw->total, 1, 4);
+            $result['account'][0]['amount_cny'] = bcmul($uw->creadit_cny, 1, 4);
+            $result['account'][0]['amount_freeze_cny'] = bcmul($uw->creadit_freeze_cny, 1, 4);
+            $result['account'][0]['cny'] = bcmul($uw->total_cny, 1, 4);
+
+            $result['cur_total'] = bcdiv($uw->total_cny, Account::getRate(), 4);
+            $result['cur_total_cny'] = bcmul($uw->total_cny, 1, 4);
+            $result['all_total'] = 0;
+            $result['all_total_cny'] = 0;
+
+            $data_other = Service::auth()->getUser()->account()->with('coin')->get()->toArray();
+
+            foreach ($data_other as $k => $v) {
+                $result['all_total']     = bcadd($result['all_total'], $v['cny'], 4);
+                $result['all_total_cny'] = bcadd($result['all_total_cny'], $v['cny'], 4);
+            }
+
+            $result['all_total'] = bcdiv($result['all_total'], Account::getRate(), 4);
+
+            return $this->response($result);
+
+        }
+
 
         $data['account'] = Service::auth()->getUser()->account()->whereType($type)->with('coin')->get()->toArray();
         $coin_num        = Coin::count();

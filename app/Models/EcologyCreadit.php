@@ -35,4 +35,30 @@ class EcologyCreadit extends Model
         $log = New EcologyCreaditLog();
         $log->addlog($uid,$amount,$type,$scence,$remark);
     }
+
+    public function getTotalAttribute()
+    {
+        return bcadd($this->amount, $this->amount_freeze, 8);
+    }
+
+    public function getCreaditCnyAttribute()
+    {
+        return bcmul($this->amount, $this->getCreaditCny(), 8);
+    }
+
+    public function getCreaditFreezeCnyAttribute()
+    {
+        return bcmul($this->amount_freeze, $this->getCreaditCny(), 8);
+    }
+
+    public function getTotalCnyAttribute()
+    {
+        return bcmul($this->total,$this->getCreaditCny(),8);
+    }
+
+    //获取积分对人民币的比例(1:1)
+    public function getCreaditCny()
+    {
+        return 1;
+    }
 }
