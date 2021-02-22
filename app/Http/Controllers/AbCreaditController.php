@@ -41,20 +41,15 @@ class AbCreaditController extends Controller
         session(['time'=>$time]);
         //获取购买价格金额
         $price = $request->get('num');
+        if ($price%10 !=0){
+            return $this->responseError('数据错误');
+        }
         $uid = Service::auth()->getUser()->id;
 //        //获取iuic当前价格
         $now_price = json_decode(json_encode(ExOrder::market(0, 60)),true);
-        $datas = [];
-//        foreach ($now_price as $k => $v){
-//            foreach ($v as $key => $value){
-//                $datas['cny'] = $value->cny;
-//                Log::info('数据'.$datas['cny']);
-//            }
-//        }
-//        dump($now_price);
-        return $now_price[0]['cny'];
+//        return $now_price[0]['cny'];
         //计算赠送冻结的iuic
-        $freeze_iuic = $price/$now_price['cny'];
+        $freeze_iuic = $price/$now_price[0]['cny'];
         //计算赠送的冻结积分和所花费的法币可用iuic
         $freeze_creadit = $price * EcologyConfigPub::where('id',1)->value('point_multiple');
         //判断余额是否足够
@@ -74,7 +69,7 @@ class AbCreaditController extends Controller
             //加积分
             EcologyCreadit::where('uid',$uid)->increment('amount',$user_iuic_balance);
             //加iuic矿池
-            UserInfo::where('uid', $uid)->increment('buy_total', $price);
+            UserInfo::where('uid', $uid)->increment('buy_total', $freeze_iuic);
             //生成订单
             $order = New EcologyCreaditOrder();
             $data['uid'] = $uid;
