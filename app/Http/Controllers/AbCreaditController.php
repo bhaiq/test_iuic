@@ -44,9 +44,11 @@ class AbCreaditController extends Controller
         $uid = Service::auth()->getUser()->id;
 //        //获取iuic当前价格
         $now_price = $this->response(ExOrder::market(0, 60));
-        Log::info("数据1".$now_price->0->cny);
-        Log::info("数据2".$now_price['cny']);
-        Log::info("数据3".$now_price->cny);
+        $datas = [];
+        foreach ($now_price as $k => $v){
+            $datas['cny'] = $v->cny;
+        }
+        Log::info("数据1".$datas['cny']);
         dd($now_price[0]->cny);
         //计算赠送冻结的iuic
         $freeze_iuic = $price/$now_price['cny'];
