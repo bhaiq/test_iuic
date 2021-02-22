@@ -184,7 +184,7 @@ class AccountController extends Controller
                 $result['all_total']     = bcadd($result['all_total'], $v['cny'], 4);
                 $result['all_total_cny'] = bcadd($result['all_total_cny'], $v['cny'], 4);
             }
-
+            dump(Account::getRate());
             $result['all_total'] = bcdiv($result['all_total'], Account::getRate(), 4);
 
             return $this->response($result);
