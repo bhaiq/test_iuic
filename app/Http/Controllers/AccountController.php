@@ -174,7 +174,6 @@ class AccountController extends Controller
 
             $result['cur_total'] = bcdiv($uw->total_cny, Account::getRate(), 4);
             $result['cur_total_cny'] = bcmul($uw->total_cny, 1, 4);
-//            $now_price = json_decode(json_encode(ExOrder::market(0, 60)),true);
             $result['all_total'] = bcdiv($uw->total_cny,Account::getRate(),4);
             $result['all_total_cny'] = bcmul($uw->total_cny, 1, 4);
 
