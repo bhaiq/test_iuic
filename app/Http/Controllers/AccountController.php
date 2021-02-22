@@ -174,11 +174,11 @@ class AccountController extends Controller
 
             $result['cur_total'] = bcdiv($uw->total_cny, Account::getRate(), 4);
             $result['cur_total_cny'] = bcmul($uw->total_cny, 1, 4);
-            $result['all_total'] = 0;
-            $result['all_total_cny'] = 0;
+            $now_price = json_decode(json_encode(ExOrder::market(0, 60)),true);
+            $result['all_total'] = bcdiv($uw->total_cny,$now_price[0]['cny'],4);
+            $result['all_total_cny'] = bcmul($uw->total_cny, 1, 4);
 
             $data_other = Service::auth()->getUser()->account()->with('coin')->get()->toArray();
-            dump($data_other);
 
             foreach ($data_other as $k => $v) {
                 $result['all_total']     = bcadd($result['all_total'], $v['cny'], 4);
