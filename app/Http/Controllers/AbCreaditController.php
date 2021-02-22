@@ -76,6 +76,7 @@ class AbCreaditController extends Controller
             $order->creadit_amount = $freeze_creadit;
             $order->already_amount = 0;
             $order->iuic_amount = $freeze_iuic;
+            $order->now_price = $now_price[0]['cny'];
             $order->save();
             \DB::commit();
         }catch (\Exception $e){
