@@ -342,7 +342,7 @@ class AccountController extends Controller
                     'coin_id' => $coin_id,
                     'amount' => $v['amount'],
                     'type' => $v['type'] == '1' ? 1 : 0,
-                    'remark' => $v['exp'],
+                    'remark' => $v['remark'],
                     'created_at' => strtotime($v['created_at'])
                 ];
             }
