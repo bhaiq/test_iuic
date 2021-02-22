@@ -50,7 +50,7 @@ class AbCreaditController extends Controller
 //        return $now_price[0]['cny'];
         //计算赠送冻结的iuic
         $freeze_iuic = $price/$now_price[0]['cny'];
-        //计算赠送的冻结积分和所花费的法币可用iuic
+        //计算赠送的冻结积分
         $freeze_creadit = $price * EcologyConfigPub::where('id',1)->value('point_multiple');
         //判断余额是否足够
         $user_iuic_balance = Account::where('uid',$uid)
@@ -64,10 +64,10 @@ class AbCreaditController extends Controller
         \DB::beginTransaction();
         try{
             //扣可用法币iuic
-            Account::reduceAmount($uid,'2',$freeze_creadit);
-            AccountLog::addLog($uid,2,$freeze_creadit,'33','1','1','购买积分');
+            Account::reduceAmount($uid,'2',$freeze_iuic);
+            AccountLog::addLog($uid,2,$freeze_iuic,'33','0','1','购买积分');
             //加积分
-            EcologyCreadit::where('uid',$uid)->increment('amount',$freeze_creadit);
+            EcologyCreadit::where('uid',$uid)->increment('amount_freeze',$freeze_creadit);
             //加iuic矿池
             UserInfo::where('uid', $uid)->increment('buy_total', $freeze_iuic);
             //生成订单
