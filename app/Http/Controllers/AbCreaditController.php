@@ -43,9 +43,9 @@ class AbCreaditController extends Controller
         $uid = Service::auth()->getUser()->id;
 //        //获取iuic当前价格
         $now_price = $this->response(ExOrder::market(0, 60));
-        dd($now_price);
+        dd($now_price['cny']);
         //计算赠送冻结的iuic
-        $freeze_iuic = $price/$now_price->cny;
+        $freeze_iuic = $price/$now_price['cny'];
         //计算赠送的冻结积分和所花费的法币可用iuic
         $freeze_creadit = $price * EcologyConfigPub::where('id',1)->value('point_multiple');
         //判断余额是否足够
