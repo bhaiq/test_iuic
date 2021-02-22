@@ -25,7 +25,7 @@ class EcologyCreadit extends Model
      * scence 场景
      * remark 备注
      */
-    public function a_o_m($uid,$amount,$type,$scence,$remark)
+    public static function a_o_m($uid,$amount,$type,$scence,$remark)
     {
         if($type == 1){
             EcologyCreadit::where('uid',$uid)->increment('amount',$amount);
