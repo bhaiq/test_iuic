@@ -28,7 +28,7 @@ class AccountController extends Controller
         Service::auth()->isLoginOrFail();
         $type            = $request->get('type', 0);
 
-        if(!in_array($type, [0, 1, 2])){
+        if(!in_array($type, [0, 1, 2,3])){
             $this->responseError(trans('api.parameter_is_wrong'));
         }
 
