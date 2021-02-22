@@ -7,5 +7,5 @@ use Illuminate\Database\Eloquent\Model;
 class EcologyCreaditOrder extends Model
 {
     //
-    protected $table = 'creadits_orders';
+    protected $table = 'ecology_creadits_orders';
 }
