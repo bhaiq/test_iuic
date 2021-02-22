@@ -52,7 +52,7 @@ class AbCreaditController extends Controller
 //            }
 //        }
 //        dump($now_price);
-        return $now_price;
+        return $now_price[0]['cny'];
         //计算赠送冻结的iuic
         $freeze_iuic = $price/$now_price['cny'];
         //计算赠送的冻结积分和所花费的法币可用iuic
