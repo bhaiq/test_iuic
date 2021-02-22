@@ -73,9 +73,9 @@ class AbCreaditController extends Controller
             //生成订单
             $order = New EcologyCreaditOrder();
             $order->uid = $uid;
-            $order->creadit_amount = $user_iuic_balance;
+            $order->creadit_amount = $freeze_creadit;
             $order->already_amount = 0;
-            $order->iuic_amount = $freeze_creadit;
+            $order->iuic_amount = $freeze_iuic;
             $order->save();
             \DB::commit();
         }catch (\Exception $e){
