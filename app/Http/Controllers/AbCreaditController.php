@@ -83,7 +83,7 @@ class AbCreaditController extends Controller
             Log::info($e->getMessage());
             return $this->responseError($e->getMessage());
         }
-        return $this->response("操作成功");
+        $this->responseSuccess(trans('api.operate_successfully'));
     }
 
     public function  mu()
