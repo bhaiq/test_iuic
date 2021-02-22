@@ -311,6 +311,13 @@ Route::group(['middleware' => ['auth.api','switchlang']], function () {
         Route::post('logs','StatController@logs'); //回购销毁记录
     });
 
+    //积分模块
+    Route::group(['prefix'=>'creadits'],function(){
+       Route::post('creadit_list','AbCreaditController@creadits_list');  //积分购买列表
+       Route::post('buy_creadits','AbCreaditController@buy_creadits');  //积分购买
+       Route::post('mu','AbCreaditController@mu');
+    });
+
 });
 
 Route::group(['prefix' => 'common'], function () {

@@ -13,7 +13,7 @@
         "caouecs/laravel-lang": "~4.0",
         "fideloper/proxy": "^4.0",
         "graze/guzzle-jsonrpc": "^3.2",
-        "guzzlehttp/guzzle": "^6.3",
+        "guzzlehttp/guzzle": "7.0",
         "jacobcyl/ali-oss-storage": "^2.1",
         "jpush/jpush": "^3.6",
         "lancewan/laravel5-cloud": "^1.1",

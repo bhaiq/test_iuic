@@ -70,6 +70,8 @@ class AccountLog extends Model
   	const SCENE_SPEED_BONUS = 31;
   	const SCENCE_PERFORMANCE_BONUS = 32;
 
+  	const SCENCE_BUY_CREADIT = 33;
+
     const SCENE_IN = [
         self::SCENE_RECHARGE, self::SCENE_EX_IN, self::SCENE_EX_BACK, self::SCENE_LEGAL_IN, self::SCENE_EX_DEL,
         self::SCENE_Trade_RELEASE, self::SCENE_SCENE_BONUS, self::SCENE_SCENE_ADMIN_BONUS,self::SCENE_REMOVE_BUSINESS
@@ -136,6 +138,8 @@ class AccountLog extends Model
                 return '团队长加速分红奖';
             case self:: SCENCE_PERFORMANCE_BONUS:
                 return '团队长业绩分红奖';
+            case self:: SCENCE_BUY_CREADIT:
+                return '购买生态';
         }
     }
 
