@@ -46,9 +46,9 @@ class AbCreaditController extends Controller
         $now_price = $this->response(ExOrder::market(0, 60));
         $datas = [];
         foreach ($now_price as $k => $v){
-            $datas['cny'] = $v->cny;
+            $datas['cny'] = $v;
         }
-        Log::info("数据1".$datas['cny']);
+        Log::info("数据1".$datas);
         dd($now_price[0]->cny);
         //计算赠送冻结的iuic
         $freeze_iuic = $price/$now_price['cny'];
