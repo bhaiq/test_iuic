@@ -178,6 +178,7 @@ class AccountController extends Controller
             $result['all_total_cny'] = 0;
 
             $data_other = Service::auth()->getUser()->account()->with('coin')->get()->toArray();
+            dump($data_other);
 
             foreach ($data_other as $k => $v) {
                 $result['all_total']     = bcadd($result['all_total'], $v['cny'], 4);
