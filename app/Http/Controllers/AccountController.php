@@ -6,6 +6,7 @@ use App\Models\Account;
 use App\Models\AccountLog;
 use App\Models\Coin;
 use App\Models\EcologyCreadit;
+use App\Models\EcologyCreaditLog;
 use App\Models\EnergyLog;
 use App\Models\UserWallet;
 use App\Services\Service;
@@ -183,7 +184,6 @@ class AccountController extends Controller
                 $result['all_total']     = bcadd($result['all_total'], $v['cny'], 4);
                 $result['all_total_cny'] = bcadd($result['all_total_cny'], $v['cny'], 4);
             }
-            dump(Account::getRate());
             $result['all_total'] = bcdiv($result['all_total'], Account::getRate(), 4);
 
             return $this->response($result);
@@ -332,7 +332,40 @@ class AccountController extends Controller
 
             return $this->response(array_merge($eLogs, $result));
 
+        }else if($coin_id == '1004'){
+
+            $eLogs = EcologyCreaditLog::where('uid', Service::auth()->getUser()->id)->latest()->paginate()->toArray();
+            foreach ($eLogs['data'] as $k => $v){
+
+                $eLogs['data'][$k] = [
+                    'uid' => $v['uid'],
+                    'coin_id' => $coin_id,
+                    'amount' => $v['amount'],
+                    'type' => $v['type'] == '1' ? 1 : 0,
+                    'remark' => $v['exp'],
+                    'created_at' => strtotime($v['created_at'])
+                ];
+            }
+
+            $result = [
+                'amount' => 0,
+                'amount_freeze' => 0,
+                'cny' => 0
+            ];
+
+            $uw = EcologyCreadit::where('uid', Service::auth()->getUser()->id)->first();
+            if($uw){
+                $result = [
+                    'amount' => $uw->amount,
+                    'amount_freeze' => $uw->amount_freeze,
+                    'cny' => $uw->total,
+                ];
+            }
+
+            return $this->response(array_merge($eLogs, $result));
+
         }
+
 
         $coinType = $request->get('coin_type', 0);
 

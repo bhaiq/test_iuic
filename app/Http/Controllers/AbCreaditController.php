@@ -67,7 +67,8 @@ class AbCreaditController extends Controller
             Account::reduceAmount($uid,'2',$freeze_iuic);
             AccountLog::addLog($uid,2,$freeze_iuic,'33','0','1','购买积分');
             //加积分
-            EcologyCreadit::where('uid',$uid)->increment('amount_freeze',$freeze_creadit);
+//            EcologyCreadit::a_o_m('uid',$uid)->increment('amount_freeze',$freeze_creadit);
+            EcologyCreadit::a_o_m($uid,$freeze_creadit,1,1,'购买积分');
             //加iuic矿池
             UserInfo::where('uid', $uid)->increment('buy_total', $freeze_iuic);
             //生成订单
