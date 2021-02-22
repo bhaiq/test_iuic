@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Libs\StringLib;
 use App\Models\Account;
 use App\Models\Authentication;
+use App\Models\EcologyCreadit;
 use App\Models\User;
 use App\Models\UserInfo;
 use App\Models\Wallet;
@@ -68,6 +69,10 @@ class UserController extends Controller
           
             $data          = $user->toArray();
             $data['token'] = Service::auth()->createToken($user->id);
+
+            //生成积分钱包
+            $creadits = New EcologyCreadit();
+            $creadits->created_wallet($user->id);
             return response()->json($data);
         }
 
