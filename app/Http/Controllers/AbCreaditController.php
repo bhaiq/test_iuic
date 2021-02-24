@@ -254,7 +254,7 @@ class AbCreaditController extends Controller
     }
 
     //车奖排行榜
-    public function ranking_list($uid)
+    public function ranking_list(Request $request)
     {
         $list = User::where('car_is_show',1)
             ->where('ecology_lv','>=',3)
