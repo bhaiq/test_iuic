@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Account;
 use App\Models\AccountLog;
+use App\Models\CreaditTransfer;
 use App\Models\EcologyBuyRmb;
 use App\Models\EcologyConfigPub;
 use App\Models\EcologyCreadit;
 use App\Models\EcologyCreaditOrder;
 use App\Models\ExOrder;
 use App\Models\UserInfo;
+use App\Models\UserWallet;
 use App\Services\Service;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -95,15 +97,82 @@ class AbCreaditController extends Controller
         $wallet->created_wallet($uid);
     }
 
-    //用户余额
-    public function user_balance(Request $request)
+    // 划转页面数据获取
+    public function transferStart()
     {
+
+        Service::auth()->isLoginOrFail();
+        $num = 0;
+        $bl = bcmul(EcologyConfigPub::where('id',1)->value('rate'),100)."%";
+
+        // 获取用户积分资产信息
+        $uw = EcologyCreadit::where('uid', Service::auth()->getUser()->id)->first();
+        if($uw){
+            $num = bcmul($uw->amount, 1, 4);
+        }
+
+        $result = [
+            'num' => $num,
+            'bl' => $bl,
+        ];
+
+        return $this->response($result);
 
     }
 
-    //用户余额记录
-    public function balance_log(Request $request)
+    // 积分划转提交
+    public function transfer(Request $request)
     {
+
+        Service::auth()->isLoginOrFail();
+
+        $this->validate($request->all(), [
+            'num' => 'required|integer|min:0',
+            'paypass' => 'required',
+        ], [
+            'num.required' => trans('api.quantity_cannot_empty'),
+            'num.integer' => trans('api.quantity_must_integer'),
+            'num.min' => trans('api.quantity_cannot_less_than_0'),
+            'paypass.required' => trans('api.trade_password_cannot_empty'),
+        ]);
+
+        // 验证二级密码
+        Service::auth()->isTransactionPasswordYesOrFail($request->get('paypass'));
+
+        // 获取用户积分资产信息
+        $uw = EcologyCreadit::where('uid', Service::auth()->getUser()->id)->first();
+        if(!$uw || $uw->amount < $request->get('num')){
+            $this->responseError(trans('api.insufficient_user_balance'));
+        }
+
+        $data = [
+            'uid' => Service::auth()->getUser()->id,
+            'num' => $request->get('num'),
+            'created_at' => now()->toDateTimeString()
+        ];
+
+        \DB::beginTransaction();
+        try {
+
+            // 积分资产划转表新增
+            $et = CreaditTransfer::create($data);
+
+            // 可用积分减少
+            EcologyCreadit::a_o_m(Service::auth()->getUser()->id, $request->get('num'),2,2,'划转');
+
+            // 用户法币USDT增加
+//            UserInfo::addBuyTotal(Service::auth()->getUser()->id, $request->get('num'));
+            Account::addAmount(Service::auth()->getUser()->id,1,$request->get('num'));
+            AccountLog::addLog(Service::auth()->getUser()->id,'1',$request->get('num'),'34','1',
+                '1','积分划转');
+            \DB::commit();
+
+        } catch (\Exception $exception) {
+            \DB::rollBack();
+            \Log::info('积分资产划转异常');
+            $this->responseError(trans('api.wrong_operation'));
+        }
+        $this->responseSuccess(trans('api.operate_successfully'));
 
     }
 }

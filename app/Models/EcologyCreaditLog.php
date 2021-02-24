@@ -13,7 +13,11 @@ class EcologyCreaditLog extends Model
     {
         switch ($value){
             case 1:
-                return "购买积分"; //兑换积分
+                echo "购买积分"; //兑换积分
+                break;
+            case 2:
+                echo "积分划转"; //积分划转法币usdt
+                break;
         }
     }
 

@@ -71,6 +71,7 @@ class AccountLog extends Model
   	const SCENCE_PERFORMANCE_BONUS = 32;
 
   	const SCENCE_BUY_CREADIT = 33;
+  	const SCENCE_CREADIT_TRANSFER = 34;
 
     const SCENE_IN = [
         self::SCENE_RECHARGE, self::SCENE_EX_IN, self::SCENE_EX_BACK, self::SCENE_LEGAL_IN, self::SCENE_EX_DEL,
@@ -140,6 +141,8 @@ class AccountLog extends Model
                 return '团队长业绩分红奖';
             case self:: SCENCE_BUY_CREADIT:
                 return '购买生态';
+            case self:: SCENCE_CREADIT_TRANSFER:
+                return '积分划转';
         }
     }
 
