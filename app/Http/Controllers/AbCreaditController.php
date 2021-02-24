@@ -108,7 +108,7 @@ class AbCreaditController extends Controller
         // 获取用户积分资产信息
         $uw = EcologyCreadit::where('uid', Service::auth()->getUser()->id)->first();
         if($uw){
-            $num = bcmul($uw->amount, 1, 4);
+            $num = bcmul($uw->amount, 1, 2);
         }
 
         $result = [
