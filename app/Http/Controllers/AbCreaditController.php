@@ -263,6 +263,7 @@ class AbCreaditController extends Controller
             ->take(50)
             ->get();
         dump($list);
+        dump(111);
         $data = [];
         foreach ($list as $k => $v){
             $data[$k]['nickname'] = $v->nickname;
