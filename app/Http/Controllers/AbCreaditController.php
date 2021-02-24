@@ -269,7 +269,7 @@ class AbCreaditController extends Controller
             $data[$k]['nickname'] = $v->nickname;
             $data[$k]['ecology_lv'] = $this->ecology($v->ecology_lv);
         }
-        if(empty($list)){
+        if(!empty($list)){
             $data[0]['nickname'] = "";
             $data[0]['ecology_lv'] = "";
         }
