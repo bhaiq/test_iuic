@@ -24,9 +24,9 @@ class AbCreaditController extends Controller
     {
         $list = EcologyBuyRmb::where('is_show','1')->orderby('sort','desc')->get();
         $data = [];
-        $data['times'] = EcologyConfigPub::where('id',1)->value('point_multiple');
+        $data['times'] = (string)EcologyConfigPub::where('id',1)->value('point_multiple');
         foreach ($list as $k => $v){
-            $data['list'][$k]['num'] = $v->branch_num;
+            $data['list'][$k]['num'] = (string)$v->branch_num;
         }
         return $this->response(['data'=>$data]);
     }
