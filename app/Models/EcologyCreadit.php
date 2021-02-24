@@ -61,4 +61,93 @@ class EcologyCreadit extends Model
     {
         return 1;
     }
+
+    //获取用户生态等级
+    public function get_ecology_lv($id)
+    {
+        return EcologyConfig::where('id',$id)->value('name');
+    }
+
+    //获取团队总人数
+    public function team_all($uid)
+    {
+        return User::where('pid_path', 'like', '%,' . $uid . ',%')->count();
+    }
+
+    //今日新增人数
+    public function new_people($uid)
+    {
+        return User::where('pid_path', 'like', '%,' . $uid . ',%')
+            ->whereDate('created_at', now()->toDateString())
+            ->count();
+    }
+
+    //日业绩(报单积分) 个人
+    public function day_yj($uid)
+    {
+        // 获取用户部门的所有用户ID
+        return EcologyCreaditOrder::where('uid', $uid)
+            ->whereDate('created_at', now()->toDateString())
+            ->sum('creadit_amount');
+    }
+
+    //总业绩
+    public function  zong_yj($uid)
+    {
+        // 获取用户部门的所有用户ID
+        $lowerIds = User::where('pid_path', 'like', '%,' . $uid . ',%')->pluck('id')->toArray();
+        return EcologyCreaditOrder::whereIn('uid', $lowerIds)
+            ->whereDate('created_at', now()->toDateString())
+            ->sum('creadit_amount');
+    }
+
+    //月业绩(个人)
+    public function month($uid)
+    {
+        $time = time();
+        $start=date('Y-m-01',strtotime($time));//获取指定月份的第一天
+        $end=date('Y-m-t',strtotime($time)); //获取指定月份的最后一天
+        return EcologyCreaditOrder::where('uid', $uid)
+            ->whereBetween('created_at',[strtotime($start),strtotime($end)])
+            ->sum('creadit_amount');
+    }
+
+    //一级生态人数
+    public function first_ecology($uid)
+    {
+        return  User::where('pid_path', 'like', '%,' . $uid . ',%')
+            ->where('ecology_lv',3)
+            ->count();
+    }
+
+    //二级生态人数
+    public function two_ecology($uid)
+    {
+        return  User::where('pid_path', 'like', '%,' . $uid . ',%')
+            ->where('ecology_lv',4)
+            ->count();
+    }
+
+    //三级生态人数
+    public function three_ecology($uid)
+    {
+        return  User::where('pid_path', 'like', '%,' . $uid . ',%')
+            ->where('ecology_lv',5)
+            ->count();
+    }
+
+    //四级生态人数
+    public function four_ecology($uid)
+    {
+        return  User::where('pid_path', 'like', '%,' . $uid . ',%')
+            ->where('ecology_lv',6)
+            ->count();
+    }
+    //五级生态人数
+    public function five_ecology($uid)
+    {
+        return  User::where('pid_path', 'like', '%,' . $uid . ',%')
+            ->where('ecology_lv',7)
+            ->count();
+    }
 }

@@ -318,6 +318,9 @@ Route::group(['middleware' => ['auth.api','switchlang']], function () {
        Route::post('mu','AbCreaditController@mu');
        Route::post('creadit_tran','AbCreaditController@transferStart'); //积分划转信息
        Route::post('creadit_transfer','AbCreaditController@transfer'); //积分划转
+       Route::post('ranking_list','AbCreaditController@ranking_list'); //车奖排行榜
+       Route::post('info','AbCreaditController@info'); //个人信息
+       Route::post('user_list','AbCreaditController@user_list'); //团队信息
     });
 
 });
