@@ -265,15 +265,15 @@ class AbCreaditController extends Controller
         dump($list);
         dump(111);
         $data = [];
-        foreach ($list as $k => $v){
-            $data[$k]['nickname'] = $v->nickname;
-            $data[$k]['ecology_lv'] = $this->ecology($v->ecology_lv);
-        }
         if(!empty($list)){
+            foreach ($list as $k => $v){
+                $data[$k]['nickname'] = $v->nickname;
+                $data[$k]['ecology_lv'] = $this->ecology($v->ecology_lv);
+            }
+        }else{
             $data[0]['nickname'] = "";
             $data[0]['ecology_lv'] = "";
         }
-
         return $this->response($data);
     }
 
