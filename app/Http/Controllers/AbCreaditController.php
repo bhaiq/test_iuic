@@ -169,7 +169,7 @@ class AbCreaditController extends Controller
 
         } catch (\Exception $exception) {
             \DB::rollBack();
-            \Log::info('积分资产划转异常');
+            \Log::info('积分资产划转异常'.$exception->getMessage());
             $this->responseError(trans('api.wrong_operation'));
         }
         $this->responseSuccess(trans('api.operate_successfully'));
