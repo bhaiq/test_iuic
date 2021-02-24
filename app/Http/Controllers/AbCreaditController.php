@@ -158,7 +158,7 @@ class AbCreaditController extends Controller
         try {
 
             // 积分资产划转表新增
-            $et = CreaditTransfer::create($data);
+            CreaditTransfer::create($data);
 
             // 可用积分减少
             EcologyCreadit::a_o_m(Service::auth()->getUser()->id, $request->get('num'),2,2,'划转');
