@@ -148,6 +148,9 @@ class AbCreaditController extends Controller
         $data = [
             'uid' => Service::auth()->getUser()->id,
             'num' => $request->get('num'),
+            'charge_rate' => EcologyConfigPub::where('id',1)->value('rate'),
+            'service_charge' => $request->get('num')*EcologyConfigPub::where('id',1)->value('rate'),
+            'true_num' => bcsub($request->get('num'),$request->get('num')*EcologyConfigPub::where('id',1)->value('rate'),4),
             'created_at' => now()->toDateTimeString()
         ];
 
@@ -162,8 +165,8 @@ class AbCreaditController extends Controller
 
             // 用户法币USDT增加
 //            UserInfo::addBuyTotal(Service::auth()->getUser()->id, $request->get('num'));
-            Account::addAmount(Service::auth()->getUser()->id,1,$request->get('num'));
-            AccountLog::addLog(Service::auth()->getUser()->id,'1',$request->get('num'),'34','1',
+            Account::addAmount(Service::auth()->getUser()->id,1,bcsub($request->get('num'),$request->get('num')*EcologyConfigPub::where('id',1)->value('rate'),4));
+            AccountLog::addLog(Service::auth()->getUser()->id,'1',bcsub($request->get('num'),$request->get('num')*EcologyConfigPub::where('id',1)->value('rate'),4),'34','1',
                 '1','积分划转');
             \DB::commit();
 
