@@ -6,10 +6,12 @@ use App\Models\Account;
 use App\Models\AccountLog;
 use App\Models\CreaditTransfer;
 use App\Models\EcologyBuyRmb;
+use App\Models\EcologyConfig;
 use App\Models\EcologyConfigPub;
 use App\Models\EcologyCreadit;
 use App\Models\EcologyCreaditOrder;
 use App\Models\ExOrder;
+use App\Models\User;
 use App\Models\UserInfo;
 use App\Models\UserWallet;
 use App\Services\Service;
@@ -178,4 +180,168 @@ class AbCreaditController extends Controller
         $this->responseSuccess(trans('api.operate_successfully'));
 
     }
+
+    // 个人推荐信息
+    public function info()
+    {
+
+        Service::auth()->isLoginOrFail();
+
+        $res = $this->getUserInfo(Service::auth()->getUser()->id);
+        if(!$res){
+            $this->responseError(trans('api.parameter_is_wrong'));
+        }
+
+//        if(Service::auth()->getUser()->id == 1){
+//
+//            $arr = [
+//                'pt_user_count' => UserInfo::where('level', 1)->count(),
+//                'gj_user_count' => UserInfo::where('level', 2)->count(),
+//            ];
+//
+//            $res = array_merge($res, $arr);
+//        }
+
+        return $this->response($res);
+
+    }
+
+    //生态2数据
+    public function user_list(Request $request)
+    {
+        Service::auth()->isLoginOrFail();
+
+        $result  = [];
+        // 获取用户的推荐用户
+        $user = User::where('pid', Service::auth()->getUser()->id)->paginate($request->get('per_page', 10));
+
+        foreach ($user as $k => $v){
+
+            $res = $this->getUserInfo($v->id);
+
+            if($res){
+                $result[] = $res;
+            }
+        }
+
+        return $this->response($result);
+    }
+
+    //用户信息
+    public function getUserInfo($uid){
+        $user = User::with('user_info')->where('id', $uid)->first();
+        if(!$user){
+            return false;
+        }
+        if(!$user->user_info){
+            return [
+                'avatar' => $user->avatar,
+                'nickname' => $user->nickname,
+                'ecology_lv' => $this->get_ecology_lv($user->ecology_lv), //生态等级
+                'team_all' => $this->team_all($uid), //团队总人数
+                'new_people' => $this->new_people($uid), //新增人数
+                'zong_yj' => $this->zong_yj($uid), //总业绩
+                'day_yj' => $this->day_yj($uid), //日业绩
+                'month_yj' => $this->month($uid), //月业绩
+                'first_ecology' => $this->first_ecology($uid), //一级生态
+                'two_ecology' => $this->two_ecology($uid), //二级生态
+                'three_ecology' => $this->three_ecology($uid), //三级生态
+                'four_ecology' => $this->four_ecology($uid), //四级生态
+                'five_ecology' => $this->five_ecology($uid), //五级生态
+            ];
+        }
+    }
+
+
+    //获取用户生态等级
+    public function get_ecology_lv($id)
+    {
+        return EcologyConfig::where('id',$id)->value('name');
+    }
+
+    //获取团队总人数
+    public function team_all($uid)
+    {
+        return User::where('pid_path', 'like', '%,' . $uid . ',%')->count();
+    }
+
+    //今日新增人数
+    public function new_people($uid)
+    {
+        return User::where('pid_path', 'like', '%,' . $uid . ',%')
+            ->whereDate('created_at', now()->toDateString())
+            ->count();
+    }
+
+    //日业绩(报单积分),不包括自己
+    public function day_yj($uid)
+    {
+        // 获取用户部门的所有用户ID
+        $lowerIds = User::where('pid_path', 'like', '%,' . $uid . ',%')->pluck('id')->toArray();
+        return EcologyCreaditOrder::whereIn('uid', $lowerIds)
+            ->whereDate('created_at', now()->toDateString())
+            ->sum('creadit_amount');
+    }
+
+    //总业绩
+    public function  zong_yj($uid)
+    {
+        // 获取用户部门的所有用户ID
+        $lowerIds = User::where('pid_path', 'like', '%,' . $uid . ',%')->pluck('id')->toArray();
+        return EcologyCreaditOrder::whereIn('uid', $lowerIds)
+            ->sum('creadit_amount');
+    }
+
+    //月业绩
+    public function month($uid)
+    {
+        $time = time();
+        $start=date('Y-m-01',strtotime($time));//获取指定月份的第一天
+        $end=date('Y-m-t',strtotime($time)); //获取指定月份的最后一天
+        $lowerIds = User::where('pid_path', 'like', '%,' . $uid . ',%')->pluck('id')->toArray();
+        return EcologyCreaditOrder::whereIn('uid', $lowerIds)
+            ->whereBetween('created_at',[strtotime($start),strtotime($end)])
+            ->sum('creadit_amount');
+    }
+
+    //一级生态人数
+    public function first_ecology($uid)
+    {
+        return  User::where('pid_path', 'like', '%,' . $uid . ',%')
+            ->where('ecology_lv',3)
+            ->count();
+    }
+
+    //二级生态人数
+    public function two_ecology($uid)
+    {
+        return  User::where('pid_path', 'like', '%,' . $uid . ',%')
+            ->where('ecology_lv',4)
+            ->count();
+    }
+
+    //三级生态人数
+    public function three_ecology($uid)
+    {
+        return  User::where('pid_path', 'like', '%,' . $uid . ',%')
+            ->where('ecology_lv',5)
+            ->count();
+    }
+
+    //四级生态人数
+    public function four_ecology($uid)
+    {
+        return  User::where('pid_path', 'like', '%,' . $uid . ',%')
+            ->where('ecology_lv',6)
+            ->count();
+    }
+    //五级生态人数
+    public function five_ecology($uid)
+    {
+        return  User::where('pid_path', 'like', '%,' . $uid . ',%')
+            ->where('ecology_lv',7)
+            ->count();
+    }
+
+
 }
