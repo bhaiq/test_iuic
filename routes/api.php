@@ -317,6 +317,7 @@ Route::group(['middleware' => ['auth.api','switchlang']], function () {
        Route::post('buy_creadits','AbCreaditController@buy_creadits');  //积分购买
        Route::post('mu','AbCreaditController@mu');
        Route::post('creadit_tran','AbCreaditController@transferStart'); //积分划转信息
+       Route::post('creadit_transfer','AbCreaditController@transfer'); //积分划转
     });
 
 });
