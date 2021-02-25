@@ -72,7 +72,7 @@ class AbCreaditController extends Controller
             AccountLog::addLog($uid,2,$freeze_iuic,'33','0','1','购买积分');
             //加积分
 //            EcologyCreadit::a_o_m('uid',$uid)->increment('amount_freeze',$freeze_creadit);
-            EcologyCreadit::a_o_m($uid,$freeze_creadit,1,1,'购买积分');
+            EcologyCreadit::a_o_m($uid,$freeze_creadit,1,1,'购买积分',2);
             //加iuic矿池
             UserInfo::where('uid', $uid)->increment('buy_total', $freeze_iuic);
             //生成订单
@@ -96,7 +96,7 @@ class AbCreaditController extends Controller
     {
         $uid = "1";
         $wallet = New EcologyCreadit();
-        $wallet->created_wallet($uid);
+        $wallet->ecology_share_reward(45,100);
     }
 
     // 划转页面数据获取
@@ -163,7 +163,7 @@ class AbCreaditController extends Controller
             CreaditTransfer::create($data);
 
             // 可用积分减少
-            EcologyCreadit::a_o_m(Service::auth()->getUser()->id, $request->get('num'),2,2,'划转');
+            EcologyCreadit::a_o_m(Service::auth()->getUser()->id, $request->get('num'),2,2,'划转',1);
 
             // 用户法币USDT增加
 //            UserInfo::addBuyTotal(Service::auth()->getUser()->id, $request->get('num'));

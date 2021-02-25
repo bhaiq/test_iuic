@@ -13,10 +13,13 @@ class EcologyCreaditLog extends Model
     {
         switch ($value){
             case 1:
-                echo "购买积分"; //兑换积分
+                return "购买积分"; //兑换积分
                 break;
             case 2:
-                echo "积分划转"; //积分划转法币usdt
+                return "积分划转"; //积分划转法币usdt
+                break;
+            case 3:
+                return "生态2分享奖";
                 break;
         }
     }
@@ -28,14 +31,16 @@ class EcologyCreaditLog extends Model
      * type   1加2减
      * scence 场景
      * remark 备注
+     * coin_type 1可用2冻结
      */
-    public function addlog($uid,$amount,$type,$scence,$remark){
+    public function addlog($uid,$amount,$type,$scence,$remark,$coin_type){
         $log = New EcologyCreaditLog();
         $log->uid = $uid;
         $log->amount = $amount;
         $log->scence = $scence;
         $log->type = $type;
         $log->remark = $remark;
+        $log->coin_type = $coin_type;
 
         $log->save();
     }

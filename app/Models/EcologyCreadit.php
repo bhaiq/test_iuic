@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class EcologyCreadit extends Model
 {
@@ -24,16 +26,25 @@ class EcologyCreadit extends Model
      * type   1加2减
      * scence 场景
      * remark 备注
+     * coin_type 1可用2冻结
      */
-    public static function a_o_m($uid,$amount,$type,$scence,$remark)
+    public static function a_o_m($uid,$amount,$type,$scence,$remark,$coin_type)
     {
-        if($type == 1){
-            EcologyCreadit::where('uid',$uid)->increment('amount',$amount);
-        }else if($type == 2){
-            EcologyCreadit::where('uid',$uid)->decrement('amount',$amount);
+        if($coin_type == 1){
+            if($type == 1){
+                EcologyCreadit::where('uid',$uid)->increment('amount',$amount);
+            }else if($type == 2){
+                EcologyCreadit::where('uid',$uid)->decrement('amount',$amount);
+            }
+        }else if($coin_type == 2){
+            if($type == 1){
+                EcologyCreadit::where('uid',$uid)->increment('amount_freeze',$amount);
+            }else if($type == 2){
+                EcologyCreadit::where('uid',$uid)->decrement('amount_freeze',$amount);
+            }
         }
         $log = New EcologyCreaditLog();
-        $log->addlog($uid,$amount,$type,$scence,$remark);
+        $log->addlog($uid,$amount,$type,$scence,$remark,$coin_type);
     }
 
     public function getTotalAttribute()
@@ -149,5 +160,41 @@ class EcologyCreadit extends Model
         return  User::where('pid_path', 'like', '%,' . $uid . ',%')
             ->where('ecology_lv',7)
             ->count();
+    }
+
+    //生态2分享奖(例:报单1万 上级得分享奖  从他的冻结积分释放到可用(1万*15%))
+    /**
+     * @param $uid 报单用户
+     * @param $num 报单数量
+     */
+    public function ecology_share_reward($uid,$num)
+    {
+        $pid = User::where('uid',$uid)->value('pid');
+        //判断上级是否有钱包,没有则生成
+        $p_wallet = EcologyCreadit::where('uid',$pid)->first();
+        if(empty($p_wallet)){
+            Log::info("上级没有购买过积分,冻结积分为0,不释放");
+            return;
+        }
+        //应释放数
+        $reward = $num * EcologyConfigPub::where('id',1)->value('rate_direct');
+        DB::beginTransaction();
+        try{
+            if($p_wallet->amount_freeze > $reward){
+                EcologyCreadit::a_o_m($uid,$reward,'2','3','生态2分享奖',2);
+                EcologyCreadit::a_o_m($uid,$reward,'1','3','生态2分享奖',1);
+            }else{
+                if($p_wallet->amount_freeze > 0){
+                    EcologyCreadit::a_o_m($uid,$p_wallet->amount_freeze,'2','3','生态2分享奖',2);
+                    EcologyCreadit::a_o_m($uid,$p_wallet->amount_freeze,'1','3','生态2分享奖',1);
+                }
+
+            }
+            DB::commit();
+        }catch (\Exception $exception){
+            DB::rollBack();
+            Log::info("错误".$exception->getMessage());
+            return;
+        }
     }
 }
