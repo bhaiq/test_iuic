@@ -126,7 +126,6 @@ class AbCreaditController extends Controller
     {
 
         Service::auth()->isLoginOrFail();
-
         $this->validate($request->all(), [
             'num' => 'required|integer|min:0',
             'paypass' => 'required',
@@ -148,13 +147,17 @@ class AbCreaditController extends Controller
 
         //实际到账数量
         $true_num = $request->get('num') - $request->get('num')*EcologyConfigPub::where('id',1)->value('rate');
+        $now_price = json_decode(json_encode(ExOrder::market(0, 60)),true);
+        //折合usdt
+        $true_num = bcmul(bcdiv($true_num,$now_price[0]['cny'],4),$now_price[0]['price'],4);
         $data = [
             'uid' => Service::auth()->getUser()->id,
             'num' => $request->get('num'),
             'charge_rate' => EcologyConfigPub::where('id',1)->value('rate'),
             'service_charge' => $request->get('num')*EcologyConfigPub::where('id',1)->value('rate'),
             'true_num' => $true_num,
-            'created_at' => now()->toDateTimeString()
+            'created_at' => now()->toDateTimeString(),
+            'usdt_cny' => $now_price[0]['price']."/".$now_price[0]['cny'],
         ];
 
         \DB::beginTransaction();
