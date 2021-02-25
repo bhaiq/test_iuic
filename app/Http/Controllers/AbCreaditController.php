@@ -262,8 +262,6 @@ class AbCreaditController extends Controller
             ->orderBy('ecology_lv_time')
             ->take(50)
             ->get();
-        dump($list);
-        dump(111);
         $data = [];
         if(!empty($list)){
             foreach ($list as $k => $v){
@@ -283,19 +281,19 @@ class AbCreaditController extends Controller
         switch ($id)
         {
             case 3:
-                echo "一级生态";
+                return "一级生态";
                 break;
             case 4:
-                echo "二级生态";
+                return "二级生态";
                 break;
             case 5:
-                echo "三级生态";
+                return "三级生态";
                 break;
             case 6:
-                echo "四级生态";
+                return "四级生态";
                 break;
             case 7:
-                echo "五级生态";
+                return "五级生态";
                 break;
         }
     }
