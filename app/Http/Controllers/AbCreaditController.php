@@ -229,12 +229,12 @@ class AbCreaditController extends Controller
 
     //用户信息
     public function getUserInfo($uid){
-        $user = User::with('user_info')->where('id', $uid)->first();
+        $user = User::where('id', $uid)->first();
         $info = New EcologyCreadit();
         if(!$user){
             return false;
         }
-        if(!$user->user_info){
+        if($user){
             return [
                 'avatar' => $user->avatar,
                 'nickname' => $user->nickname,
