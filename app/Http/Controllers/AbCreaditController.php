@@ -269,8 +269,8 @@ class AbCreaditController extends Controller
                 $data[$k]['ecology_lv'] = $this->ecology($v->ecology_lv);
             }
         }else{
-            $data[0]['nickname'] = "";
-            $data[0]['ecology_lv'] = "";
+            $data[]['nickname'] = "";
+            $data[]['ecology_lv'] = "";
         }
         return $this->response($data);
     }
