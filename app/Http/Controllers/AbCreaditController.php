@@ -95,7 +95,7 @@ class AbCreaditController extends Controller
     public function  mu()
     {
         $now_price = json_decode(json_encode(ExOrder::market(0, 60)),true);
-        return $now_price;
+        return $this->response($now_price);
     }
 
     // 划转页面数据获取
