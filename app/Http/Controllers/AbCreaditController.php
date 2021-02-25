@@ -188,10 +188,10 @@ class AbCreaditController extends Controller
         Service::auth()->isLoginOrFail();
 
         $res = $this->getUserInfo(Service::auth()->getUser()->id);
-//        if(!$res){
-//            $this->responseError(trans('api.parameter_is_wrong'));
-//        }
-         dd($res);
+        if(!$res){
+            $this->responseError(trans('api.parameter_is_wrong'));
+        }
+//         dd($res);
 //        if(Service::auth()->getUser()->id == 1){
 //
 //            $arr = [
