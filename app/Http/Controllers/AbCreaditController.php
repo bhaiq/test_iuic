@@ -262,7 +262,9 @@ class AbCreaditController extends Controller
             ->orderBy('ecology_lv_time')
             ->take(50)
             ->get();
-        $data = [];
+//        $data[0]['nickname'] = "";
+//        $data[0]['ecology_lv'] = "";
+//        $data = [];
         if(!empty($list)){
             foreach ($list as $k => $v){
                 $data[$k]['nickname'] = $v->nickname;
