@@ -239,16 +239,16 @@ class AbCreaditController extends Controller
                 'avatar' => $user->avatar,
                 'nickname' => $user->nickname,
                 'ecology_lv' => $info->get_ecology_lv($user->ecology_lv), //生态等级
-                'team_all' => $info->team_all($uid), //团队总人数
-                'new_people' => $info->new_people($uid), //新增人数
-                'zong_yj' => $info->zong_yj($uid), //总业绩
-                'day_yj' => $info->day_yj($uid), //日业绩
-                'month_yj' => $info->month($uid), //月业绩
-                'first_ecology' => $info->first_ecology($uid), //一级生态
-                'two_ecology' => $info->two_ecology($uid), //二级生态
-                'three_ecology' => $info->three_ecology($uid), //三级生态
-                'four_ecology' => $info->four_ecology($uid), //四级生态
-                'five_ecology' => $info->five_ecology($uid), //五级生态
+                'team_all' => (string)$info->team_all($uid), //团队总人数
+                'new_people' => (string)$info->new_people($uid), //新增人数
+                'zong_yj' => (string)$info->zong_yj($uid), //总业绩
+                'day_yj' => (string)$info->day_yj($uid), //日业绩
+                'month_yj' => (string)$info->month($uid), //月业绩
+                'first_ecology' => (string)$info->first_ecology($uid), //一级生态
+                'two_ecology' => (string)$info->two_ecology($uid), //二级生态
+                'three_ecology' => (string)$info->three_ecology($uid), //三级生态
+                'four_ecology' => (string)$info->four_ecology($uid), //四级生态
+                'five_ecology' => (string)$info->five_ecology($uid), //五级生态
             ];
         }
     }
