@@ -269,6 +269,7 @@ class AbCreaditController extends Controller
             foreach ($list as $k => $v){
                 $data['list'][$k]['nickname'] = $v->nickname;
                 $data['list'][$k]['ecology_lv'] = $this->ecology($v->ecology_lv);
+                $data['list'][$k]['created_at'] =$v->ecology_lv_time;
             }
         $data['reward'] = EcologyConfigPub::where('id',1)->value('car_surplus');
         return $this->response($data);
