@@ -153,7 +153,7 @@ class AbCreaditController extends Controller
             'num' => $request->get('num'),
             'charge_rate' => EcologyConfigPub::where('id',1)->value('rate'),
             'service_charge' => $request->get('num')*EcologyConfigPub::where('id',1)->value('rate'),
-            'true_num' => ,
+            'true_num' => $true_num,
             'created_at' => now()->toDateTimeString()
         ];
 
