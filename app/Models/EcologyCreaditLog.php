@@ -9,7 +9,7 @@ class EcologyCreaditLog extends Model
     //
     protected $table = 'ecology_creadits_log';
 
-    public function getScenceAttributes($value)
+    public function getScenceAttribute($value)
     {
         switch ($value){
             case 1:

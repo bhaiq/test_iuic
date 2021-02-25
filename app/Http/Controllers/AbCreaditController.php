@@ -94,9 +94,8 @@ class AbCreaditController extends Controller
 
     public function  mu()
     {
-        $uid = "1";
-        $wallet = New EcologyCreadit();
-        $wallet->ecology_share_reward(45,100);
+        $now_price = json_decode(json_encode(ExOrder::market(0, 60)),true);
+        return $now_price;
     }
 
     // 划转页面数据获取
@@ -147,12 +146,14 @@ class AbCreaditController extends Controller
             $this->responseError(trans('api.insufficient_user_balance'));
         }
 
+        //实际到账数量
+        $true_num = $request->get('num') - $request->get('num')*EcologyConfigPub::where('id',1)->value('rate');
         $data = [
             'uid' => Service::auth()->getUser()->id,
             'num' => $request->get('num'),
             'charge_rate' => EcologyConfigPub::where('id',1)->value('rate'),
             'service_charge' => $request->get('num')*EcologyConfigPub::where('id',1)->value('rate'),
-            'true_num' => bcsub($request->get('num'),$request->get('num')*EcologyConfigPub::where('id',1)->value('rate'),4),
+            'true_num' => ,
             'created_at' => now()->toDateTimeString()
         ];
 
