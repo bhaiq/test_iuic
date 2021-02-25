@@ -44,10 +44,12 @@ class EcologyCreaditDay extends Command
         //每日全网新增业绩(元)(应结算数)
         $total_cny = EcologyCreaditOrder::where('created_at','>',$time)
             ->where('created_at','<',date('Y-m-d'))
+            ->whereNull('end_time')
             ->sum('price_cny');
         //每日全网新增业绩(积分)
         $total_creadit = EcologyCreaditOrder::where('created_at','>',$time)
             ->where('created_at','<',date('Y-m-d'))
+            ->whereNull('end_time')
             ->sum('creadit_amount');
         //结算方式
         $set_status = EcologyConfigPub::where('id',1)->value('settlement_switch');

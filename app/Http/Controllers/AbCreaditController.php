@@ -78,6 +78,7 @@ class AbCreaditController extends Controller
             //生成订单
             $order = New EcologyCreaditOrder();
             $order->uid = $uid;
+            $order->price_cny = $price;
             $order->creadit_amount = $freeze_creadit;
             $order->already_amount = 0;
             $order->iuic_amount = $freeze_iuic;

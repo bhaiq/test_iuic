@@ -5,6 +5,8 @@ namespace App\Console;
 use App\Console\Commands\AddBaodan;
 use App\Console\Commands\AddInfoCollect;
 use App\Console\Commands\AddWalletCollect;
+use App\Console\Commands\EcologyCreaditDay;
+use App\Console\Commands\EcologyPartner;
 use App\Console\Commands\JlKjRelease;
 use App\Console\Commands\KuangjiRelease;
 use App\Console\Commands\MinusDay;
@@ -43,6 +45,8 @@ class Kernel extends ConsoleKernel
         JlKjRelease::class,
         MinusDay::class,
         SumServiceCharge::class,
+        EcologyCreaditDay::class,
+        EcologyPartner::class,
     ];
 
     /**
@@ -98,6 +102,7 @@ class Kernel extends ConsoleKernel
     //     $schedule->command('newKuangchiRelease')->dailyAt('13:31');
     //     $schedule->command('todayReleaseClear')->dailyAt('13:36');
 
+        $schedule->command('ecologycreaditday')->dailyAt('02:00'); //凌晨生成前一天报单总数据信息
     }
 
     /**
