@@ -262,14 +262,15 @@ class AbCreaditController extends Controller
             ->orderBy('ecology_lv_time')
             ->take(50)
             ->get();
-        $data[0]['nickname'] = "";
-        $data[0]['ecology_lv'] = "";
+        $data['list'][0]['nickname'] = "";
+        $data['list'][0]['ecology_lv'] = "";
 //        $data = [];
 
             foreach ($list as $k => $v){
-                $data[$k]['nickname'] = $v->nickname;
-                $data[$k]['ecology_lv'] = $this->ecology($v->ecology_lv);
+                $data['list'][$k]['nickname'] = $v->nickname;
+                $data['list'][$k]['ecology_lv'] = $this->ecology($v->ecology_lv);
             }
+        $data['reward'] = EcologyConfigPub::where('id',1)->value('car_surplus');
         return $this->response($data);
     }
 
