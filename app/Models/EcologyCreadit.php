@@ -169,7 +169,7 @@ class EcologyCreadit extends Model
      */
     public function ecology_share_reward($uid,$num)
     {
-        $pid = User::where('uid',$uid)->value('pid');
+        $pid = User::where('id',$uid)->value('pid');
         //判断上级是否有钱包,没有则生成
         $p_wallet = EcologyCreadit::where('uid',$pid)->first();
         if(empty($p_wallet)){
