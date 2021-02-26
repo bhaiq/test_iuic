@@ -21,6 +21,21 @@ class EcologyCreaditLog extends Model
             case 3:
                 return "生态2分享奖";
                 break;
+            case 4:
+                return "生态2团队长奖";
+                break;
+            case 5:
+                return "生态2合伙人奖";
+                break;
+            case 6:
+                return "生态2手续费团队长奖";
+                break;
+            case 7:
+                return "生态2手续费奖";
+                break;
+            case 8:
+                return "生态2手续费合伙人奖";
+                break;
         }
     }
 

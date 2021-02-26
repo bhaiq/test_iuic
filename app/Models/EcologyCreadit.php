@@ -162,7 +162,7 @@ class EcologyCreadit extends Model
             ->count();
     }
 
-    //生态2分享奖(例:报单1万 上级得分享奖  从他的冻结积分释放到可用(1万*15%))
+    //生态2分享奖(例:报单1万 上级得分享奖  从他的冻结积分释放到可用(1万*15%)),别忘记订单
     /**
      * @param $uid 报单用户
      * @param $num 报单数量
@@ -170,7 +170,7 @@ class EcologyCreadit extends Model
     public function ecology_share_reward($uid,$num)
     {
         $pid = User::where('id',$uid)->value('pid');
-        //判断上级是否有钱包,没有则生成
+        //判断上级是否有钱包
         $p_wallet = EcologyCreadit::where('uid',$pid)->first();
         if(empty($p_wallet)){
             Log::info("上级没有购买过积分,冻结积分为0,不释放");
@@ -181,14 +181,38 @@ class EcologyCreadit extends Model
         DB::beginTransaction();
         try{
             if($p_wallet->amount_freeze > $reward){
-                EcologyCreadit::a_o_m($uid,$reward,'2','3','生态2分享奖',2);
-                EcologyCreadit::a_o_m($uid,$reward,'1','3','生态2分享奖',1);
+                $true_num = $reward;
+                EcologyCreadit::a_o_m($uid,$true_num,'2','3','生态2分享奖',2);
+                EcologyCreadit::a_o_m($uid,$true_num,'1','3','生态2分享奖',1);
             }else{
                 if($p_wallet->amount_freeze > 0){
-                    EcologyCreadit::a_o_m($uid,$p_wallet->amount_freeze,'2','3','生态2分享奖',2);
-                    EcologyCreadit::a_o_m($uid,$p_wallet->amount_freeze,'1','3','生态2分享奖',1);
+                    $true_num = $p_wallet->amount_freeze;
+                    EcologyCreadit::a_o_m($uid,$true_num,'2','3','生态2分享奖',2);
+                    EcologyCreadit::a_o_m($uid,$true_num,'1','3','生态2分享奖',1);
                 }
 
+            }
+            //从最早的订单开始释放
+            $lists = EcologyCreaditOrder::where('uid',$pid)
+                ->whereNull('end_time')
+                ->orderby('id')
+                ->get();
+            $all = 0;
+            foreach ($lists as $k => $v){
+                $all+=$v->creadit_amount - $v->already_amount;
+                //大于当前说明当前可以释放完,继续释放下一单
+                if($true_num >= $all){
+                    //订单状态更改,改为已释放完成,插入完成时间
+                    EcologyCreaditOrder::where('id',$v->id)->update(['already_amount'=>$v->creadit_amount,
+                        'end_time'=>date('Y-m-d H:i:s')]);
+                }else{
+                    //小于当前此单释放不完,改为释放部分,不插入完成时间,循环终止
+                    $now_amount = $v->creadit_amount - $v->already_amount;
+                    $sheng = $all - $now_amount;
+                    $sheng = $true_num - $sheng;
+                    EcologyCreaditOrder::where('id',$v->id)->increment('already_amount',$sheng);
+                    break;
+                }
             }
             DB::commit();
         }catch (\Exception $exception){
