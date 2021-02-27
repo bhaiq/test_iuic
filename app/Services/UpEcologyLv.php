@@ -19,8 +19,8 @@ class UpEcologyLv
     //模式购买   影响上级升级
     public function up_ecology_lv($uid)
     {
-        $user = User::where('uid',$uid)->first();
-        $p_user = User::where('uid',$user->pid)->first();
+        $user = User::where('id',$uid)->first();
+        $p_user = User::where('id',$user->pid)->first();
         $this->first_ecology($p_user->id,$p_user->ecology_lv);
         $this->two_ecology($p_user->id,$p_user->ecology_lv);
         $this->three_ecology($p_user->id,$p_user->ecology_lv);
