@@ -103,6 +103,7 @@ class EcologySettlement
         //等级人数
         $peopleNum = $this->uModel
             ->where('ecology_lv',$level)
+            ->where('ecology_lv_close',0)
             ->count();
 
         // 个人结算数 总数*比例/总人数
@@ -137,6 +138,7 @@ class EcologySettlement
         //该等级 用户id集合
         $ids = $this->uModel
             ->where('ecology_lv',$level)
+            ->where('ecology_lv_close',0)
             ->pluck('id')
             ->toArray();
         foreach ($ids as $k => $v) {
@@ -162,8 +164,10 @@ class EcologySettlement
             return false;
         }
         //冻结积分不足 全释放
-        if ($oneNum > $ecRes['amount_freeze']) {
+        if ($oneNum >= $ecRes['amount_freeze']) {
             $oneNum = $ecRes['amount_freeze'];
+            //插入释放完成时间
+            EcologyCreadit::where('uid',$uid)->update(['release_end_time'=>date('Y-m-d H:i')]);
         }
 
         // -冻结积分

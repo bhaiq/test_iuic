@@ -106,6 +106,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('ecologypartner')->dailyAt('02:10'); //生态2合伙人奖
         $schedule->command('ecology_partner_service')->dailyAt('02:20'); //生态2手续费合伙人奖
         $schedule->command('ecology_service')->dailyAt('02:30'); //生态2手续费奖
+        $schedule->command('out')->hourly(); //每小时跑一次 当前账号是否出局
     }
 
     /**

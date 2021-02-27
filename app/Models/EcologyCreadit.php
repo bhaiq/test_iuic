@@ -189,6 +189,8 @@ class EcologyCreadit extends Model
                     $true_num = $p_wallet->amount_freeze;
                     EcologyCreadit::a_o_m($uid,$true_num,'2','3','生态2分享奖',2);
                     EcologyCreadit::a_o_m($uid,$true_num,'1','3','生态2分享奖',1);
+                    //插入释放完成时间
+                    EcologyCreadit::where('uid',$uid)->update(['release_end_time'=>date('Y-m-d H:i')]);
                 }
 
             }
