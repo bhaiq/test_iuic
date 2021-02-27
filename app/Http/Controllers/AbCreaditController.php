@@ -92,16 +92,17 @@ class AbCreaditController extends Controller
             if($user->ecology_lv = 1){
                 User::where('id',$uid)->update(['ecology_lv'=>2,'ecology_lv_time'=>date('Y-m-d H:i:s')]);
             }
+            //升级
+            $level = New UpEcologyLv();
+            $level->up_ecology_lv($uid);
             \DB::commit();
         }catch (\Exception $e){
             \DB::rollBack();
             Log::info($e->getMessage());
             return $this->responseError($e->getMessage());
         }
-        //升级
-        $level = New UpEcologyLv();
-        $level->up_ecology_lv($uid);
         $this->responseSuccess(trans('api.operate_successfully'));
+
     }
 
     public function  mu()
