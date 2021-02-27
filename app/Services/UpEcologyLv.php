@@ -21,6 +21,10 @@ class UpEcologyLv
     {
         $user = User::where('id',$uid)->first();
         $p_user = User::where('id',$user->pid)->first();
+        if(empty($p_user)){
+            Log::info("找不到上级,停止");
+            return;
+        }
         $this->first_ecology($p_user->id,$p_user->ecology_lv);
         $this->two_ecology($p_user->id,$p_user->ecology_lv);
         $this->three_ecology($p_user->id,$p_user->ecology_lv);
