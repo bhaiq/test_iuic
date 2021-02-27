@@ -90,7 +90,7 @@ class AbCreaditController extends Controller
             $creadit_m->ecology_share_reward($uid,$price);
             //给自己升合格消费者(如果自己等级低)
             if($user->ecology_lv = 1){
-                User::where('uid',$uid)->update(['ecology_lv'=>2,'ecology_lv_time'=>date('Y-m-d H:i:s')]);
+                User::where('id',$uid)->update(['ecology_lv'=>2,'ecology_lv_time'=>date('Y-m-d H:i:s')]);
             }
             \DB::commit();
         }catch (\Exception $e){
