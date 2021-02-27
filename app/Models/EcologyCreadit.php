@@ -221,4 +221,36 @@ class EcologyCreadit extends Model
             return;
         }
     }
+
+    //生态2手续费团队长奖(实时发放)直接加到可用积分中 例:每次划转手续费*比例(后台给每个人设置的比例) 递归找上级,有极差,只找高的
+
+    /**
+     * @param $uid 用户id
+     * @param $num 手续费数量
+     * @param int $rate 得奖比例
+     */
+    public function ecology_team_reward($uid,$num,$rate=0)
+    {
+        $user = User::where('uid',$uid)->first();
+        $p_user = User::where('uid',$user->pid)->first();
+        if(empty($p_user)){
+            Log::info("找不到上级终止");
+            return;
+        }
+        $rates = $p_user->ecology_team_bl;
+        if($rate < $rates){
+            $true_rate = $rates - $rate;
+        }else{
+            //大于当前比例跳过
+            Log::info("当前用户uid".$p_user->id."比例过低".$rates."不得奖");
+            return $this->ecology_team_reward($p_user->uid,$num,$rate);
+        }
+        $reward = $num*$true_rate;
+        if($reward > 0){
+            EcologyCreadit::a_o_m($p_user->id,$reward,1,6,'生态2手续费团队长奖',1);
+            Log::info("用户uid".$p_user->id."得奖".$reward);
+        }
+        $rate = $rates;
+        return $this->ecology_team_reward($p_user->id,$num,$rate);
+    }
 }

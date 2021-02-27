@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\EcologyConfigPub;
 use App\Models\EcologyCreadit;
+use App\Models\EcologyCreaditsDayFushu;
 use App\Models\UserPartner;
 use Illuminate\Console\Command;
 
@@ -44,6 +45,7 @@ class EcologyPartner extends Command
         //例:1万(今日报单总金额)*1%(比例) / 合伙人总人数  分给每个合伙人(直接加到可用积分中)
         $rate = EcologyConfigPub::where('id',1)->value('rate_partner');
         $all_num = \App\Models\EcologyCreaditDay::where('day_time',date('Y-m-d'))->value('total_cny_actual');
+        $dy_id = \App\Models\EcologyCreaditDay::where('day_time',date('Y-m-d'))->value('id');
         $people_num = UserPartner::where('id','>',0)->count();
         $average = $all_num * $rate / $people_num;
         $list = UserPartner::where('id','>',0)->get();
@@ -56,6 +58,18 @@ class EcologyPartner extends Command
             }
             EcologyCreadit::a_o_m($v->uid,$average,1,5,'生态2合伙人奖','1');
         }
+
+        //记录结算信息
+        $ecdfData = [
+            'day_id' => $dy_id,
+            'type' => 100,
+            'rate' => $rate,
+            'people_num' => $people_num,
+            'one_num' => $average,
+            'created_at' => date('Y-m-d H:i:s')
+        ];
+        $log = New EcologyCreaditsDayFushu();
+        $log->insert($ecdfData);
 
     }
 }

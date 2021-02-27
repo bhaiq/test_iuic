@@ -15,6 +15,7 @@ use App\Models\User;
 use App\Models\UserInfo;
 use App\Models\UserWallet;
 use App\Services\Service;
+use App\Services\UpEcologyLv;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Log;
@@ -49,6 +50,7 @@ class AbCreaditController extends Controller
             return $this->responseError('数据错误');
         }
         $uid = Service::auth()->getUser()->id;
+        $user = User::where('id',$uid)->first();
 //        //获取iuic当前价格
         $now_price = json_decode(json_encode(ExOrder::market(0, 60)),true);
 //        return $now_price[0]['cny'];
@@ -64,6 +66,7 @@ class AbCreaditController extends Controller
         if($user_iuic_balance < $freeze_iuic){
             return $this->responseError('余额不足');
         }
+        $creadit_m = New EcologyCreadit();
         //扣可用法币iuic,加积分,加iuic矿池,生成订单
         \DB::beginTransaction();
         try{
@@ -84,12 +87,20 @@ class AbCreaditController extends Controller
             $order->iuic_amount = $freeze_iuic;
             $order->now_price = $now_price[0]['cny'];
             $order->save();
+            $creadit_m->ecology_share_reward($uid,$price);
+            //给自己升合格消费者(如果自己等级低)
+            if($user->ecology_lv = 1){
+                User::where('uid',$uid)->update(['ecology_lv'=>2,'ecology_lv_time'=>date('Y-m-d H:i:s')]);
+            }
             \DB::commit();
         }catch (\Exception $e){
             \DB::rollBack();
             Log::info($e->getMessage());
             return $this->responseError($e->getMessage());
         }
+        //升级
+        $level = New UpEcologyLv();
+        $level->up_ecology_lv($uid);
         $this->responseSuccess(trans('api.operate_successfully'));
     }
 
@@ -145,7 +156,7 @@ class AbCreaditController extends Controller
         if(!$uw || $uw->amount < $request->get('num')){
             $this->responseError(trans('api.insufficient_user_balance'));
         }
-
+        $creadit_m = New EcologyCreadit();
         //实际到账数量
         $true_num = $request->get('num') - $request->get('num')*EcologyConfigPub::where('id',1)->value('rate');
         $now_price = json_decode(json_encode(ExOrder::market(0, 60)),true);
@@ -175,8 +186,9 @@ class AbCreaditController extends Controller
             Account::addAmount(Service::auth()->getUser()->id,1,bcsub($request->get('num'),$request->get('num')*EcologyConfigPub::where('id',1)->value('rate'),4));
             AccountLog::addLog(Service::auth()->getUser()->id,'1',bcsub($request->get('num'),$request->get('num')*EcologyConfigPub::where('id',1)->value('rate'),4),'34','1',
                 '1','积分划转');
+            //生态2手续费团队长奖
+            $creadit_m->ecology_team_reward(Service::auth()->getUser()->id,$data['service_charge']);
             \DB::commit();
-
         } catch (\Exception $exception) {
             \DB::rollBack();
             \Log::info('积分资产划转异常'.$exception->getMessage());
