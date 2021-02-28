@@ -53,7 +53,7 @@ class EcologyYjBonus extends Command
             ->where("day_time",date("Y-m-d",strtotime("-1 day")))
             ->where('set_status',1)
             ->first();
-        if(empty($info)){
+        if(!empty($info)){
             Log::info("已结算过不结算id".$info->id);
             return;
         }
