@@ -169,6 +169,7 @@ class EcologyCreadit extends Model
      */
     public function ecology_share_reward($uid,$num)
     {
+        Log::info("-------------生态2分享奖开始------------");
         $pid = User::where('id',$uid)->value('pid');
         //判断上级是否有钱包
         $p_wallet = EcologyCreadit::where('uid',$pid)->first();
@@ -222,6 +223,7 @@ class EcologyCreadit extends Model
             Log::info("错误".$exception->getMessage());
             return;
         }
+        Log::info("-------------生态2分享奖结束------------");
     }
 
     //生态2手续费团队长奖(实时发放)直接加到可用积分中 例:每次划转手续费*比例(后台给每个人设置的比例) 递归找上级,有极差,只找高的
