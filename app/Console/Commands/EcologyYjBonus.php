@@ -21,7 +21,7 @@ class EcologyYjBonus extends Command
      *
      * @var string
      */
-    protected $description = '积分业绩分红';
+    protected $description = '生态2团队长奖';
 
     /**
      * Create a new command instance.
