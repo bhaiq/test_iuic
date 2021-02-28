@@ -159,11 +159,9 @@ class AccountController extends Controller
             // 积分账户
             $uw = EcologyCreadit::where('uid', Service::auth()->getUser()->id)->first();
             if(!$uw){
-                $uwData = [
-                    'uid' => Service::auth()->getUser()->id,
-//                    'created_at' => now()->toDateTimeString(),
-                ];
-                $uw = EcologyCreadit::create($uwData);
+                $wallet = New EcologyCreadit();
+                $wallet->uid = Service::auth()->getUser()->id;
+                $wallet->save();
             }
 
             $result['account'][0]['amount'] = bcmul($uw->amount, 1, 4);
