@@ -44,8 +44,8 @@ class EcologyPartner extends Command
 
         //例:1万(今日报单总金额)*1%(比例) / 合伙人总人数  分给每个合伙人(直接加到可用积分中)
         $rate = EcologyConfigPub::where('id',1)->value('rate_partner');
-        $all_num = \App\Models\EcologyCreaditDay::where('day_time',date('Y-m-d'))->value('total_cny_actual');
-        $dy_id = \App\Models\EcologyCreaditDay::where('day_time',date('Y-m-d'))->value('id');
+        $all_num = \App\Models\EcologyCreaditDay::where('day_time',date('Y-m-d',strtotime("-1 day")))->value('total_cny_actual');
+        $dy_id = \App\Models\EcologyCreaditDay::where('day_time',date('Y-m-d',strtotime("-1 day")))->value('id');
         $people_num = UserPartner::where('id','>',0)->count();
         $average = $all_num * $rate / $people_num;
         $list = UserPartner::where('id','>',0)->get();
