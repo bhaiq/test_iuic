@@ -173,7 +173,7 @@ class EcologyCreadit extends Model
         $pid = User::where('id',$uid)->value('pid');
         //判断上级是否有钱包
         $p_wallet = EcologyCreadit::where('uid',$pid)->first();
-        if(empty($p_wallet) || $p_wallet <= 0){
+        if(empty($p_wallet) || $p_wallet->amount_freeze <= 0){
             Log::info("上级没有开通积分钱包或冻结积分为0");
             return;
         }
