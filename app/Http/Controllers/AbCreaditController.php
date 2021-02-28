@@ -96,7 +96,7 @@ class AbCreaditController extends Controller
             $level = New UpEcologyLv();
             $level->up_ecology_lv($uid);
             //若已进入24小时内报单,将时间清除
-            EcologyCreadit::where('uid',$uid)->update(['release_end_time'=>""]);
+            EcologyCreadit::where('uid',$uid)->update(['release_end_time'=>null]);
             \DB::commit();
         }catch (\Exception $e){
             \DB::rollBack();
