@@ -122,7 +122,7 @@ class AbCreaditController extends Controller
         Service::auth()->isLoginOrFail();
         $num = 0;
         $bl = bcmul(EcologyConfigPub::where('id',1)->value('rate'),100)."%";
-
+        $now_price = json_decode(json_encode(ExOrder::market(0, 60)),true);
         // 获取用户积分资产信息
         $uw = EcologyCreadit::where('uid', Service::auth()->getUser()->id)->first();
         if($uw){
@@ -132,6 +132,8 @@ class AbCreaditController extends Controller
         $result = [
             'num' => $num,
             'bl' => $bl,
+            'cny' => $data['cny'] = (string)$now_price[0]['cny'],
+            'pirce' => $data['cny'] = (string)$now_price[0]['price'],
         ];
 
         return $this->response($result);
