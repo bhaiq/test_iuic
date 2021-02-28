@@ -10,7 +10,7 @@ class EcologyCreadit extends Model
 {
     //
     protected $table = 'ecology_creadits';
-
+    const RELEASE_END_TIME = null;
     public  function created_wallet($uid){
         $wallet = New EcologyCreadit();
         $wallet->uid = $uid;
