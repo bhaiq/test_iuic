@@ -247,7 +247,7 @@ class EcologyCreadit extends Model
         }else{
             //大于当前比例跳过
             Log::info("当前用户uid".$p_user->id."比例过低".$rates."不得奖");
-            return $this->ecology_team_reward($p_user->uid,$num,$rate);
+            return $this->ecology_team_reward($p_user->id,$num,$rate);
         }
         $reward = $num*$true_rate;
         if($reward > 0){
