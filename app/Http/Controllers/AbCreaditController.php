@@ -185,7 +185,7 @@ class AbCreaditController extends Controller
             // 用户法币USDT增加
 //            UserInfo::addBuyTotal(Service::auth()->getUser()->id, $request->get('num'));
             Account::addAmount(Service::auth()->getUser()->id,1,$true_num);
-            AccountLog::addLog(Service::auth()->getUser()->id,'1',bcsub($request->get('num'),$request->get('num')*EcologyConfigPub::where('id',1)->value('rate'),4),'34','1',
+            AccountLog::addLog(Service::auth()->getUser()->id,'1',$true_num,'34','1',
                 '1','积分划转');
             //生态2手续费团队长奖
             $creadit_m->ecology_team_reward(Service::auth()->getUser()->id,$data['service_charge']);
