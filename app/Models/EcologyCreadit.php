@@ -183,15 +183,15 @@ class EcologyCreadit extends Model
         try{
             if($p_wallet->amount_freeze > $reward){
                 $true_num = $reward;
-                EcologyCreadit::a_o_m($uid,$true_num,'2','3','生态2分享奖',2);
-                EcologyCreadit::a_o_m($uid,$true_num,'1','3','生态2分享奖',1);
+                EcologyCreadit::a_o_m($pid,$true_num,'2','3','生态2分享奖',2);
+                EcologyCreadit::a_o_m($pid,$true_num,'1','3','生态2分享奖',1);
             }else{
                 if($p_wallet->amount_freeze > 0){
                     $true_num = $p_wallet->amount_freeze;
-                    EcologyCreadit::a_o_m($uid,$true_num,'2','3','生态2分享奖',2);
-                    EcologyCreadit::a_o_m($uid,$true_num,'1','3','生态2分享奖',1);
+                    EcologyCreadit::a_o_m($pid,$true_num,'2','3','生态2分享奖',2);
+                    EcologyCreadit::a_o_m($pid,$true_num,'1','3','生态2分享奖',1);
                     //插入释放完成时间
-                    EcologyCreadit::where('uid',$uid)->update(['release_end_time'=>date('Y-m-d H:i')]);
+                    EcologyCreadit::where('uid',$pid)->update(['release_end_time'=>date('Y-m-d H:i')]);
                 }
 
             }
