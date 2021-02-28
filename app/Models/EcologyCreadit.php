@@ -233,8 +233,8 @@ class EcologyCreadit extends Model
      */
     public function ecology_team_reward($uid,$num,$rate=0)
     {
-        $user = User::where('uid',$uid)->first();
-        $p_user = User::where('uid',$user->pid)->first();
+        $user = User::where('id',$uid)->first();
+        $p_user = User::where('id',$user->pid)->first();
         if(empty($p_user)){
             Log::info("找不到上级终止");
             return;
