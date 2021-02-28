@@ -29,7 +29,7 @@ class AccountController extends Controller
         Service::auth()->isLoginOrFail();
         $type            = $request->get('type', 0);
 
-        if(!in_array($type, [0, 1, 2,3])){
+        if(!in_array($type, [0, 1, 2, 3])){
             $this->responseError(trans('api.parameter_is_wrong'));
         }
 
@@ -158,13 +158,13 @@ class AccountController extends Controller
 
             // 积分账户
             $uw = EcologyCreadit::where('uid', Service::auth()->getUser()->id)->first();
-//            if(!$uw){
-//                $uwData = [
-//                    'uid' => Service::auth()->getUser()->id,
+            if(!$uw){
+                $uwData = [
+                    'uid' => Service::auth()->getUser()->id,
 //                    'created_at' => now()->toDateTimeString(),
-//                ];
-//                $uw = UserWallet::create($uwData);
-//            }
+                ];
+                $uw = EcologyCreadit::save($uwData);
+            }
 
             $result['account'][0]['amount'] = bcmul($uw->amount, 1, 4);
             $result['account'][0]['amount_freeze'] = bcmul($uw->amount_freeze, 1, 4);
