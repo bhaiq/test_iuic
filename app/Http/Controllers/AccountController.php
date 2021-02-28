@@ -163,7 +163,7 @@ class AccountController extends Controller
                     'uid' => Service::auth()->getUser()->id,
 //                    'created_at' => now()->toDateTimeString(),
                 ];
-                $uw = EcologyCreadit::save($uwData);
+                $uw = EcologyCreadit::create($uwData);
             }
 
             $result['account'][0]['amount'] = bcmul($uw->amount, 1, 4);
