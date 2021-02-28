@@ -51,10 +51,10 @@ class EcologyYjBonus extends Command
         $EcologySettlement = new EcologySettlement();
         $info = $EcologyCreaditsDay
             ->where("day_time",date("Y-m-d",strtotime("-1 day")))
-            ->where('set_status',1)
+            ->where('set_status',0)
             ->first();
-        if(!empty($info)){
-            Log::info("已结算过不结算id".$info->id);
+        if(empty($info)){
+            Log::info("当前没有未结算的");
             return;
         }
         \DB::beginTransaction();
