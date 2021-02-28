@@ -46,7 +46,7 @@ class EcologyService extends Command
         $all_service = CreaditTransfer::where('created_at','>',$yestaody)
             ->where('created_at','<',date("Y-m-d"))
             ->sum('service_charge');
-        dd($all_service);
+//        dd($all_service);
         $users = User::where('is_ecology_service',1)->select('id')->get()->toArray();
         $num = count($users);
         $rate = EcologyConfigPub::where('id',1)->value('rate_service');
