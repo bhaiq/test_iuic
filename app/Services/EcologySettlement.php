@@ -47,20 +47,20 @@ class EcologySettlement
         $dayRes   结算日期信息
         $set_time 结算时间
     */
-    public function settlement($dayid,$num,$dayRes,$set_time)
+    public function settlement($dayid,$num,$set_time)
     {
         // $res = $this->ecdModel->where('id',$dayid)->first();//结算日期信息
         // dd($res);
-        if(!$dayRes){
-            return ['code'=>0,'msg'=>'结算日期信息有误'];
-            // \Log::info('结算日期信息有误');
-            // return true;
-        }
-        if ($dayRes['set_status']['value'] != 0) {
-            return ['code'=>0,'msg'=>'请勿重复结算'];
-            // \Log::info('请勿重复结算');
-            // return true;
-        }
+//        if(!$dayRes){
+//            return ['code'=>0,'msg'=>'结算日期信息有误'];
+//            // \Log::info('结算日期信息有误');
+//            // return true;
+//        }
+//        if ($dayRes['set_status']['value'] != 0) {
+//            return ['code'=>0,'msg'=>'请勿重复结算'];
+//            // \Log::info('请勿重复结算');
+//            // return true;
+//        }
 
         $this->dayid = $dayid;
         $this->num = $num;

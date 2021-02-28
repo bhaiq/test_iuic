@@ -64,8 +64,7 @@ class EcologyYjBonus extends Command
             $EcologyCreaditsDay->where("day_time",date("Y-m-d",strtotime("-1 day")))->update($ecdData);
             /////待处理/////
             //结算
-            $settlement = $EcologySettlement->settlement($info->id,$info->total_cny_actual,date("Y-m-d",strtotime("-1 day")),
-                date('Y-m-d H:i:s'));
+            $settlement = $EcologySettlement->settlement($info->id,$info->total_cny_actual,date('Y-m-d H:i:s'));
             if($settlement['code'] == 0){
                 Log::info("结算失败".$settlement['msg']);
                 return;
