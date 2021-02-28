@@ -27,7 +27,9 @@ class AbCreaditController extends Controller
     {
         $list = EcologyBuyRmb::where('is_show','1')->orderby('sort','desc')->get();
         $data = [];
+        $now_price = json_decode(json_encode(ExOrder::market(0, 60)),true);
         $data['times'] = (string)EcologyConfigPub::where('id',1)->value('point_multiple');
+        $data['cny'] = (string)$now_price[0]['cny'];
         foreach ($list as $k => $v){
             $data['list'][$k]['num'] = (string)$v->branch_num;
         }
