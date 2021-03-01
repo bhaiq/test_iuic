@@ -88,7 +88,8 @@ class UpEcologyLv
             foreach ($direct_couts as $k => $v){
                 $count[$k] = User::where('pid_path', 'like', '%,' . $v->id . ',%')
                     ->where('ecology_lv','>=','3')
-                    ->count();
+                    ->count() + User::where('id',$v->id)->where('ecology_lv','>=','3')->count();
+
             }
             //将数组元素从大到小排列,判断第三个数是否小于1
             rsort($count);
@@ -117,7 +118,7 @@ class UpEcologyLv
             foreach ($direct_couts as $k => $v){
                 $count[$k] = User::where('pid_path', 'like', '%,' . $v->id . ',%')
                     ->where('ecology_lv','>=','3')
-                    ->count();
+                    ->count() + User::where('id',$v->id)->where('ecology_lv','>=','3')->count();
             }
             //将数组元素从大到小排列,判断第三个数是否大于等于1
             rsort($count);
@@ -140,7 +141,7 @@ class UpEcologyLv
             foreach ($direct_couts as $k => $v){
                 $count[$k] = User::where('pid_path', 'like', '%,' . $v->id . ',%')
                     ->where('ecology_lv','>=','4')
-                    ->count();
+                    ->count() + User::where('id',$v->id)->where('ecology_lv','>=','4')->count();
             }
             //将数组元素从大到小排列,判断第三个数是否大于等于1
             rsort($count);
@@ -170,7 +171,7 @@ class UpEcologyLv
             foreach ($direct_couts as $k => $v){
                 $count[$k] = User::where('pid_path', 'like', '%,' . $v->id . ',%')
                     ->where('ecology_lv','>=','4')
-                    ->count();
+                    ->count() + User::where('id',$v->id)->where('ecology_lv','>=','4')->count();
             }
             //将数组元素从大到小排列,判断第三个数是否小于1
             rsort($count);
@@ -193,7 +194,7 @@ class UpEcologyLv
             foreach ($direct_couts as $k => $v){
                 $count[$k] = User::where('pid_path', 'like', '%,' . $v->id . ',%')
                     ->where('ecology_lv','>=','5')
-                    ->count();
+                    ->count() + User::where('id',$v->id)->where('ecology_lv','>=','5')->count();
             }
             //将数组元素从大到小排列,判断第三个数是否小于1
             rsort($count);
@@ -223,7 +224,7 @@ class UpEcologyLv
             foreach ($direct_couts as $k => $v){
                 $count[$k] = User::where('pid_path', 'like', '%,' . $v->id . ',%')
                     ->where('ecology_lv','>=','5')
-                    ->count();
+                    ->count() + User::where('id',$v->id)->where('ecology_lv','>=','5')->count();
             }
             //将数组元素从大到小排列,判断第三个数是否大于等于1
             rsort($count);
@@ -246,7 +247,7 @@ class UpEcologyLv
             foreach ($direct_couts as $k => $v){
                 $count[$k] = User::where('pid_path', 'like', '%,' . $v->id . ',%')
                     ->where('ecology_lv','>=','6')
-                    ->count();
+                    ->count() + User::where('id',$v->id)->where('ecology_lv','>=','6')->count();
             }
             //将数组元素从大到小排列,判断第三个数是否小于1
             rsort($count);
@@ -275,7 +276,7 @@ class UpEcologyLv
             foreach ($direct_couts as $k => $v){
                 $count[$k]= User::where('pid_path', 'like', '%,' . $v->id . ',%')
                     ->where('ecology_lv','>=','6')
-                    ->count();
+                    ->count() + User::where('id',$v->id)->where('ecology_lv','>=','6')->count();
             }
             //将数组元素从大到小排列,判断第三个数是否小于1
             rsort($count);
