@@ -68,6 +68,7 @@ class UpEcologyLv
             $count = User::where('pid',$uid)
                 ->where('ecology_lv','>=','2')
                 ->count();
+            Log::info("直推合格消费者人数".$count);
             if($count >= 3){
                 User::where('id',$uid)->update(['ecology_lv'=>3,'ecology_lv_time'=>date('Y-m-d H:i:s')]);
                 Log::info("用户uid".$uid."升一级生态");
