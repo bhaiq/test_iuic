@@ -116,8 +116,8 @@ class EcologyCreadit extends Model
     public function month($uid)
     {
         $time = time();
-        $start=date('Y-m-01',strtotime($time));//获取指定月份的第一天
-        $end=date('Y-m-t',strtotime($time)); //获取指定月份的最后一天
+        $start=date('Y-m-01',$time);//获取指定月份的第一天
+        $end=date('Y-m-t',$time); //获取指定月份的最后一天
         return EcologyCreaditOrder::where('uid', $uid)
             ->whereBetween('created_at',[strtotime($start),strtotime($end)])
             ->sum('creadit_amount');
