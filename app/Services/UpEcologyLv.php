@@ -92,7 +92,7 @@ class UpEcologyLv
             }
             //将数组元素从大到小排列,判断第三个数是否小于1
             rsort($count);
-            if(count($count >= 3) && $count[2] < 1){
+            if(count($count) >= 3 && $count[2] < 1){
                 User::where('id',$uid)->update(['ecology_lv'=>3,'ecology_lv_time'=>date('Y-m-d H:i:s')]);
                 Log::info("用户uid".$uid."降一级生态");
                 return;
@@ -121,7 +121,7 @@ class UpEcologyLv
             }
             //将数组元素从大到小排列,判断第三个数是否大于等于1
             rsort($count);
-            if(count($count >= 3) && $count[2] >= 1){
+            if(count($count) >= 3 && $count[2] >= 1){
                 User::where('id',$uid)->update(['ecology_lv'=>4,'ecology_lv_time'=>date('Y-m-d H:i:s')]);
                 Log::info("用户uid".$uid."升二级生态");
                 return;
@@ -144,7 +144,7 @@ class UpEcologyLv
             }
             //将数组元素从大到小排列,判断第三个数是否大于等于1
             rsort($count);
-            if(count($count >= 3) && $count[2] < 1){
+            if(count($count) >= 3 && $count[2] < 1){
                 User::where('id',$uid)->update(['ecology_lv'=>4,'ecology_lv_time'=>date('Y-m-d H:i:s')]);
                 Log::info("用户uid".$uid."降二级生态");
                 return;
@@ -174,7 +174,7 @@ class UpEcologyLv
             }
             //将数组元素从大到小排列,判断第三个数是否小于1
             rsort($count);
-            if(count($count >= 3) && $count[2] >= 1){
+            if(count($count) >= 3 && $count[2] >= 1){
                 User::where('id',$uid)->update(['ecology_lv'=>5,'ecology_lv_time'=>date('Y-m-d H:i:s')]);
                 Log::info("用户uid".$uid."升三级生态");
                 return;
@@ -197,7 +197,7 @@ class UpEcologyLv
             }
             //将数组元素从大到小排列,判断第三个数是否小于1
             rsort($count);
-            if(count($count >= 3) && $count[2] < 1){
+            if(count($count) >= 3 && $count[2] < 1){
                 User::where('id',$uid)->update(['ecology_lv'=>5,'ecology_lv_time'=>date('Y-m-d H:i:s')]);
                 Log::info("用户uid".$uid."降三级生态");
                 return;
@@ -227,7 +227,7 @@ class UpEcologyLv
             }
             //将数组元素从大到小排列,判断第三个数是否大于等于1
             rsort($count);
-            if(count($count >= 3) && $count[2] >= 1){
+            if(count($count) >= 3 && $count[2] >= 1){
                 User::where('id',$uid)->update(['ecology_lv'=>6,'ecology_lv_time'=>date('Y-m-d H:i:s')]);
                 Log::info("用户uid".$uid."升四级生态");
                 return;
@@ -250,7 +250,7 @@ class UpEcologyLv
             }
             //将数组元素从大到小排列,判断第三个数是否小于1
             rsort($count);
-            if(count($count >= 3) && $count[2] < 1){
+            if(count($count) >= 3 && $count[2] < 1){
                 User::where('id',$uid)->update(['ecology_lv'=>6,'ecology_lv_time'=>date('Y-m-d H:i:s')]);
                 Log::info("用户uid".$uid."降四级生态");
                 return;
@@ -279,7 +279,7 @@ class UpEcologyLv
             }
             //将数组元素从大到小排列,判断第三个数是否小于1
             rsort($count);
-            if(count($count >= 3) && $count[2] >= 1){
+            if(count($count) >= 3 && $count[2] >= 1){
                 User::where('id',$uid)->update(['ecology_lv'=>7,'ecology_lv_time'=>date('Y-m-d H:i:s')]);
                 Log::info("用户uid".$uid."升五级生态");
                 return;
