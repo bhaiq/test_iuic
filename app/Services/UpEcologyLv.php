@@ -164,7 +164,7 @@ class UpEcologyLv
                 return;
             }
             //判断是有三人三级消费者
-            $count = where('pid_path', 'like', '%,' . $uid . ',%')
+            $count = User::where('pid_path', 'like', '%,' . $uid . ',%')
                 ->where('ecology_lv','>=','5')
                 ->count();
             if($count < 3){
