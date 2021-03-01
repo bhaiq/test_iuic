@@ -82,10 +82,14 @@ class UpEcologyLv
                 Log::info("当前已是该等级或小于该等级,不用降");
                 return;
             }
-            //判断是否有三个一级消费者
-            $count = User::where('pid_path', 'like', '%,' . $uid . ',%')
-                ->where('ecology_lv','>=','3')
-                ->count();
+            //判断所有部门是否有三个一级生态(先找出所有直推,再找出所有直推的下级判断)
+            $direct_couts = User::where('pid',$uid)->select('id')->get();
+            $count = 0;
+            foreach ($direct_couts as $k => $v){
+                $count += User::where('pid_path', 'like', '%,' . $v->id . ',%')
+                    ->where('ecology_lv','>=','3')
+                    ->count();
+            }
             if($count < 3){
                 User::where('id',$uid)->update(['ecology_lv'=>3,'ecology_lv_time'=>date('Y-m-d H:i:s')]);
                 Log::info("用户uid".$uid."降一级生态");
@@ -105,10 +109,15 @@ class UpEcologyLv
                 Log::info("当前已是该等级或大于该等级,不用升");
                 return;
             }
-            //判断所有下级是否有三个一级生态
-            $count = User::where('pid_path', 'like', '%,' . $uid . ',%')
-                ->where('ecology_lv','>=','3')
-                ->count();
+            //判断所有部门是否有三个一级生态(先找出所有直推,再找出所有直推的下级判断)
+            $direct_couts = User::where('pid',$uid)->select('id')->get();
+            $count = 0;
+            foreach ($direct_couts as $k => $v){
+                $count += User::where('pid_path', 'like', '%,' . $v->id . ',%')
+                    ->where('ecology_lv','>=','3')
+                    ->count();
+            }
+
             if($count >= 3){
                 User::where('id',$uid)->update(['ecology_lv'=>4,'ecology_lv_time'=>date('Y-m-d H:i:s')]);
                 Log::info("用户uid".$uid."升二级生态");
@@ -122,10 +131,14 @@ class UpEcologyLv
                 Log::info("当前已是该等级或小于该等级,不用降");
                 return;
             }
-            //判断所有下级是否有三个二级生态
-            $count = User::where('pid_path', 'like', '%,' . $uid . ',%')
-                ->where('ecology_lv','>=','4')
-                ->count();
+            //判断所有部门是否有三个二级生态(先找出所有直推,再找出所有直推的下级判断)
+            $direct_couts = User::where('pid',$uid)->select('id')->get();
+            $count = 0;
+            foreach ($direct_couts as $k => $v){
+                $count += User::where('pid_path', 'like', '%,' . $v->id . ',%')
+                    ->where('ecology_lv','>=','4')
+                    ->count();
+            }
             if($count < 3){
                 User::where('id',$uid)->update(['ecology_lv'=>4,'ecology_lv_time'=>date('Y-m-d H:i:s')]);
                 Log::info("用户uid".$uid."降二级生态");
@@ -146,10 +159,14 @@ class UpEcologyLv
                 Log::info("当前已是该等级或大于该等级,不用升");
                 return;
             }
-            //判断所有下级是否有三个二级生态
-            $count = User::where('pid_path', 'like', '%,' . $uid . ',%')
-                ->where('ecology_lv','>=','4')
-                ->count();
+            //判断所有部门是否有三个二级生态(先找出所有直推,再找出所有直推的下级判断)
+            $direct_couts = User::where('pid',$uid)->select('id')->get();
+            $count = 0;
+            foreach ($direct_couts as $k => $v){
+                $count += User::where('pid_path', 'like', '%,' . $v->id . ',%')
+                    ->where('ecology_lv','>=','4')
+                    ->count();
+            }
             if($count >= 3){
                 User::where('id',$uid)->update(['ecology_lv'=>5,'ecology_lv_time'=>date('Y-m-d H:i:s')]);
                 Log::info("用户uid".$uid."升三级生态");
@@ -163,10 +180,14 @@ class UpEcologyLv
                 Log::info("当前已是该等级或小于该等级,不用降");
                 return;
             }
-            //判断是有三人三级消费者
-            $count = User::where('pid_path', 'like', '%,' . $uid . ',%')
-                ->where('ecology_lv','>=','5')
-                ->count();
+            //判断所有部门是否有三个三级生态(先找出所有直推,再找出所有直推的下级判断)
+            $direct_couts = User::where('pid',$uid)->select('id')->get();
+            $count = 0;
+            foreach ($direct_couts as $k => $v){
+                $count += User::where('pid_path', 'like', '%,' . $v->id . ',%')
+                    ->where('ecology_lv','>=','5')
+                    ->count();
+            }
             if($count < 3){
                 User::where('id',$uid)->update(['ecology_lv'=>5,'ecology_lv_time'=>date('Y-m-d H:i:s')]);
                 Log::info("用户uid".$uid."降三级生态");
@@ -187,10 +208,14 @@ class UpEcologyLv
                 Log::info("当前已是该等级或大于该等级,不用升");
                 return;
             }
-            //判断所有下级是否有三个三级生态
-            $count = User::where('pid_path', 'like', '%,' . $uid . ',%')
-                ->where('ecology_lv','>=','5')
-                ->count();
+            //判断所有部门是否有三个三级生态(先找出所有直推,再找出所有直推的下级判断)
+            $direct_couts = User::where('pid',$uid)->select('id')->get();
+            $count = 0;
+            foreach ($direct_couts as $k => $v){
+                $count += User::where('pid_path', 'like', '%,' . $v->id . ',%')
+                    ->where('ecology_lv','>=','5')
+                    ->count();
+            }
             if($count >= 3){
                 User::where('id',$uid)->update(['ecology_lv'=>6,'ecology_lv_time'=>date('Y-m-d H:i:s')]);
                 Log::info("用户uid".$uid."升四级生态");
@@ -204,9 +229,14 @@ class UpEcologyLv
                 Log::info("当前已是该等级或小于该等级,不用降");
                 return;
             }
-            $count = User::where('pid_path', 'like', '%,' . $uid . ',%')
-                ->where('ecology_lv','>=','6')
-                ->count();
+            //判断所有部门是否有三个四级生态(先找出所有直推,再找出所有直推的下级判断)
+            $direct_couts = User::where('pid',$uid)->select('id')->get();
+            $count = 0;
+            foreach ($direct_couts as $k => $v){
+                $count += User::where('pid_path', 'like', '%,' . $v->id . ',%')
+                    ->where('ecology_lv','>=','6')
+                    ->count();
+            }
             if($count < 3){
                 User::where('id',$uid)->update(['ecology_lv'=>6,'ecology_lv_time'=>date('Y-m-d H:i:s')]);
                 Log::info("用户uid".$uid."降四级生态");
@@ -226,10 +256,14 @@ class UpEcologyLv
                 Log::info("当前已是该等级或大于该等级,不用升");
                 return;
             }
-            //判断所有下级是否有三个三级生态
-            $count = User::where('pid_path', 'like', '%,' . $uid . ',%')
-                ->where('ecology_lv','>=','6')
-                ->count();
+            //判断所有部门是否有三个五级生态(先找出所有直推,再找出所有直推的下级判断)
+            $direct_couts = User::where('pid',$uid)->select('id')->get();
+            $count = 0;
+            foreach ($direct_couts as $k => $v){
+                $count += User::where('pid_path', 'like', '%,' . $v->id . ',%')
+                    ->where('ecology_lv','>=','6')
+                    ->count();
+            }
             if($count >= 3){
                 User::where('id',$uid)->update(['ecology_lv'=>7,'ecology_lv_time'=>date('Y-m-d H:i:s')]);
                 Log::info("用户uid".$uid."升五级生态");
