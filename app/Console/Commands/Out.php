@@ -44,7 +44,7 @@ class Out extends Command
         foreach ($wallet as $k => $v){
             $cle = time() - strtotime($v->release_end_time);
             $hours = ceil($cle/3600);
-            \Log::info("用户".$wallet->uid."出局距现在时间差".$hours."个小时");
+            \Log::info("用户".$v->uid."出局距现在时间差".$hours."个小时");
             //出局降级,释放完成就出局,每24小时降一级
             if($hours == "24"){
                 //在目前等级降级,如果已是最低等级不降级
