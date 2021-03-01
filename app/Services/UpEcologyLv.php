@@ -122,12 +122,12 @@ class UpEcologyLv
                 Log::info("用户uid".$uid."升二级生态");
                 return;
             }else{
-                Log::info("未推够三个一级生态,不升级");
+                Log::info("用户uid".$uid."未推够三个一级生态,不升级");
                 return;
             }
         }else if($type == 2){
             if($level <= 4){
-                Log::info("当前已是该等级或小于该等级,不用降");
+                Log::info("当前已是该等级2级或小于该等级,不用降");
                 return;
             }
             //判断所有部门是否有三个二级生态(先找出所有直推,再找出所有直推的下级判断)
@@ -143,7 +143,7 @@ class UpEcologyLv
                 Log::info("用户uid".$uid."降二级生态");
                 return;
             }else{
-                Log::info("推够三个合格消费者,不降级");
+                Log::info("用户uid".$uid."推够三个二级生态,不降级");
                 return;
             }
         }
