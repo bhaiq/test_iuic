@@ -51,6 +51,7 @@ class Out extends Command
 //                User::where('id',$wallet->uid)->update(['ecology_lv_close'=>1]);
                 if($v->ecology_lv > 1){
                     User::where('id',$v->uid)->decrement('ecology_lv',1);
+                    \Log::info("用户uid".$v->uid."降级");
                 }
             }else if($hours == "48"){
                 //在目前等级降级,如果已是最低等级不降级
