@@ -42,7 +42,6 @@ class UpEcologyLv
             Log::info("找不到上级,停止");
             return;
         }
-        $this->five_ecology($p_user->id,$p_user->ecology_lv,$type);
         $this->four_ecology($p_user->id,$p_user->ecology_lv,$type);
         $this->three_ecology($p_user->id,$p_user->ecology_lv,$type);
         $this->two_ecology($p_user->id,$p_user->ecology_lv,$type);
@@ -62,7 +61,7 @@ class UpEcologyLv
     {
         if($type == 1){
             if($level >= 3){
-                Log::info("当前uid".$uid."已是该等级或大于该等级,不用升");
+                Log::info("当前uid".$uid."已是该等级1级或大于该等级,不用升");
                 return;
             }
             //判断是否直推三人合格消费者
@@ -79,7 +78,7 @@ class UpEcologyLv
             }
         }else if($type == 2){
             if($level <= 3){
-                Log::info("当前已是该等级或小于该等级,不用降");
+                Log::info("当前已是该等级1级或小于该等级,不用降");
                 return;
             }
             //判断所有部门是否有三个一级生态(先找出所有直推,再找出所有直推的下级判断)
@@ -95,7 +94,7 @@ class UpEcologyLv
                 Log::info("用户uid".$uid."降一级生态");
                 return;
             }else{
-                Log::info("推够三个合格消费者,不降级");
+                Log::info("用户uid".$uid."推够三个合格消费者,不降级");
                 return;
             }
         }
@@ -106,7 +105,7 @@ class UpEcologyLv
     {
         if($type == 1){
             if($level >= 4){
-                Log::info("当前uid".$uid."已是该等级或大于该等级,不用升");
+                Log::info("当前uid".$uid."已是该等级2级或大于该等级,不用升");
                 return;
             }
             //判断所有部门是否有三个一级生态(先找出所有直推,再找出所有直推的下级判断)
@@ -156,7 +155,7 @@ class UpEcologyLv
     {
         if($type == 1){
             if($level >= 5){
-                Log::info("当前uid".$uid."当前已是该等级或大于该等级,不用升");
+                Log::info("当前uid".$uid."当前已是该等级3级或大于该等级,不用升");
                 return;
             }
             //判断所有部门是否有三个二级生态(先找出所有直推,再找出所有直推的下级判断)
@@ -177,7 +176,7 @@ class UpEcologyLv
             }
         }else if($type == 2){
             if($level <= 5){
-                Log::info("当前uid".$uid."已是该等级或小于该等级,不用降");
+                Log::info("当前uid".$uid."已是该等级3级或小于该等级,不用降");
                 return;
             }
             //判断所有部门是否有三个三级生态(先找出所有直推,再找出所有直推的下级判断)
@@ -205,7 +204,7 @@ class UpEcologyLv
     {
         if($type == 1){
             if($level >= 6){
-                Log::info("当前uid".$uid."已是该等级或大于该等级,不用升");
+                Log::info("当前uid".$uid."已是该等级4级或大于该等级,不用升");
                 return;
             }
             //判断所有部门是否有三个三级生态(先找出所有直推,再找出所有直推的下级判断)
@@ -226,7 +225,7 @@ class UpEcologyLv
             }
         }else if($type == 2){
             if($level <= 6){
-                Log::info("当前uid".$uid."已是该等级或小于该等级,不用降");
+                Log::info("当前uid".$uid."已是该等级4级或小于该等级,不用降");
                 return;
             }
             //判断所有部门是否有三个四级生态(先找出所有直推,再找出所有直推的下级判断)
@@ -253,7 +252,7 @@ class UpEcologyLv
     {
         if($type == 1){
             if($level >= 7){
-                Log::info("当前uid".$uid."已是该等级或大于该等级,不用升");
+                Log::info("当前uid".$uid."已是该等级5级或大于该等级,不用升");
                 return;
             }
             //判断所有部门是否有三个五级生态(先找出所有直推,再找出所有直推的下级判断)
@@ -281,7 +280,7 @@ class UpEcologyLv
     {
         if($type == 2){
             if($level <= 2){
-                Log::info("当前uid".$uid."已是该等级或小于该等级,不用降");
+                Log::info("当前uid".$uid."已是该等级合格消费者或小于该等级,不用降");
                 return;
             }
             //需要直推三个合格消费者
