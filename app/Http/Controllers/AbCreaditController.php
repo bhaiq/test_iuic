@@ -78,7 +78,19 @@ class AbCreaditController extends Controller
             //加积分
 //            EcologyCreadit::a_o_m('uid',$uid)->increment('amount_freeze',$freeze_creadit);
             EcologyCreadit::a_o_m($uid,$freeze_creadit,1,1,'购买积分',2);
-            //加iuic矿池
+            //加iuic矿池(没有矿池创建矿池)
+            if(empty(UserInfo::where('uid',$uid)->first())){
+                $ulData = [
+                    'uid' => $uid,
+                    'pid' => $user->pid,
+                    'pid_path' => $user->pid_path,
+                    'level' => 1,
+                    'buy_total' => 0,
+                    'buy_count' => 0,
+                ];
+
+                UserInfo::create($ulData);
+            }
             UserInfo::where('uid', $uid)->increment('buy_total', $freeze_iuic);
             //生成订单
             $order = New EcologyCreaditOrder();

@@ -191,6 +191,7 @@ class EcologyCreadit extends Model
                     EcologyCreadit::a_o_m($pid,$true_num,'2','3','生态2分享奖',2);
                     EcologyCreadit::a_o_m($pid,$true_num,'1','3','生态2分享奖',1);
                     //插入释放完成时间
+                    User::where('id',$pid)->update(['ecology_lv_close'=>1]);
                     EcologyCreadit::where('uid',$pid)->update(['release_end_time'=>date('Y-m-d H:i')]);
                 }
 

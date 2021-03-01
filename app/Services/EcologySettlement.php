@@ -167,6 +167,7 @@ class EcologySettlement
         if ($oneNum >= $ecRes['amount_freeze']) {
             $oneNum = $ecRes['amount_freeze'];
             //插入释放完成时间
+            User::where('id',$uid)->update(['ecology_lv_close'=>1]);
             EcologyCreadit::where('uid',$uid)->update(['release_end_time'=>date('Y-m-d H:i')]);
         }
 
