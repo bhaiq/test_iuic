@@ -94,7 +94,7 @@ class UpEcologyLv
                 Log::info("用户uid".$uid."降一级生态");
                 return;
             }else{
-                Log::info("用户uid".$uid."推够三个合格消费者,不降级");
+                Log::info("用户uid".$uid."推够三个一级生态,不降级");
                 return;
             }
         }
@@ -292,7 +292,7 @@ class UpEcologyLv
                 Log::info("用户uid".$uid."降为合格消费者");
                 return;
             }else{
-                Log::info("当前uid".$uid."未推够三个合格消费者,不升级");
+                Log::info("当前uid".$uid."推够三个合格消费者,不降级");
                 return;
             }
         }
