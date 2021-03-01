@@ -51,7 +51,7 @@ class Out extends Command
             if($hours == 24){
                 //在目前等级降级,如果已是最低等级不降级
 //                User::where('id',$wallet->uid)->update(['ecology_lv_close'=>1]);
-                if($v->ecology_lv > 1){
+                if(User::where('id',$v->uid)->value('ecology_lv') > 1){
                     User::where('id',$v->uid)->decrement('ecology_lv',1);
                    $down_level->down_ecology_lv($v->uid);
                     \Log::info("用户uid".$v->uid."降级");
@@ -60,19 +60,19 @@ class Out extends Command
                 }
             }else if($hours == 48){
                 //在目前等级降级,如果已是最低等级不降级
-                if($v->ecology_lv > 1){
+                if(User::where('id',$v->uid)->value('ecology_lv') > 1){
                     User::where('id',$v->uid)->decrement('ecology_lv',1);
                     $down_level->down_ecology_lv($v->uid);
                 }
             }else if($hours == 72){
                 //在目前等级降级,如果已是最低等级不降级
-                if($v->ecology_lv > 1){
+                if(User::where('id',$v->uid)->value('ecology_lv') > 1){
                     User::where('id',$v->uid)->decrement('ecology_lv',1);
                     $down_level->down_ecology_lv($v->uid);
                 }
             }else if($hours >= 96){
                 //在目前等级降级,如果已是最低等级不降级
-                if($v->ecology_lv > 1){
+                if(User::where('id',$v->uid)->value('ecology_lv') > 1){
                     User::where('id',$v->uid)->decrement('ecology_lv',1);
                     $down_level->down_ecology_lv($v->uid);
                 }
