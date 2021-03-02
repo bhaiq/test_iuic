@@ -58,7 +58,7 @@ class EcologyCreaditDay extends Command
         $log->total_cny = $total_cny;
         $log->total_point = $total_creadit;
         $log->total_cny_actual = $total_cny;
-        $log->set_status = $set_status;
+        $log->set_status = 0;
         $log->save();
     }
 }
