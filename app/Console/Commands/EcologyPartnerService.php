@@ -62,7 +62,10 @@ class EcologyPartnerService extends Command
             if(empty($user_wallet)){
                 $wallet->created_wallet($v->uid);
             }
-            EcologyCreadit::a_o_m($v->uid,$average,1,7,'生态2手续费合伙人奖',1);
+            if($average > 0){
+                EcologyCreadit::a_o_m($v->uid,$average,1,7,'生态2手续费合伙人奖',1);
+            }
+
         }
 
     }
