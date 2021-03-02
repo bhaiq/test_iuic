@@ -89,7 +89,7 @@ class EcologySettlement
         // dd($this->configLv);
         // 各个等级结算
         foreach ($this->configLv as $k => $v) {
-            $this->levelSettlement($v['id'],$v['rate_bonus']);
+            $this->levelSettlement($v['id'],$v['rate_bonus'],$v['name']);
         }
         return true;
     }
@@ -98,7 +98,7 @@ class EcologySettlement
         $level 等级
         $rate 结算比例
     */
-    public function levelSettlement($level,$rate)
+    public function levelSettlement($level,$rate,$name)
     {
         //等级人数
         $peopleNum = $this->uModel
@@ -142,7 +142,7 @@ class EcologySettlement
             ->pluck('id')
             ->toArray();
         foreach ($ids as $k => $v) {
-            $this->peopleOne($v,$oneNum);
+            $this->peopleOne($v,$oneNum,$name);
         }
         return true;
     }
@@ -151,7 +151,7 @@ class EcologySettlement
         $uid 用户id
         $oneNum 个人结算数
     */
-    public function peopleOne($uid,$oneNum)
+    public function peopleOne($uid,$oneNum,$name)
     {
         // 判断冻结是否充足
         $ecRes = $this->ecModel->where('uid',$uid)->first();
@@ -174,14 +174,14 @@ class EcologySettlement
         // -冻结积分
         $this->ecModel->where('uid',$uid)->decrement('amount_freeze',$oneNum);
         //记录日志
-        $this->eclModel->addlog($uid,$oneNum,2,4,'生态2团队长奖',2);
+        $this->eclModel->addlog($uid,$oneNum,2,4,$name.'生态2团队长奖',2);
         //顺延释放冻结订单
         $this->minusOrder($uid,$oneNum);
 
         // +可用积分
         $this->ecModel->where('uid',$uid)->increment('amount',$oneNum);
         //记录日志
-        $this->eclModel->addlog($uid,$oneNum,1,4,'生态2团队长奖',1);
+        $this->eclModel->addlog($uid,$oneNum,1,4,$name.'生态2团队长奖',1);
         return true;
     }
 
