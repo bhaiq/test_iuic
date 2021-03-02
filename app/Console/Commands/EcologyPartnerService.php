@@ -41,10 +41,10 @@ class EcologyPartnerService extends Command
      */
     public function handle()
     {
-//        $ce_time =  strtotime("-1 day");
-        $ce_time =  time();
-        $end_time = date("Y-m-d 23:59:59");
-//        $end_time = date("Y-m-d");
+        $ce_time =  strtotime("-1 day");
+//        $ce_time =  time();
+//        $end_time = date("Y-m-d 23:59:59");
+        $end_time = date("Y-m-d");
         //例:每天划转手续费*比例 / 合伙人总人数   分给每个人(直接加到可用积分中)
         $yestaody = date("Y-m-d",$ce_time);
         $all_service = CreaditTransfer::where('created_at','>',$yestaody)

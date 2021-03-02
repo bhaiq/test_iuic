@@ -42,8 +42,8 @@ class EcologyYjBonus extends Command
     public function handle()
     {
 
-        $ce_time = time();
-//        $ce_time = strtotime("-1 day");
+//        $ce_time = time();
+        $ce_time = strtotime("-1 day");
         //1万(今日总报单金额)*生态等级比例 / 该等级当前人数   分给每个生态用户(从他的冻结积分释放到可用)
         $EcologyCreaditsDay = new \App\Models\EcologyCreaditDay();
 
