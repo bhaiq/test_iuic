@@ -40,15 +40,20 @@ class EcologyCreaditDay extends Command
     public function handle()
     {
         //
-        $time = date('Y-m-d',strtotime("-1 day"));//时间
+        $ce_time = time();
+//        $ce_time = strtotime("-1 day");
+        $time = date('Y-m-d',$ce_time);//时间
+        $end = date('Y-m-d 23:59:59');
+//        $end = date('Y-m-d');
+
         //每日全网新增业绩(元)(应结算数)
         $total_cny = EcologyCreaditOrder::where('created_at','>',$time)
-            ->where('created_at','<',date('Y-m-d'))
+            ->where('created_at','<',$end)
             ->whereNull('end_time')
             ->sum('price_cny');
         //每日全网新增业绩(积分)
         $total_creadit = EcologyCreaditOrder::where('created_at','>',$time)
-            ->where('created_at','<',date('Y-m-d'))
+            ->where('created_at','<',$end)
             ->whereNull('end_time')
             ->sum('creadit_amount');
         //结算方式

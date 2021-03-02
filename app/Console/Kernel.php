@@ -103,10 +103,10 @@ class Kernel extends ConsoleKernel
     //     $schedule->command('todayReleaseClear')->dailyAt('13:36');
 
         $schedule->command('ecologycreaditday')->dailyAt('02:00'); //凌晨生成前一天报单总数据信息
-        $schedule->command('ecology_yj_bonus')->dailyAt('02:05'); //生态2团队长奖
-        $schedule->command('ecologypartner')->dailyAt('02:10'); //生态2合伙人奖
-        $schedule->command('ecology_partner_service')->dailyAt('02:20'); //生态2手续费合伙人奖
-        $schedule->command('ecology_service')->dailyAt('02:30'); //生态2手续费奖
+        $schedule->command('ecology_yj_bonus')->dailyAt('02:35'); //生态2团队长奖
+        $schedule->command('ecologypartner')->dailyAt('03:30'); //生态2合伙人奖
+        $schedule->command('ecology_partner_service')->dailyAt('02:40'); //生态2手续费合伙人奖
+        $schedule->command('ecology_service')->dailyAt('02:50'); //生态2手续费奖
         $schedule->command('out')->hourly(); //每小时跑一次 当前账号是否出局
     }
 

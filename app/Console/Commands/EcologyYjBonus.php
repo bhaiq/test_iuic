@@ -40,6 +40,9 @@ class EcologyYjBonus extends Command
      */
     public function handle()
     {
+
+        $ce_time = time();
+//        $ce_time = strtotime("-1 day");
         //1万(今日总报单金额)*生态等级比例 / 该等级当前人数   分给每个生态用户(从他的冻结积分释放到可用)
         $EcologyCreaditsDay = new \App\Models\EcologyCreaditDay();
 
@@ -50,7 +53,7 @@ class EcologyYjBonus extends Command
 
         $EcologySettlement = new EcologySettlement();
         $info = $EcologyCreaditsDay
-            ->where("day_time",date("Y-m-d",strtotime("-1 day")))
+            ->where("day_time",date("Y-m-d",$ce_time))
             ->where('set_status',0)
             ->first();
         if(empty($info)){
@@ -61,7 +64,7 @@ class EcologyYjBonus extends Command
         try {
 
             //修改结算表信息
-            $EcologyCreaditsDay->where("day_time",date("Y-m-d",strtotime("-1 day")))->update($ecdData);
+            $EcologyCreaditsDay->where("day_time",date("Y-m-d",$ce_time))->update($ecdData);
             /////待处理/////
             //结算
             $settlement = $EcologySettlement->settlement($info->id,$info->total_cny_actual,date('Y-m-d H:i:s'));
