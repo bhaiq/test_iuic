@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\EcologyConfigPub;
 use App\Models\EcologyCreadit;
 use App\Services\EcologySettlement;
 use Illuminate\Console\Command;
@@ -50,6 +51,13 @@ class EcologyYjBonus extends Command
             'set_status' => 1,
             'set_time' => date('Y-m-d H:i:s'),
         ];
+
+        //判断是否是自动结算,不是则终止
+        $set_status = EcologyConfigPub::where('id',1)->value('settlement_switch');
+        if($set_status != 1){
+            Log::info("配置为手动结算,自动则终止");
+            return;
+        }
 
         $EcologySettlement = new EcologySettlement();
         $info = $EcologyCreaditsDay

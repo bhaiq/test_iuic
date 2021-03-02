@@ -57,7 +57,7 @@ class EcologyCreaditDay extends Command
             ->whereNull('end_time')
             ->sum('creadit_amount');
         //结算方式
-        $set_status = EcologyConfigPub::where('id',1)->value('settlement_switch');
+
         $log = New \App\Models\EcologyCreaditDay();
         $log->day_time = $time;
         $log->total_cny = $total_cny;
