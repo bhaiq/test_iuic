@@ -102,6 +102,7 @@ class Kernel extends ConsoleKernel
     //     $schedule->command('newKuangchiRelease')->dailyAt('13:31');
     //     $schedule->command('todayReleaseClear')->dailyAt('13:36');
 
+
         $schedule->command('ecologycreaditday')->dailyAt('02:00'); //凌晨生成前一天报单总数据信息
         $schedule->command('ecology_yj_bonus')->dailyAt('02:35'); //生态2团队长奖
         $schedule->command('ecologypartner')->dailyAt('03:30'); //生态2合伙人奖
