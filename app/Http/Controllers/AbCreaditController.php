@@ -42,14 +42,14 @@ class AbCreaditController extends Controller
         $time = time();
         if(!empty(session('time'))){
             if($time <= session('time')+5){
-                return $this->responseError('请求频繁');
+                return $this->responseError(trans('api.request_is_frequent'));
             }
         }
         session(['time'=>$time]);
         //获取购买价格金额
         $price = $request->get('num');
         if ($price%10000 !=0){
-            return $this->responseError('数据错误');
+            return $this->responseError(trans('api.parameter_is_wrong'));
         }
         $uid = Service::auth()->getUser()->id;
         $user = User::where('id',$uid)->first();
@@ -66,7 +66,7 @@ class AbCreaditController extends Controller
                             ->where('type',1)
                             ->value('amount');
         if($user_iuic_balance < $freeze_iuic){
-            return $this->responseError('余额不足');
+            return $this->responseError(trans('api.insufficient_user_balance'));
         }
         $creadit_m = New EcologyCreadit();
         //扣可用法币iuic,加积分,加iuic矿池,生成订单

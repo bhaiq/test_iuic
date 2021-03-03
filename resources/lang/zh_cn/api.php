@@ -178,6 +178,7 @@ return [
     'fourth_gear'   => '四档',
     'service_closing'   => '服务关闭',
     'creadit'   => '积分',
+    'request_is_frequent'   => '请求频繁',
 
 
 

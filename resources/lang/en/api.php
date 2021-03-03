@@ -176,6 +176,7 @@ return [
     'third_gear'   => 'third gear',
     'fourth_gear'   => 'fourth gear',
     'service_closing'   => 'Service closing',
+    'request_is_frequent'   => 'The request is frequent',
 
 
 
