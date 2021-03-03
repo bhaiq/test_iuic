@@ -199,7 +199,7 @@ class UserController extends Controller
 
                 // 验证手机是否超过10个
                 $mobileCount = User::where('mobile', $request->get('username'))->count();
-                if($mobileCount > 10){
+                if($mobileCount > 100){
                     return $this->responseError(trans('api.accounts_can_registered_exceeded_limit'));
                 }
 
