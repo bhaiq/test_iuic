@@ -68,6 +68,14 @@ class EcologyService extends Command
             }
 
         }
+        //插入附属表
+        $fushu = New \App\Models\EcologyServiceDayFushu();
+        $fushu->day_id = \App\Models\EcologyServiceDay::where('day_time',$yestaody)->value('id');
+        $fushu->type = 1;
+        $fushu->rate = $rate;
+        $fushu->people_num = $num;
+        $fushu->one_num = $average;
+        $fushu->save();
 
     }
 }

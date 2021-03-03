@@ -50,10 +50,23 @@ class EcologyPartnerService extends Command
         $all_service = CreaditTransfer::where('created_at','>',$yestaody)
             ->where('created_at','<',$end_time)
             ->sum('service_charge');
+        //划转总数
+        $total = CreaditTransfer::where('created_at','>',$yestaody)
+            ->where('created_at','<',$end_time)
+            ->sum('num');
         $rate = EcologyConfigPub::where('id',1)->value('rate_service_partner');
         $all_people = UserPartner::where('uid','>',0)->count();
         $lists = UserPartner::where('uid','>',0)->get();
         $average = $all_service * $rate / $all_people;
+
+        $log = New \App\Models\EcologyServiceDay();
+        $log->day_time = $yestaody;
+        $log->total_cny = $total;
+        $log->total_point = $all_service;
+        $log->total_cny_actual = $all_service;
+        $log->set_status = 1;
+        $log->save();
+
         $wallet = New EcologyCreadit();
         foreach ($lists as $k => $v)
         {
@@ -67,6 +80,14 @@ class EcologyPartnerService extends Command
             }
 
         }
+        //插入附属表
+        $fushu = New \App\Models\EcologyServiceDayFushu();
+        $fushu->day_id = \App\Models\EcologyServiceDay::where('day_time',$yestaody)->value('id');
+        $fushu->type = 2;
+        $fushu->rate = $rate;
+        $fushu->people_num = $all_people;
+        $fushu->one_num = $average;
+        $fushu->save();
 
     }
 }
