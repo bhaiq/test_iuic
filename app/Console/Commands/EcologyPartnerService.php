@@ -65,6 +65,7 @@ class EcologyPartnerService extends Command
         $log->total_point = $all_service;
         $log->total_cny_actual = $all_service;
         $log->set_status = 1;
+        $log->set_time = date('Y-m-d H:i:s');
         $log->save();
 
         $wallet = New EcologyCreadit();
