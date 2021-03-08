@@ -158,7 +158,12 @@ class UserController extends Controller
         \Log::info('info',['code'=> $request->get('int_code')]);
         $user = User::create($data);
         $user->refresh();
-
+        //生成积分钱包
+        $is_has = EcologyCreadit::where('uid',$user->id)->first();
+        if(empty($is_has)){
+            $creadits = New EcologyCreadit();
+            $creadits->created_wallet($user->id);
+        }
         return response()->json(array_merge($user->toArray(), [
             'token' => Service::auth()->createToken($user->id)
         ]));
