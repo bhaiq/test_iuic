@@ -1015,6 +1015,7 @@ class ExcelController extends Controller
 
     public function ecology_share_rewards($uid,$num)
     {
+
         \Log::info("-------------生态2分享奖开始------------");
         $pid = $uid;
         //判断上级是否有钱包
