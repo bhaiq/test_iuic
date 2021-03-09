@@ -956,7 +956,7 @@ class ExcelController extends Controller
 //                     dump((string)$v[0]);
 //                     dump((string)$v[1]);
                     $new_account = $v[0];
-                    $user = User::where('nickname', $new_account)->first();
+                    $user = User::where('new_account', $new_account)->first();
                     if(!$user){
                         // 无账号
                         $wu += 1;
