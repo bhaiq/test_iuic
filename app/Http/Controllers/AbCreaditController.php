@@ -39,8 +39,8 @@ class AbCreaditController extends Controller
     //购买积分(扣除法币可用iuic,加积分,加等额锁定矿池)
     public function buy_creadits(Request $request)
     {
-        $this->responseSuccess('暂未开放');
-        return;
+//        $this->responseSuccess('暂未开放');
+//        return;
 
         $time = time();
         if(!empty(session('time'))){
@@ -49,7 +49,7 @@ class AbCreaditController extends Controller
             }
         }
         session(['time'=>$time]);
-        //获取上一比
+
         //获取购买价格金额
         $price = $request->get('num');
         if ($price%10000 !=0){
@@ -57,6 +57,13 @@ class AbCreaditController extends Controller
         }
         $uid = Service::auth()->getUser()->id;
         $user = User::where('id',$uid)->first();
+        //获取上一笔订单时间
+        $last_order = New EcologyCreaditOrder();
+        $last_order = $last_order->where('uid',$uid)->orderby('id','desc')->first();
+        if(strtotime($last_order['created_at'])+10 < time() ){
+            $this->responseSuccess(trans('api.request_is_frequent'));
+            return;
+        }
 //        //获取iuic当前价格
         $now_price = json_decode(json_encode(ExOrder::market(0, 60)),true);
 //        return $now_price[0]['cny'];
