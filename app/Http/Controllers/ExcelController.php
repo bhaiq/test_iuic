@@ -952,8 +952,7 @@ class ExcelController extends Controller
             $wuArr = [];
             foreach($data as $k=>$v){
                 // dump((string)$v['A']);
-                $new_account = $v[0];;
-                $reward = $v[1];
+                $new_account = $v[0];
                 $user = User::where('nickname', $new_account)->first();
                 if(!$user){
                     // 无账号
@@ -965,7 +964,7 @@ class ExcelController extends Controller
                 //加分享奖
 //                UserInfo::where('uid', $uid)->increment('buy_total', $freeze_iuic);
                 $creadit_m = New EcologyCreadit();
-                $creadit_m->ecology_share_reward($user['id'],$reward);
+                $creadit_m->ecology_share_reward($user['id'],$v[1]);
 
                 $yes += 1;
                 array_push($yesArr, $new_account);
