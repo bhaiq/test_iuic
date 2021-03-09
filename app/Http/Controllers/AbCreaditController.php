@@ -61,7 +61,7 @@ class AbCreaditController extends Controller
         //获取上一笔订单时间
         $last_order = New EcologyCreaditOrder();
         $last_orders = $last_order->where('uid',$uid)->orderby('id','desc')->first();
-//        Log::info()
+        Log::info(json_encode($last_orders));
         if($last_orders){
             if(strtotime($last_orders['created_at'])+10 < time() ){
                 $this->responseSuccess(trans('api.request_is_frequent'));
