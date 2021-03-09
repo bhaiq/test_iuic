@@ -40,9 +40,9 @@ class AbCreaditController extends Controller
     //购买积分(扣除法币可用iuic,加积分,加等额锁定矿池)
     public function buy_creadits(Request $request)
     {
-        if(Service::auth()->getUser()->id != "4952"){
-            return $this->responseError('暂未开放');
-        }
+//        if(Service::auth()->getUser()->id != "4952"){
+//            return $this->responseError('暂未开放');
+//        }
 //
 
 //        $time = time();
