@@ -70,8 +70,8 @@ class AbCreaditController extends Controller
             if(strtotime($last_orders->created_at)+10 > time() ){
                 $times  = strtotime($last_orders->created_at) + 10;
                 Log::info("当前时间".time()."上次时间".$times);
-                $this->responseSuccess(trans('api.request_is_frequent'));
-                return;
+                return $this->responseSuccess(trans('api.request_is_frequent'));
+
             }
         }
 
