@@ -974,7 +974,7 @@ class ExcelController extends Controller
             \DB::commit();
         } catch (\Exception $e) {
             \DB::rollBack();
-            return returnJson(0, '操作异常');
+            return returnJson(0, '操作异常'.$e->getMessage());
         }
 
         $returnArr = [
