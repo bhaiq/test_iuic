@@ -984,7 +984,7 @@ class ExcelController extends Controller
 //                        $service_charge->save();
 //                    }
 //                    $wallet = New EcologyCreadit();
-                    $this->ecology_share_reward($user['id'],$v[1]);
+                    $this->ecology_share_rewards($user['id'],$v[1]);
 
 
                     $yes += 1;
