@@ -63,6 +63,7 @@ class AbCreaditController extends Controller
         $last_orders = $last_order->where('uid',$uid)->orderby('id','desc')->first();
         Log::info(json_encode($last_orders));
         if($last_orders){
+
             if(strtotime($last_orders->created_at)+10 < time() ){
                 $times  = strtotime($last_orders->created_at) + 10;
                 Log::info("当前时间".time()."上次时间".$times);
