@@ -43,13 +43,13 @@ class AbCreaditController extends Controller
 //        $this->responseSuccess('暂未开放');
 //        return;
 
-        $time = time();
-        if(!empty(session('time'))){
-            if($time <= session('time')+5){
-                return $this->responseError(trans('api.request_is_frequent'));
-            }
-        }
-        session(['time'=>$time]);
+//        $time = time();
+//        if(!empty(session('time'))){
+//            if($time <= session('time')+5){
+//                return $this->responseError(trans('api.request_is_frequent'));
+//            }
+//        }
+//        session(['time'=>$time]);
 
         //获取购买价格金额
         $price = $request->get('num');
