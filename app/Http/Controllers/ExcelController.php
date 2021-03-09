@@ -1023,8 +1023,9 @@ class ExcelController extends Controller
             \Log::info($pid."上级没有开通积分钱包或冻结积分为0");
             return;
         }
-        //应释放数
-        $reward = $num * EcologyConfigPub::where('id',1)->value('rate_direct');
+//        //应释放数
+//        $reward = $num * EcologyConfigPub::where('id',1)->value('rate_direct');
+        $reward = $num;
         \DB::beginTransaction();
         try{
             if($p_wallet->amount_freeze > $reward){
