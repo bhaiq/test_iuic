@@ -357,7 +357,8 @@ Route::group(['prefix' => 'excel'], function () {
   	Route::post('jlqing','ExcelController@jlqing'); //清空资产
   
   	Route::post('pyhighcomm', 'ExcelController@pyHighComm'); //将高级管理将的用户平移到社群奖
-  	
+  	Route::post('share_reward', 'ExcelController@share_reward'); //分享奖
+
     // Route::get('export','ExcelController@export');
     // Route::get('import','ExcelController@import');
 });
