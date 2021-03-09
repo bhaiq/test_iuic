@@ -40,8 +40,8 @@ class AbCreaditController extends Controller
     //购买积分(扣除法币可用iuic,加积分,加等额锁定矿池)
     public function buy_creadits(Request $request)
     {
-        $this->responseSuccess('暂未开放');
-        return;
+//        $this->responseSuccess('暂未开放');
+//        return;
 
 //        $time = time();
 //        if(!empty(session('time'))){
@@ -63,8 +63,8 @@ class AbCreaditController extends Controller
         $last_orders = $last_order->where('uid',$uid)->orderby('id','desc')->first();
         Log::info(json_encode($last_orders));
         if($last_orders){
-            if(strtotime($last_orders['created_at'])+10 < time() ){
-//                Log::info("当前时间".time()."上次时间".strtotime($last_orders['created_at'])+10);
+            if(strtotime($last_orders->created_at)+10 < time() ){
+                Log::info("当前时间".time()."上次时间".strtotime($last_orders->created_at)+10);
                 $this->responseSuccess(trans('api.request_is_frequent'));
                 return;
             }
