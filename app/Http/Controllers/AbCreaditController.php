@@ -61,10 +61,13 @@ class AbCreaditController extends Controller
         //获取上一笔订单时间
         $last_order = New EcologyCreaditOrder();
         $last_order = $last_order->where('uid',$uid)->orderby('id','desc')->first();
-        if(strtotime($last_order['created_at'])+10 < time() ){
-            $this->responseSuccess(trans('api.request_is_frequent'));
-            return;
+        if($last_order){
+            if(strtotime($last_order['created_at'])+10 < time() ){
+                $this->responseSuccess(trans('api.request_is_frequent'));
+                return;
+            }
         }
+
 //        //获取iuic当前价格
         $now_price = json_decode(json_encode(ExOrder::market(0, 60)),true);
 //        return $now_price[0]['cny'];
