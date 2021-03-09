@@ -1020,7 +1020,7 @@ class ExcelController extends Controller
         //判断上级是否有钱包
         $p_wallet = EcologyCreadit::where('uid',$pid)->first();
         if(empty($p_wallet) || $p_wallet->amount_freeze <= 0){
-            \Log::info("上级没有开通积分钱包或冻结积分为0");
+            \Log::info($pid."上级没有开通积分钱包或冻结积分为0");
             return;
         }
         //应释放数
