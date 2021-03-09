@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\EcologyConfigPub;
 use App\Models\EcologyCreadit;
 use App\Models\EcologyCreaditLog;
+use App\Models\EcologyCreaditOrder;
 use App\Models\KuangchiServiceCharge;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -981,8 +983,8 @@ class ExcelController extends Controller
 //                        $service_charge->all_num = $kou;
 //                        $service_charge->save();
 //                    }
-                    $wallet = New EcologyCreadit();
-                    $wallet->ecology_share_reward($user['id'],$v[1]);
+//                    $wallet = New EcologyCreadit();
+                    $this->ecology_share_reward($user['id'],$v[1]);
 
 
                     $yes += 1;
@@ -1009,5 +1011,66 @@ class ExcelController extends Controller
 
         \Log::info('用户清资产结束', $returnArr);
         return returnJson('1','处理成功',$returnArr);
+    }
+
+    public function ecology_share_rewards($uid,$num)
+    {
+        \Log::info("-------------生态2分享奖开始------------");
+        $pid = $uid;
+        //判断上级是否有钱包
+        $p_wallet = EcologyCreadit::where('uid',$pid)->first();
+        if(empty($p_wallet) || $p_wallet->amount_freeze <= 0){
+            \Log::info("上级没有开通积分钱包或冻结积分为0");
+            return;
+        }
+        //应释放数
+        $reward = $num * EcologyConfigPub::where('id',1)->value('rate_direct');
+        \DB::beginTransaction();
+        try{
+            if($p_wallet->amount_freeze > $reward){
+                $true_num = $reward;
+                EcologyCreadit::a_o_m($pid,$true_num,'2','3','生态2分享奖',2);
+                EcologyCreadit::a_o_m($pid,$true_num,'1','3','生态2分享奖',1);
+            }else{
+                if($p_wallet->amount_freeze > 0){
+                    $true_num = $p_wallet->amount_freeze;
+                    EcologyCreadit::a_o_m($pid,$true_num,'2','3','生态2分享奖',2);
+                    EcologyCreadit::a_o_m($pid,$true_num,'1','3','生态2分享奖',1);
+                    //插入释放完成时间
+                    User::where('id',$pid)->update(['ecology_lv_close'=>1]);
+                    EcologyCreadit::where('uid',$pid)->update(['release_end_time'=>date('Y-m-d H:i')]);
+                }
+
+            }
+            //从最早的订单开始释放
+//            $lists = EcologyCreaditOrder::where('uid',$pid)
+            $lists = EcologyCreaditOrder::where('uid',$pid)
+                ->whereNull('end_time')
+                ->orderby('id')
+                ->get();
+            $all = 0;
+            foreach ($lists as $k => $v){
+                $all+=$v->creadit_amount - $v->already_amount;
+                //大于当前说明当前可以释放完,继续释放下一单
+                if($true_num >= $all){
+                    //订单状态更改,改为已释放完成,插入完成时间
+                    EcologyCreaditOrder::where('id',$v->id)->update(['already_amount'=>$v->creadit_amount,
+                        'end_time'=>date('Y-m-d H:i:s')]);
+                }else{
+                    //小于当前此单释放不完,改为释放部分,不插入完成时间,循环终止
+                    $now_amount = $v->creadit_amount - $v->already_amount;
+                    $sheng = $all - $now_amount;
+                    $sheng = $true_num - $sheng;
+                    EcologyCreaditOrder::where('id',$v->id)->increment('already_amount',$sheng);
+                    break;
+                }
+            }
+            \DB::commit();
+        }catch (\Exception $exception){
+            \DB::rollBack();
+            \Log::info("错误".$exception->getMessage());
+            return;
+        }
+        \Log::info("-------------生态2分享奖结束------------");
     }
 }
