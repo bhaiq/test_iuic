@@ -39,6 +39,9 @@ class AbCreaditController extends Controller
     //购买积分(扣除法币可用iuic,加积分,加等额锁定矿池)
     public function buy_creadits(Request $request)
     {
+        $this->responseSuccess('暂未开放');
+        return;
+
         $time = time();
         if(!empty(session('time'))){
             if($time <= session('time')+5){
@@ -46,6 +49,7 @@ class AbCreaditController extends Controller
             }
         }
         session(['time'=>$time]);
+        //获取上一比
         //获取购买价格金额
         $price = $request->get('num');
         if ($price%10000 !=0){
