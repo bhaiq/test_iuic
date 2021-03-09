@@ -943,7 +943,7 @@ class ExcelController extends Controller
         if($count<1){
             return returnJson('0','未检测到有效数据');
         }
-        return returnJson(0, '终止');
+//        return returnJson(0, '终止');
         \DB::beginTransaction();
         try {
             $yes = 0;//处理数量
