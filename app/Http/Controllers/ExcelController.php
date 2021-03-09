@@ -952,8 +952,8 @@ class ExcelController extends Controller
             $wuArr = [];
             foreach($data as $k=>$v){
                 // dump((string)$v['A']);
-                $new_account = (string)$v['A'];
-                $reward = (string)$v['B'];
+                $new_account = $v[0];;
+                $reward = $v[1];
                 $user = User::with('user_info')->where('new_account', $new_account)->first();
                 if(!$user){
                     // 无账号
