@@ -13,6 +13,7 @@ use App\Services\Service;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
 class AccountController extends Controller
@@ -460,15 +461,22 @@ class AccountController extends Controller
         $this->validate($request->all(), [
             'amount' => 'numeric|max:' . $account->amount,
         ]);
+        DB::beginTransaction();
+        try{
+            Service::auth()->account($coin_id, $action)->decrement('amount', $amount);
+            Service::auth()->account($coin_id, intval(!$action))->increment('amount', $amount);
 
-        Service::auth()->account($coin_id, $action)->decrement('amount', $amount);
-        Service::auth()->account($coin_id, intval(!$action))->increment('amount', $amount);
-
-        $scene = $action ? AccountLog::SCENE_TO_COIN_COIN : AccountLog::SCENE_TO_LEGAL_COIN;
+            $scene = $action ? AccountLog::SCENE_TO_COIN_COIN : AccountLog::SCENE_TO_LEGAL_COIN;
 //        Service::account()->createLog(Service::auth()->getUser()->id, $coin_id, $amount, $scene);
 
-        AccountLog::addLog(Service::auth()->getUser()->id, $coin_id, $amount, $scene, $action, intval($action), AccountLog::getRemark($scene));
-        AccountLog::addLog(Service::auth()->getUser()->id, $coin_id, $amount, $scene, intval(!$action), intval(!$action), AccountLog::getRemark($scene));
+            AccountLog::addLog(Service::auth()->getUser()->id, $coin_id, $amount, $scene, $action, intval($action), AccountLog::getRemark($scene));
+            AccountLog::addLog(Service::auth()->getUser()->id, $coin_id, $amount, $scene, intval(!$action), intval(!$action), AccountLog::getRemark($scene));
+            \DB::commit();
+        }catch (\Exception $e){
+            \Log::info("程序异常".$e->getMessage());
+            \DB::rollBack();
+            return;
+        }
 
         return $this->response(Account::whereUid(Service::auth()->getUser()->id)->whereCoinId($coin_id)->get()->toArray());
     }
