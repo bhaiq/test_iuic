@@ -443,7 +443,7 @@ class AccountController extends Controller
         if($times - $last_log['created_at'] <= 5){
             return $this->responseError("请求频繁");
         }
-
+        \Log::info('位置1');
 
         Service::auth()->isLoginOrFail();
 
@@ -461,6 +461,7 @@ class AccountController extends Controller
         $this->validate($request->all(), [
             'amount' => 'numeric|max:' . $account->amount,
         ]);
+        \Log::info('位置2');
         DB::beginTransaction();
         try{
             Service::auth()->account($coin_id, $action)->decrement('amount', $amount);
@@ -477,7 +478,7 @@ class AccountController extends Controller
             \DB::rollBack();
             return;
         }
-
+        \Log::info('位置3');
         return $this->response(Account::whereUid(Service::auth()->getUser()->id)->whereCoinId($coin_id)->get()->toArray());
     }
 
