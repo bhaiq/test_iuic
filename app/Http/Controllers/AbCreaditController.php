@@ -57,6 +57,9 @@ class AbCreaditController extends Controller
             return $this->responseError(trans('api.parameter_is_wrong'));
         }
         $uid = Service::auth()->getUser()->id;
+        if(empty($uid)){
+            return $this->responseError('参数错误');
+        }
         $user = User::where('id',$uid)->first();
         //获取上一笔订单时间
         $last_order = New EcologyCreaditOrder();
