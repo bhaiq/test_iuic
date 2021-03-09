@@ -363,28 +363,7 @@ class AbCreaditController extends Controller
     }
 
 
-    //撤回订单(扣除法币可用iuic,加积分,加等额锁定矿池)
-    //撤回订单(加法币可用iuic,扣积分,减等额锁定矿池)
-    public function che()
-    {
-        $order = New EcologyCreaditOrder();
-        $order->where('created_at','>','2021-03-09')
-            ->where('created_at','<','2021-03-09 23:59:59')
-            ->get();
-        $log = EcologyCreaditLog::where('created_at','>','2021-03-09')
-            ->where('created_at','<','2021-03-09 23:59:59')
-            ->where('scence',3)
-            ->get();
-        foreach ($order as $k => $v){
 
-            //加可用法币iuic
-            Account::addAmount($v->uid,'2',$v->iuic_amount);
-//            AccountLog::addLog($uid,2,$freeze_iuic,'33','0','1','购买积分');
-            //减积分
-//            EcologyCreadit::a_o_m('uid',$uid)->increment('amount_freeze',$freeze_creadit);
-            EcologyCreadit::a_o_m($v->uid,$v->creadit_amount,2,1,'购买积分',2);
-        }
-    }
 
 
 
