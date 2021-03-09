@@ -60,9 +60,10 @@ class AbCreaditController extends Controller
         $user = User::where('id',$uid)->first();
         //获取上一笔订单时间
         $last_order = New EcologyCreaditOrder();
-        $last_order = $last_order->where('uid',$uid)->orderby('id','desc')->first();
-        if($last_order){
-            if(strtotime($last_order['created_at'])+10 < time() ){
+        $last_orders = $last_order->where('uid',$uid)->orderby('id','desc')->first();
+//        Log::info()
+        if($last_orders){
+            if(strtotime($last_orders['created_at'])+10 < time() ){
                 $this->responseSuccess(trans('api.request_is_frequent'));
                 return;
             }
