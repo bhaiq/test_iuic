@@ -135,7 +135,7 @@ class AbCreaditController extends Controller
             $level->up_ecology_lv($uid);
             //若已进入24小时内报单,将时间清除,重新入局
             EcologyCreadit::where('uid',$uid)->update(['release_end_time'=>null]);
-            User::where('uid',$uid)->update(['ecology_lv_close'=>0]);
+            User::where('id',$uid)->update(['ecology_lv_close'=>0]);
             //车奖加入累计
             $car_rate = EcologyConfigPub::where('id',1)->value('car_rate');
             EcologyConfigPub::where('id',1)->increment('car_total',$price*$car_rate);
