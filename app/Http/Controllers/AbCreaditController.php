@@ -31,6 +31,7 @@ class AbCreaditController extends Controller
         $now_price = json_decode(json_encode(ExOrder::market(0, 60)),true);
         $data['times'] = (string)EcologyConfigPub::where('id',1)->value('point_multiple');
         $data['cny'] = (string)$now_price[0]['cny'];
+        $data['price'] = (string)$now_price[0]['price'];
         foreach ($list as $k => $v){
             $data['list'][$k]['num'] = (string)$v->branch_num;
         }
