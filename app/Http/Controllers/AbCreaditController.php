@@ -323,7 +323,7 @@ class AbCreaditController extends Controller
     public function ranking_list(Request $request)
     {
         $list = User::where('car_is_show',1)
-            ->where('ecology_lv','>=',3)
+            ->where('ecology_lv','>=',5)
             ->orderBy('ecology_lv','desc')
             ->orderBy('ecology_lv_time')
             ->take(50)
