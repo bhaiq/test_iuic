@@ -174,14 +174,15 @@ class EcologySettlement
         // -冻结积分
         $this->ecModel->where('uid',$uid)->decrement('amount_freeze',$oneNum);
         //记录日志
-        $this->eclModel->addlog($uid,$oneNum,2,4,$name.'生态2团队长奖',2);
+//        $this->eclModel->addlog($uid,$oneNum,2,4,$name.'生态2团队长奖',2);
+        $this->eclModel->addlog($uid,$oneNum,2,4,$name.'产业红利奖',2);
         //顺延释放冻结订单
         $this->minusOrder($uid,$oneNum);
 
         // +可用积分
         $this->ecModel->where('uid',$uid)->increment('amount',$oneNum);
         //记录日志
-        $this->eclModel->addlog($uid,$oneNum,1,4,$name.'生态2团队长奖',1);
+        $this->eclModel->addlog($uid,$oneNum,1,4,$name.'产业红利奖',1);
         return true;
     }
 
