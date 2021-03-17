@@ -414,7 +414,7 @@ class AbCreaditController extends Controller
 
             //加到对方账户
             Account::addAmount($to_user->id,'1',$true_num,0);
-            AccountLog::addLog($uid,1,$true_num,'35','1','0','usdt互转');
+            AccountLog::addLog($to_user->id,1,$true_num,'35','1','0','usdt互转');
 
             //加手续费
             Account::addAmount($service_user->id,'1',$service_charge,0);
@@ -424,12 +424,24 @@ class AbCreaditController extends Controller
             Log::info("程序错误".$exception->getMessage());
             \DB::rollBack();
         }
+        return $this->responseSuccess(trans('api.operate_successfully'));
     }
 
     //互转页信息
     public function turn_info(Request $request)
     {
-
+        Service::auth()->isLoginOrFail();
+        $res = $this->getUserInfo(Service::auth()->getUser()->id);
+        if(!$res){
+            $this->responseError(trans('api.parameter_is_wrong'));
+        }
+        $data = [];
+        $data['service_charge'] = config('trade.service_charge');
+        $data['user_balance'] = Account::where('uid',Service::auth()->getUser()->id)
+            ->where('coin_id',1)
+            ->where('type',0)
+            ->value('amount');
+        return $this->response($data);
     }
 
 
