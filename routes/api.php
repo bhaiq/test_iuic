@@ -323,6 +323,12 @@ Route::group(['middleware' => ['auth.api','switchlang']], function () {
        Route::post('user_list','AbCreaditController@user_list'); //团队信息
     });
 
+    //币币USDT互转
+    Route::group(['prefix'=>'trans_u'],function(){
+        Route::post('turn_info','AbCreaditController@turn_info');  //usdt互转信息
+        Route::post('turn_usdt','AbCreaditController@turn_usdt');  //usdt互转
+    });
+
 });
 
 Route::group(['prefix' => 'common'], function () {

@@ -259,4 +259,38 @@ class EcologyCreadit extends Model
         $rate = $rates;
         return $this->ecology_team_reward($p_user->id,$num,$rate);
     }
+
+
+    //生态2指定领导人伞下管理奖(实时发放直接加到可用积分中,第一次报单才计算奖励),递归找上级,有级差
+    //例:每次报单*比例(后台给每个人设置的比例) 递归找上级
+
+    /**
+     * @param $uid 用户id
+     * @param $num 手续费数量
+     * @param int $rate 得奖比例
+     */
+    public function ecology_leader_reward($uid,$num,$rate=0)
+    {
+        $user = User::where('id',$uid)->first();
+        $p_user = User::where('id',$user->pid)->first();
+        if(empty($p_user)){
+            Log::info("找不到上级终止");
+            return;
+        }
+        $rates = $p_user->ecology_leader_bl;
+        if($rate < $rates){
+            $true_rate = $rates - $rate;
+        }else{
+            //大于当前比例跳过
+            Log::info("当前用户uid".$p_user->id."比例过低".$rates."不得奖");
+            return $this->ecology_leader_reward($p_user->id,$num,$rate);
+        }
+        $reward = $num*$true_rate;
+        if($reward > 0){
+            EcologyCreadit::a_o_m($p_user->id,$reward,1,6,'生态2指定领导人伞下管理奖',1);
+            Log::info("用户uid".$p_user->id."得奖".$reward);
+        }
+        $rate = $rates;
+        return $this->ecology_leader_reward($p_user->id,$num,$rate);
+    }
 }

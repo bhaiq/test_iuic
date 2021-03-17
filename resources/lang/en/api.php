@@ -43,6 +43,7 @@ return [
     'quantity_must_integer' => 'The quantity must be an integer',
     'quantity_cannot_less_than_1' => 'The quantity cannot be less than 1',
     'quantity_cannot_less_than_0' => 'The quantity cannot be less than 0',
+    'quantity_cannot_less_than' => 'The quantity cannot be less than',
     'currency_information_incorrect' => 'The currency information is incorrect',
     'account_does_not_exist' => 'The account does not exist',
     'cant_transfer_money_to_yourself' => 'You can\'t transfer money to yourself',

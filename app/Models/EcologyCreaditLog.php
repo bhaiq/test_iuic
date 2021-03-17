@@ -36,6 +36,9 @@ class EcologyCreaditLog extends Model
             case 8:
                 return "生态2手续费合伙人奖";
                 break;
+            case 9:
+                return "后台操作";
+                break;
         }
     }
 

@@ -72,6 +72,8 @@ class AccountLog extends Model
 
   	const SCENCE_BUY_CREADIT = 33;
   	const SCENCE_CREADIT_TRANSFER = 34;
+  	const SCENCE_TRNF = 35;
+  	const SCENCE_TRNF_SERVICE = 36;
 
     const SCENE_IN = [
         self::SCENE_RECHARGE, self::SCENE_EX_IN, self::SCENE_EX_BACK, self::SCENE_LEGAL_IN, self::SCENE_EX_DEL,
@@ -143,6 +145,10 @@ class AccountLog extends Model
                 return '购买生态';
             case self:: SCENCE_CREADIT_TRANSFER:
                 return '积分划转';
+            case self:: SCENCE_TRNF:
+                return 'USDT互转';
+            case self:: SCENCE_TRNF_SERVICE:
+                return 'USDT互转手续费';
         }
     }
 
@@ -151,6 +157,17 @@ class AccountLog extends Model
         return $this->belongsTo('App\Models\Coin');
     }
 
+    /**
+     * @param $uid  用户id
+     * @param $coinId 币种id
+     * @param $amount 数量
+     * @param $scene  场景
+     * @param $type   0减少1增加
+     * @param $coinType 0币币1法币
+     * @param string $remark 描述
+     * @param string $extend
+     * @return bool
+     */
     public static function addLog($uid, $coinId, $amount, $scene, $type, $coinType, $remark = '', $extend = '[]')
     {
 

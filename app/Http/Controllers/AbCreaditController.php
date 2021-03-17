@@ -364,6 +364,76 @@ class AbCreaditController extends Controller
         }
     }
 
+    //usdt互转,转币币,手续费加到18172807378(币币),固定每笔六个usdt
+    public function turn_usdt(Request $request)
+    {
+        $time = time();
+        if(!empty(session('time'))){
+            if($time <= session('time')+5){
+                return $this->responseError(trans('api.request_is_frequent'));
+            }
+        }
+        session(['time'=>$time]);
+
+        Service::auth()->isLoginOrFail();
+        $this->validate($request->all(), [
+            'num' => 'required|integer',
+            'new_account' => 'required',
+            'paypass' => 'required',
+        ], [
+            'num.required' => trans('api.quantity_cannot_empty'),
+            'new_account.required' => trans('api.quantity_cannot_empty'),
+            'num.integer' => trans('api.quantity_must_integer'),
+            'paypass.required' => trans('api.trade_password_cannot_empty'),
+        ]);
+        $uid = Service::auth()->getUser()->id;
+        $user_balance = Account::where('type',0)
+            ->where('uid',$uid)
+            ->value('amount');
+        if($user_balance < $request->get('num')){
+            return $this->responseError(trans('api.not_enough'));
+        }
+        $tranf_min = config('trade.tranf_min');//最少转账数量
+        $service_charge = config('trade.service_charge');//手续费
+        if($tranf_min > $request->get('num')){
+            return $this->responseError(trans('api.quantity_cannot_less_than').$tranf_min);
+        }
+
+        $to_user = User::where('new_account',$request->get('new_account'))->first();
+        if(empty($to_user)) {
+            return $this->responseError(trans('api.account_does_not_exist'));
+        }
+        $num = $request->get('num');
+        $true_num = $num - $service_charge; //实际到账数量
+        $service_user = User::where('new_account','18172807378')->first();//收手续费的人
+        \DB::beginTransaction();
+        try{
+            //自己账户扣除,加到对方账户,手续费加到相应账户
+            Account::reduceAmount($uid,'1',$num,0);
+            AccountLog::addLog($uid,1,$num,'35','0','0','usdt互转');
+
+            //加到对方账户
+            Account::addAmount($to_user->id,'1',$true_num,0);
+            AccountLog::addLog($uid,1,$true_num,'35','1','0','usdt互转');
+
+            //加手续费
+            Account::addAmount($service_user->id,'1',$service_charge,0);
+            AccountLog::addLog($service_user->id,1,$service_charge,'36','1','0','usdt互转手续费');
+            \DB::commit();
+        }catch (\Exception $exception) {
+            Log::info("程序错误".$exception->getMessage());
+            \DB::rollBack();
+        }
+    }
+
+    //互转页信息
+    public function turn_info(Request $request)
+    {
+
+    }
+
+
+
 
 
 

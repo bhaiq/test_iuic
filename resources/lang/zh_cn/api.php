@@ -43,6 +43,7 @@ return [
     'quantity_must_integer' => '数量必须是整数',
     'quantity_cannot_less_than_1' => '数量不能小于1',
     'quantity_cannot_less_than_0' => '数量不能小于0',
+    'quantity_cannot_less_than' => '数量不能小于',
     'currency_information_incorrect' => '币种信息有误',
     'account_does_not_exist' => '账号不存在',
     'cant_transfer_money_to_yourself' => '不能给自己转账',
