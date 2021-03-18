@@ -141,6 +141,9 @@ class AbCreaditController extends Controller
             $car_rate = EcologyConfigPub::where('id',1)->value('car_rate');
             EcologyConfigPub::where('id',1)->increment('car_total',$price*$car_rate);
             EcologyConfigPub::where('id',1)->increment('car_surplus',$price*$car_rate);
+
+            //生态2指定领导人伞下管理奖
+            $creadit_m->ecology_leader_reward($uid,$price);
             \DB::commit();
         }catch (\Exception $e){
             \DB::rollBack();
