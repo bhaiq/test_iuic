@@ -40,6 +40,9 @@ class EcologyCreaditLog extends Model
             case 9:
                 return "后台操作";
                 break;
+            case 10:
+                return "生态2指定领导人伞下管理奖";
+                break;
         }
     }
 

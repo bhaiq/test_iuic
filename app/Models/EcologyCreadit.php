@@ -287,7 +287,7 @@ class EcologyCreadit extends Model
         }
         $reward = $num*$true_rate;
         if($reward > 0){
-            EcologyCreadit::a_o_m($p_user->id,$reward,1,6,'生态2指定领导人伞下管理奖',1);
+            EcologyCreadit::a_o_m($p_user->id,$reward,1,10,'生态2指定领导人伞下管理奖',1);
             Log::info("用户uid".$p_user->id."得奖".$reward);
         }
         $rate = $rates;
