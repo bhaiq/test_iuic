@@ -406,6 +406,10 @@ class AbCreaditController extends Controller
         if(empty($to_user)) {
             return $this->responseError(trans('api.account_does_not_exist'));
         }
+        //不能转给自己
+        if($to_user->id == $uid){
+            return $this->responseError(trans('api.cant_transfer_money_to_yourself'));
+        }
         $num = $request->get('num');
         $true_num = $num - $service_charge; //实际到账数量
         $service_user = User::where('new_account','18172807378')->first();//收手续费的人
