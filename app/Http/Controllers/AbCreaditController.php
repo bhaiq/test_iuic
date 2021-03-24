@@ -46,13 +46,13 @@ class AbCreaditController extends Controller
 //        }
 //
 
-//        $time = time();
-//        if(!empty(session('time'))){
-//            if($time <= session('time')+5){
-//                return $this->responseError(trans('api.request_is_frequent'));
-//            }
-//        }
-//        session(['time'=>$time]);
+        $time = time();
+        if(!empty(session('time'))){
+            if($time <= session('time')+5){
+                return $this->responseError(trans('api.request_is_frequent'));
+            }
+        }
+        session(['time'=>$time]);
 
         //获取购买价格金额
         $price = $request->get('num');
@@ -73,7 +73,7 @@ class AbCreaditController extends Controller
             if(strtotime($last_orders->created_at)+10 > time() ){
                 $times  = strtotime($last_orders->created_at) + 10;
                 Log::info("当前时间".time()."上次时间".$times);
-                return $this->responseSuccess(trans('api.request_is_frequent'));
+                return $this->responseError(trans('api.request_is_frequent'));
 
             }
         }
